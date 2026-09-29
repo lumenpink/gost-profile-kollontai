@@ -632,5 +632,64 @@ services:
     restart: unless-stopped
 ```
 
+---
+
+## 13. Rodapé Canônico Multilíngue (Padrão de Autoria e Soberania)
+
+Todo aplicativo com interface gráfica, vitrine pública, documentação (`site/`) ou CLI com rodapé formatado no ecossistema Lumen **DEVE** exibir o rodapé canônico em **duas linhas rigorosamente estruturadas**, com paridade de tradução nas **10 Línguas Oficiais da Norma GOST**.
+
+### 13.1 Arquitetura do Rodapé em Duas Linhas
+
+* **Linha 1 — Afirmação Identitária & Transfeminista:**  
+  `Orgulhosamente produzido por uma [travesti latina] 🏳️‍⚧️ :)`  
+  - O substantivo **"travesti"** permanece rigorosamente **sem tradução** em todos os idiomas, preservando sua singularidade geopolítica e conceitual sul-americana.
+  - O adjetivo **"latina"** é adaptado à gramática nativa de cada idioma.
+  - A expressão composta `travesti [latina]` **DEVE** atuar como hiperlink obrigatório direcionando para o artigo canônico de definição em `https://travesti.2lp.in/<lang>/`.
+  - A bandeira trans (`🏳️‍⚧️`) sucede a expressão antes do sorriso `:)`.
+
+* **Linha 2 — Metadados de Soberania, Autoria e Licenciamento:**  
+  `{Nome do App} v{Versão} • [Lumen Pink](https://lumen.pink) • {Data/Hora ISO UTC} • {País / Brasil} 🇧🇷 • [{Licença}]`  
+  - `{Nome do App}`: Identificador público da aplicação ou biblioteca.
+  - `v{Versão}`: Versão extraída diretamente do arquivo `VERSION` da raiz do repositório (ex: `v0.1.0-dev.1` ou `v1.0.0`).
+  - `Lumen Pink`: Com link canônico para `https://lumen.pink`.
+  - `{Data/Hora ISO UTC}`: Carimbo exato de data e hora da compilação/montagem no formato ISO 8601 UTC (ex: `2026-09-28T22:20:00Z`), no lugar do ano estático.
+  - `{País / Brasil} 🇧🇷`: Nome do país adaptado ao idioma (ex: `Brasil 🇧🇷`, `Brazil 🇧🇷`, `Brésil 🇧🇷`, `Brasilien 🇧🇷`, `Brasile 🇧🇷`, `Бразилия 🇧🇷`, `巴西 🇧🇷`, `ブラジル 🇧🇷`, `البرازيل 🇧🇷`), acompanhado da bandeira nacional brasileira.
+  - `[{Licença}]`: Identificador SPDX da licença (ex: `GPL-3.0-or-later`, `CC-BY-SA-4.0`, etc.) com link para o arquivo `LICENSE` do repositório.
+
+### 13.2 Matriz Canônica das 10 Línguas Oficiais (Rodapé)
+
+| Idioma | ISO | Linha 1 (Afirmação Identitária) | Linha 2 (Metadados de Soberania) |
+|:---:|:---:|---|---|
+| **Português** | `pt` | Orgulhosamente produzido por uma [travesti latina](https://travesti.2lp.in/pt/) 🏳️‍⚧️ :) | {App} v{Versão} • por [Lumen Pink](https://lumen.pink) • {ISO_UTC} • Brasil 🇧🇷 • [{Licença}] |
+| **Inglês** | `en` | Proudly produced by a [Latin American travesti](https://travesti.2lp.in/en/) 🏳️‍⚧️ :) | {App} v{Versão} • by [Lumen Pink](https://lumen.pink) • {ISO_UTC} • Brazil 🇧🇷 • [{Licença}] |
+| **Espanhol** | `es` | Orgullosamente producido por una [travesti latinoamericana](https://travesti.2lp.in/es/) 🏳️‍⚧️ :) | {App} v{Versão} • por [Lumen Pink](https://lumen.pink) • {ISO_UTC} • Brasil 🇧🇷 • [{Licença}] |
+| **Francês** | `fr` | Fièrement produit par une [travesti latino-américaine](https://travesti.2lp.in/fr/) 🏳️‍⚧️ :) | {App} v{Versão} • par [Lumen Pink](https://lumen.pink) • {ISO_UTC} • Brésil 🇧🇷 • [{Licença}] |
+| **Alemão** | `de` | Mit Stolz entwickelt von einer [lateinamerikanischen Travesti](https://travesti.2lp.in/de/) 🏳️‍⚧️ :) | {App} v{Versão} • von [Lumen Pink](https://lumen.pink) • {ISO_UTC} • Brasilien 🇧🇷 • [{Licença}] |
+| **Italiano** | `it` | Orgogliosamente prodotto da una [travesti latinoamericana](https://travesti.2lp.in/it/) 🏳️‍⚧️ :) | {App} v{Versão} • da [Lumen Pink](https://lumen.pink) • {ISO_UTC} • Brasile 🇧🇷 • [{Licença}] |
+| **Russo** | `ru` | С гордостью создано [латиноамериканской travesti](https://travesti.2lp.in/ru/) 🏳️‍⚧️ :) | {App} v{Versão} • от [Lumen Pink](https://lumen.pink) • {ISO_UTC} • Бразилия 🇧🇷 • [{Licença}] |
+| **Chinês** | `zh` | 由一位[拉美 travesti](https://travesti.2lp.in/zh/) 自豪制作 🏳️‍⚧️ :) | {App} v{Versão} • 来自 [Lumen Pink](https://lumen.pink) • {ISO_UTC} • 巴西 🇧🇷 • [{Licença}] |
+| **Japonês** | `ja` | [ラテンアメリカの travesti](https://travesti.2lp.in/ja/) によって誇りを持って制作されました 🏳️‍⚧️ :) | {App} v{Versão} • 制作: [Lumen Pink](https://lumen.pink) • {ISO_UTC} • ブラジル 🇧🇷 • [{Licença}] |
+| **Árabe (RTL)** | `ar` | صُنع بكل فخر بواسطة [travesti أمريكية لاتينية](https://travesti.2lp.in/ar/) 🏳️‍⚧️ :) | {App} v{Versão} • بواسطة [Lumen Pink](https://lumen.pink) • {ISO_UTC} • البرازيل 🇧🇷 • [{Licença}] |
+
+---
+
+## 14. Atualização Contínua de Containers Docker (Watchtower)
+
+Para garantir segurança, integridade e atualização contínua de imagens de containers em infraestruturas Docker / Docker Compose autohospedadas (como nos nós `obione`, `obitwo` e `baquara`), a automação adota o **Watchtower** sob as seguintes diretrizes obrigatórias:
+
+1. **Opt-in Rigoroso por Labels (`--label-enable`):**  
+   O Watchtower **NUNCA** monitora ou reinicia containers de modo indiscriminado. Apenas containers declarando explicitamente a label:
+   ```yaml
+   labels:
+     - "com.centurylinklabs.watchtower.enable=true"
+   ```
+   serão atualizados. Containers com dependências sensíveis de migração de banco de dados ou volumes críticos sem backup permanecem intocados.
+2. **Limpeza Compulsória de Imagens Órfãs (`WATCHTOWER_CLEANUP=true`):**  
+   Imagens antigas substituídas são purgadas imediatamente para evitar exaustão de armazenamento no host.
+3. **Modos de Acionamento Homologados:**
+   - **Agendamento Periódico:** Polling programado com intervalo seguro (ex: diário ou a cada 2h).
+   - **Acionamento por Webhook (`WATCHTOWER_HTTP_API_TOKEN`):** Disparo autenticado via POST HTTP disparado automaticamente pelo pipeline de CI/CD do Codeberg após a publicação da nova imagem no registry.
+
+
 
 
