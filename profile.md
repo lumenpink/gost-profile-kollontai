@@ -1,6 +1,6 @@
-# Perfil de Implementação: Ecossistema Lumen
-**Identificador do Perfil:** `lumen`  
-**Norma Base:** GOST `1.0.0-draft`  
+# Perfil de Implementação: Kollontai
+**Identificador do Perfil:** `kollontai`  
+**Norma Base:** GOST `1.3.0`  
 **Autor:** lumenpink  
 **Status:** Ativo / Produção
 
@@ -8,7 +8,7 @@
 
 ## 1. Visão Geral
 
-Este documento define as especificações concretas, serviços de nuvem, ferramentas de automação e infraestrutura adotadas no ecossistema pessoal e profissional da Lumen para satisfazer todos os requisitos normativos do padrão **GOST**.
+Este documento define as especificações concretas, serviços de nuvem, ferramentas de automação e infraestrutura adotadas no perfil **Kollontai** (homenagem à revolucionária soviética, feminista e diplomata Alexandra Kollontai) para satisfazer todos os requisitos normativos do padrão **GOST**.
 
 ---
 
@@ -41,10 +41,10 @@ curl -X POST \
 
 ## 3. Gestão de Commits e Hooks (`cccp`)
 
-O ecossistema Lumen utiliza a CLI **`cccp`** como ferramenta central de versionamento, hooks do Git e integridade semântica.
+O ecossistema Kollontai utiliza a CLI **`cccp`** como ferramenta central de versionamento, hooks do Git e integridade semântica.
 
 ### 3.1 Arquivo `.cccprc`
-Todo repositório no perfil Lumen **DEVE** conter na raiz o arquivo `.cccprc`:
+Todo repositório no perfil Kollontai **DEVE** conter na raiz o arquivo `.cccprc`:
 
 ```ini
 codeberg_owner = lumenpink
@@ -98,10 +98,15 @@ A vitrine de documentação pública (`./site`) é publicada na borda da Cloudfl
   Referrer-Policy: strict-origin-when-cross-origin
 ```
 
-### 4.4 Fallback: Codeberg Pages
+### 4.4 Fallback: Codeberg Pages (Stateless Orphan Force Push)
 Como contingência e redundância estática, o pipeline de CI publica a pasta `./site` também no Codeberg Pages (`https://lumenpink.codeberg.page/<nome-do-repo>/`).
+Para evitar acúmulo de histórico de builds e inchaço do repositório no Codeberg, o branch `pages` é tratado como estritamente efêmero: a publicação gera uma árvore órfã isolada com commit único do snapshot atual e executa `git push --force origin pages`.
 
-### 4.5 Topologia de Serviços Dinâmicos no Perfil Lumen
+### 4.5 Armazenamento Canônico de Artefatos & Releases (Cloudflare R2)
+No ecossistema Kollontai, binários compilados (executáveis `musl`, APKs Android, bundles `.tar.gz`) **NÃO** são acumulados nem hospedados em releases no Codeberg.
+Todos os artefatos de release são enviados diretamente para buckets Cloudflare R2 via `npx wrangler r2 object put` e distribuídos na borda sob `*.2lp.in` com suporte nativo a streaming HTTP Range (RFC 7233) e zero taxa de saída.
+
+### 4.6 Topologia de Serviços Dinâmicos no Perfil Kollontai
 Para repositórios que implementam serviços web dinâmicos, daemons ou REPLs (como o Matraca):
 1. **Camada Privada Primária (Mesh VPN):**
    - Acesso via **Tailscale** (`http://100.x.y.z:<porta>`).
@@ -113,17 +118,20 @@ Para repositórios que implementam serviços web dinâmicos, daemons ou REPLs (c
 
 ## 5. Stack e Ferramental Padrão de Testes
 
-Para atender aos requisitos de alta cobertura (>90%, foco em 100%) e mutação da norma GOST, o ecossistema Lumen adota as seguintes ferramentas padronizadas por linguagem:
+Para atender aos requisitos de alta cobertura (>90%, foco em 100%) e mutação da norma GOST, o ecossistema Kollontai adota as seguintes ferramentas padronizadas por linguagem:
 
 ### 5.1 Shell Scripting / CLI de Sistema
 * **Runner de Testes:** **`shellspec`** (BDD framework para POSIX shell / bash).
 * **Estrutura:** Especificações organizadas sob `spec/` (ex: `spec/*_spec.sh`).
 * **Cobertura:** Mensuração via `kcov` integrada ao shellspec (`shellspec --kcov`).
 
-### 5.2 Rust (Sistemas, Milters, Daemons e CLI)
+### 5.2 Rust (Sistemas, Milters, Daemons, CLI e Clientes)
+* **Compilador Canônico:** **`rustc >= 1.99.0`** (Estado da arte).
+* **Edição Canônica Obrigatória:** **`edition = "2024"`** e `rust-version = "1.99"` declarados em todo `Cargo.toml`.
 * **Runner de Testes:** **`cargo test`** (testes unitários in-source em `src/` e testes de integração em `tests/`).
 * **Cobertura:** **`cargo-tarpaulin`** ou **`cargo-llvm-cov`** (com flag obrigatória de bloqueio `--fail-under 90`).
 * **Testes de Mutação:** **`cargo-mutants`** para detecção de testes ineficazes e mutantes sobreviventes.
+* **Target Estático de Distribuição:** `x86_64-unknown-linux-musl` e `aarch64-unknown-linux-musl` (compilação estática pura sem glibc para distribuição hermética).
 
 ### 5.3 PHP (IndieWeb, APIs e Aplicações Web)
 * **Runner de Testes:** **`pest`** (PHP Testing Framework elegante e veloz).
@@ -133,12 +141,38 @@ Para atender aos requisitos de alta cobertura (>90%, foco em 100%) e mutação d
   ```
 * **Testes de Mutação:** **`infection`** (`vendor/bin/infection --min-msi=80`).
 
-### 5.4 Web, Interfaces e Ponta a Ponta (E2E)
+### 5.4 Interfaces de Usuário, Web & Mobile: Dioxus 0.8
+O framework declarativo universal adotado no perfil Kollontai para desenvolvimento de aplicações gráficas reativas (Desktop, Web WASM e Mobile) é o **Dioxus 0.8** (`dioxus = "0.8"`):
+
+* **Multiplataforma Nativa:**
+  - **Desktop:** Renderização rápida via Tao/Wry.
+  - **Web (WASM):** Single Page Apps estáticas com renderização client-side ultra-rápida sem NodeJS em runtime.
+  - **Mobile:** Android NDK e iOS compilados diretamente com Cargo.
+* **Manifesto Canônico (`Dioxus.toml`):**
+  Todo projeto Dioxus deve manter seu manifesto configurado com o identificador canônico `in.2lp.<app>` e metadados de empacotamento:
+  ```toml
+  [application]
+  name = "<app>"
+  default_platform = "web"
+
+  [bundle]
+  identifier = "in.2lp.<app>"
+  publisher = "Lumen Pink"
+  icon = ["assets/icon.png"]
+  ```
+* **Ergonomia Mobile e Layout Adaptativo:**
+  - Safe Area Insets respeitando entalhes e barras gestuais (`env(safe-area-inset-top)` e `env(safe-area-inset-bottom)`).
+  - Alvos de toque com `touch-action: manipulation` e dimensão mínima de **48px**.
+  - Responsividade automática: navegação por barra inferior no celular (< 640px) e barra lateral compacta (*rail*) em tablets (640px – 1024px).
+* **Componente de Rodapé Canônico:**
+  Aplicações Dioxus devem embutir o componente reativo do rodapé oficial com tradução dinâmica para as 10 línguas normativas.
+
+### 5.5 Web, Interfaces e Ponta a Ponta (E2E)
 * **Runner E2E:** **`playwright`** (`npx playwright test`).
 * **Escopo:** Navegação automatizada *headless* em Chromium, Firefox e WebKit simulando as jornadas reais do usuário e garantindo ausência de erros de console, layout e renderização.
 
-### 5.5 Análise Estática, Formatação Determinística & Zero Warnings por Stack
-O ecossistema Lumen adota um pipeline estrito onde **erros de linter e desvios de formatação quebram o build**:
+### 5.6 Análise Estática, Formatação Determinística & Zero Warnings por Stack
+O ecossistema adota um pipeline estrito onde **erros de linter e desvios de formatação quebram o build**:
 
 * **Rust:**
   - Linter: `cargo clippy --all-targets --all-features -- -D warnings`
@@ -156,12 +190,12 @@ O ecossistema Lumen adota um pipeline estrito onde **erros de linter e desvios d
 * **Higiene Universal de Editores:**
   - Arquivo `.editorconfig` na raiz de todo repositório para impor LF, UTF-8, ausência de trailing whitespaces e indentação correta.
 
-### 5.6 Gate de Pre-Push com `act` (CI Local Idêntico)
-O ecossistema Lumen usa **`act`** — executor local de Forgejo/GitHub Actions baseado em Docker — para rodar o job `test` do pipeline em um ambiente **bit-for-bit idêntico** ao do Forgejo antes de cada `git push`.
+### 5.7 Gate de Pre-Push com `act` (CI Local Idêntico)
+O ecossistema Kollontai usa **`act`** — executor local de Forgejo/GitHub Actions baseado em Docker — para rodar o job `test` do pipeline em um ambiente **bit-for-bit idêntico** ao do Forgejo antes de cada `git push`.
 
 #### Ferramenta
 * **`act`** ([`nektos/act`](https://github.com/nektos/act)): lê `.forgejo/workflows/ci.yml` e executa os jobs dentro dos mesmos containers Docker usados pelo Forgejo Actions.
-* **Pré-requisito:** Docker em execução na máquina de desenvolvimento (sempre presente no ecossistema Lumen).
+* **Pré-requisito:** Docker em execução na máquina de desenvolvimento (sempre presente no ecossistema Kollontai).
 
 #### Comportamento do Hook `pre-push`
 ```
@@ -244,17 +278,33 @@ jobs:
           if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
             npx wrangler deploy
           fi
-      - name: "Deploy to Codeberg Pages (Fallback)"
-        uses: https://codeberg.org/actions/pages@v1
-        with:
-          path: site
+      - name: "Deploy to Codeberg Pages (Stateless Orphan Force Push)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "actions-user"
+          git config user.email "actions@codeberg.org"
+          WORKTREE_DIR=$(mktemp -d)
+          git worktree add --orphan -b pages "$WORKTREE_DIR"
+          rm -rf "${WORKTREE_DIR:?}"/*
+          cp -r site/* "$WORKTREE_DIR/"
+          cd "$WORKTREE_DIR"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No site changes to deploy."
+          else
+            git commit -m "docs(site): deploy documentation snapshot [skip ci]"
+            git push --force origin pages
+          fi
+          cd - >/dev/null
+          git worktree remove "$WORKTREE_DIR" --force || true
 ```
 
 ---
 
 ## 7. Registro no Catálogo Central (`~/src/catalog.json`)
 
-Todo repositório sob o perfil Lumen deve ser registrado no arquivo central de descoberta `~/src/catalog.json`:
+Todo repositório sob o perfil Kollontai deve ser registrado no arquivo central de descoberta `~/src/catalog.json`:
 
 ```json
 {
@@ -273,9 +323,9 @@ Isso garante indexação pelo `cccp catalog`, ferramentas de busca local e dashb
 
 ---
 
-## 8. Mapeamento do Ciclo DD-TDD no Perfil Lumen
+## 8. Mapeamento do Ciclo DD-TDD no Perfil Kollontai
 
-No dia a dia do ecossistema Lumen, o ciclo DD-TDD opera integrado ao Codeberg Issues, branches dedicados e ao CLI `cccp`:
+No dia a dia do ecossistema Kollontai, o ciclo DD-TDD opera integrado ao Codeberg Issues, branches dedicados e ao CLI `cccp`:
 
 ### 8.1 Passo a Passo Operacional:
 1. **Abertura do Ticket:**
@@ -318,9 +368,9 @@ git push --tags origin main
 ```
 Isso consolida o `CHANGELOG.md`, atualiza `VERSION` para versão estável e cria a tag Git correspondente.
 
-### 8.3 Comandos Operacionais para Agentes de IA no Perfil Lumen
-No dia a dia com agentes de IA (assistentes CLI/IDE), o perfil Lumen adota o protocolo canônico de comandos curtos:
-* **`DCPD` (Do, Commit, Push, Deploy):** Autorização expressa para implementação da demanda, validação local com testes e Zero Warnings, commit no padrão Conventional Commits com fechamento de issue (`closes #ID`), push da branch do ticket, merge na branch principal (`main`) e push remoto disparando o deploy contínuo no Cloudflare Workers e Codeberg Pages.
+### 8.3 Comandos Operacionais para Agentes de IA no Perfil Kollontai
+No dia a dia com agentes de IA (assistentes CLI/IDE), o perfil Kollontai adota o protocolo canônico de comandos curtos:
+* **`DCPD` (Do, Commit, Push, Deploy):** Autorização expressa para implementação da demanda, validação local com testes e Zero Warnings, commit no padrão Conventional Commits com fechamento de issue (`closes #ID`), push da branch do ticket, merge na branch principal (`main`) e push remoto disparando o deploy contínuo no Cloudflare Workers / R2 e Codeberg Pages (via stateless single-commit force push).
 * **`DCP` (Do, Commit, Push):** Implementação, testes locais e push restritos à branch de trabalho (`feat/<id>-*`), gerando a URL do Pull Request no Codeberg para revisão humana prévia.
 * **`PLAN` (Plan & Propose):** Pesquisa e diagnóstico aprofundado sem qualquer alteração em arquivos de código nem commits.
 * **`TDD` (Ticket, Doc, Test, Do):** Execução estrita das 5 etapas do ciclo GOST com commits separados para documentação (`docs: ... ref #ID`), teste quebrado (`test: ... ref #ID`) e código funcional.
@@ -330,9 +380,9 @@ No dia a dia com agentes de IA (assistentes CLI/IDE), o perfil Lumen adota o pro
 
 ---
 
-## 9. Internacionalização no Perfil Lumen
+## 9. Internacionalização no Perfil Kollontai
 
-O ecossistema Lumen adota o padrão de arquitetura multilíngue validado no `indieinabox` com governança de idioma centralizada pelo `cccp`:
+O ecossistema Kollontai adota o padrão de arquitetura multilíngue validado no `indieinabox` com governança de idioma centralizada pelo `cccp`:
 
 ### 9.1 Configuração da Língua Primária (`.cccprc`)
 A autoridade canônica do idioma padrão de cada repositório é configurada no `.cccprc`:
@@ -391,9 +441,9 @@ Para validação visual fiel antes do deploy, recomenda-se incluir em `site/card
 
 ---
 
-## 11. Arquitetura Pragmática & Estrutura de Código no Perfil Lumen
+## 11. Arquitetura Pragmática & Estrutura de Código no Perfil Kollontai
 
-O perfil Lumen materializa os princípios de Inversão de Dependência (DIP), hermeticidade e anti-bloat através de padrões objetivos adaptados às linguagens centrais do ecossistema (**Rust** e **PHP**).
+O perfil Kollontai materializa os princípios de Inversão de Dependência (DIP), hermeticidade e anti-bloat através de padrões objetivos adaptados às linguagens centrais do ecossistema (**Rust** e **PHP**).
 
 ### 11.1 Regra de Gradação: Micro-ferramenta vs. Aplicação
 1. **Micro-ferramentas e Scripts Utilitários:** Ferramentas de escopo pontual (ex: CLI de 100 linhas ou filtro de texto) **NÃO DEVEM** ser fracionadas em múltiplas pastas cerimoniais. Ficam contidas diretamente em `src/main.rs` (Rust) ou arquivo executável único (PHP/Bash).
@@ -517,9 +567,9 @@ test('autentica usuário com storage em memória', function () {
 
 ---
 
-## 12. Padrões de Sistema e Containers no Perfil Lumen
+## 12. Padrões de Sistema e Containers no Perfil Kollontai
 
-O ecossistema Lumen adota padrões rígidos de interoperabilidade Unix, priorizando ferramentas leves e compatíveis com shell scripting e ambientes conteinerizados seguros.
+O ecossistema Kollontai adota padrões rígidos de interoperabilidade Unix, priorizando ferramentas leves e compatíveis com shell scripting e ambientes conteinerizados seguros.
 
 ### 12.1 Resolução Canônica de Diretórios XDG
 Todo utilitário ou serviço Lumen implementa o mapeamento estrito da especificação XDG com fallbacks universais.
@@ -569,12 +619,12 @@ if [ -f "$CONFIG_FILE" ]; then
 fi
 ```
 
-### 12.3 Dockerfiles Canônicos no Perfil Lumen
+### 12.3 Dockerfiles Canônicos no Perfil Kollontai
 
 #### Template Rust (Multi-stage + `scratch` estático):
 ```dockerfile
 # Estágio de compilação
-FROM rust:1.80-alpine3.20 AS builder
+FROM rust:1.99-alpine AS builder
 RUN apk add --no-cache musl-dev
 WORKDIR /build
 COPY Cargo.toml Cargo.lock ./
@@ -636,7 +686,7 @@ services:
 
 ## 13. Rodapé Canônico Multilíngue (Padrão de Autoria e Soberania)
 
-Todo aplicativo com interface gráfica, vitrine pública, documentação (`site/`) ou CLI com rodapé formatado no ecossistema Lumen **DEVE** exibir o rodapé canônico em **duas linhas rigorosamente estruturadas**, com paridade de tradução nas **10 Línguas Oficiais da Norma GOST**.
+Todo aplicativo com interface gráfica, vitrine pública, documentação (`site/`) ou CLI com rodapé formatado no ecossistema Kollontai **DEVE** exibir o rodapé canônico em **duas linhas rigorosamente estruturadas**, com paridade de tradução nas **10 Línguas Oficiais da Norma GOST**.
 
 ### 13.1 Arquitetura do Rodapé em Duas Linhas
 

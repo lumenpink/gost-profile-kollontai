@@ -1,19 +1,19 @@
-# gost-profile-lumen
+# gost-profile-kollontai
 
-Perfil de Implementação de Infraestrutura e Ferramental do Ecossistema Lumen para a norma **[GOST](https://codeberg.org/lumenpink/gost)**.
+Perfil de Implementação de Infraestrutura e Ferramental Kollontai para a norma **[GOST](https://codeberg.org/lumenpink/gost)**.
 
 ## 📌 Sobre
 
-Este repositório contém a especificação concreta das escolhas de tecnologia, automação, forja de código, testes, CI/CD e implantação adotadas no ecossistema Lumen.
+Este repositório contém a especificação concreta das escolhas de tecnologia, automação, forja de código, testes, CI/CD e implantação adotadas no perfil Kollontai.
 
 ## 🚀 Como Usar no Padrão GOST
 
-Em projetos que adotam o padrão GOST sob o ecossistema Lumen, declare a URL deste perfil no arquivo `GOSTVER` na raiz do seu repositório:
+Em projetos que adotam o padrão GOST sob o perfil Kollontai, declare a URL deste perfil no arquivo `GOSTVER` na raiz do seu repositório:
 
 ```bash
 # GOSTVER — Declaração de Conformidade com o Padrão GOST
-GOST_VERSION="1.0.0"
-GOST_PROFILE_URL="https://codeberg.org/lumenpink/gost-profile-lumen/raw/branch/main/profile.md"
+GOST_VERSION="1.3.0"
+GOST_PROFILE_URL="https://codeberg.org/lumenpink/gost-profile-kollontai/raw/branch/main/profile.md"
 GOST_LANGUAGES="shell,rust,php"
 ```
 
