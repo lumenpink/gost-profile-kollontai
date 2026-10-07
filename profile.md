@@ -63,7 +63,7 @@ Isso instala:
   - Validador rigoroso de Conventional Commits.
   - **Enforcement de Tickets:** Rejeita qualquer commit que não contenha a referência explícita ao ticket da issue no padrão `(ref #<id>)` ou `(closes #<id>)`. Bloqueia commits sem ticket na raiz.
 * **`post-commit`:** Sincronizador atômico de versão (`VERSION`), atualização do `CHANGELOG.md` e metadados.
-* **`pre-push`:** Gate de CI local com `act` (ver Seção 5.6).
+* **`pre-push`:** Gate de CI local com `act` (ver Seção 5.8).
 
 ---
 
@@ -121,9 +121,11 @@ Para repositórios que implementam serviços web dinâmicos, daemons ou REPLs (c
 Para atender aos requisitos de alta cobertura (>90%, foco em 100%) e mutação da norma GOST, o ecossistema Kollontai adota as seguintes ferramentas padronizadas por linguagem:
 
 ### 5.1 Shell Scripting / CLI de Sistema
+* **Dialeto Canônico:** POSIX Shell estrito (`/bin/sh`) como baseline universal portável; Bash 5.2+ (`#!/usr/bin/env bash`) quando recursos avançados (arrays, controle fino de processos) forem expressamente justificados.
 * **Runner de Testes:** **`shellspec`** (BDD framework para POSIX shell / bash).
 * **Estrutura:** Especificações organizadas sob `spec/` (ex: `spec/*_spec.sh`).
-* **Cobertura:** Mensuração via `kcov` integrada ao shellspec (`shellspec --kcov`).
+* **Cobertura:** Mensuração via `kcov` integrada ao shellspec (`shellspec --kcov`), mantendo meta de bloqueio $\ge 90\%$.
+* **Linter & Formatação:** `shellcheck` (zero avisos tolerados) e `shfmt -d -i 2 -ci -bn .`.
 
 ### 5.2 Rust (Sistemas, Milters, Daemons, CLI e Clientes)
 * **Compilador Canônico:** **`rustc >= 1.99.0`** (Estado da arte).
@@ -134,14 +136,25 @@ Para atender aos requisitos de alta cobertura (>90%, foco em 100%) e mutação d
 * **Target Estático de Distribuição:** `x86_64-unknown-linux-musl` e `aarch64-unknown-linux-musl` (compilação estática pura sem glibc para distribuição hermética).
 
 ### 5.3 PHP (IndieWeb, APIs e Aplicações Web)
+* **Versão Canônica:** **`PHP >= 8.5.0`** (Estado da arte).
+* **Suporte Reverso Mandatório:** Compatibilidade garantida com **`PHP >= 8.2`** (`"php": "^8.2 || ^8.3 || ^8.4 || ^8.5"` no `composer.json`), proibindo quebras de sintaxe ou dependências exclusivas de versões superiores sem fallback seguro.
+* **Tipagem Estrita:** `declare(strict_types=1);` mandatório em 100% dos arquivos PHP.
 * **Runner de Testes:** **`pest`** (PHP Testing Framework elegante e veloz).
 * **Cobertura:** Execução contínua com verificação estrita:
   ```bash
   vendor/bin/pest --coverage --min=90
   ```
-* **Testes de Mutação:** **`infection`** (`vendor/bin/infection --min-msi=80`).
+* **Testes de Mutação:** **`infection`** (`vendor/bin/infection --min-msi=80 --min-covered-msi=85`).
+* **Análise Estática & Estilo:** `vendor/bin/phpstan analyse --level=max` (configurado com target 8.2 no baseline de compatibilidade) e `vendor/bin/pint --test`.
 
-### 5.4 Interfaces de Usuário, Web & Mobile: Dioxus 0.8
+### 5.4 Node.js & TypeScript (Serviços, Workers e Tooling)
+* **Runtime Canônico:** **`Node.js >= 24.16.0 LTS`** (Estado da arte).
+* **Padrão de Módulos:** **ESM nativo obrigatório** (`"type": "module"` no `package.json`).
+* **TypeScript:** **`TypeScript >= 5.8`** sob modo estrito total (`"strict": true`).
+* **Linter & Formatação:** **`biome`** (`npx biome check .` / `npx biome format .`) como ferramenta canônica e ultrarrápida baseada em Rust.
+* **Runner de Testes:** **`vitest`** ou **`node:test`** nativo com cobertura v8 $\ge 90\%$.
+
+### 5.5 Interfaces de Usuário, Web & Mobile: Dioxus 0.8
 O framework declarativo universal adotado no perfil Kollontai para desenvolvimento de aplicações gráficas reativas (Desktop, Web WASM e Mobile) é o **Dioxus 0.8** (`dioxus = "0.8"`):
 
 * **Multiplataforma Nativa:**
@@ -167,11 +180,11 @@ O framework declarativo universal adotado no perfil Kollontai para desenvolvimen
 * **Componente de Rodapé Canônico:**
   Aplicações Dioxus devem embutir o componente reativo do rodapé oficial com tradução dinâmica para as 10 línguas normativas.
 
-### 5.5 Web, Interfaces e Ponta a Ponta (E2E)
+### 5.6 Web, Interfaces e Ponta a Ponta (E2E)
 * **Runner E2E:** **`playwright`** (`npx playwright test`).
 * **Escopo:** Navegação automatizada *headless* em Chromium, Firefox e WebKit simulando as jornadas reais do usuário e garantindo ausência de erros de console, layout e renderização.
 
-### 5.6 Análise Estática, Formatação Determinística & Zero Warnings por Stack
+### 5.7 Análise Estática, Formatação Determinística & Zero Warnings por Stack
 O ecossistema adota um pipeline estrito onde **erros de linter e desvios de formatação quebram o build**:
 
 * **Rust:**
@@ -186,11 +199,11 @@ O ecossistema adota um pipeline estrito onde **erros de linter e desvios de form
   - Linter: `shellcheck` (zero avisos tolerados em todos os scripts)
   - Formatação: `shfmt -d -i 2 -ci -bn .` (2 espaços, recuo de case, operadores no início)
 * **Web, JS/TS, JSON, YAML e Markdown:**
-  - Formatação e Linter: `biome check` ou `npx prettier --check "**/*.{json,yaml,md,js,ts,html,css}"`
+  - Formatação e Linter: `npx biome check .` (canônico) ou `npx prettier --check "**/*.{json,yaml,md,js,ts,html,css}"`
 * **Higiene Universal de Editores:**
   - Arquivo `.editorconfig` na raiz de todo repositório para impor LF, UTF-8, ausência de trailing whitespaces e indentação correta.
 
-### 5.7 Gate de Pre-Push com `act` (CI Local Idêntico)
+### 5.8 Gate de Pre-Push com `act` (CI Local Idêntico)
 O ecossistema Kollontai usa **`act`** — executor local de Forgejo/GitHub Actions baseado em Docker — para rodar o job `test` do pipeline em um ambiente **bit-for-bit idêntico** ao do Forgejo antes de cada `git push`.
 
 #### Ferramenta
