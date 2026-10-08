@@ -369,12 +369,14 @@
 <code>text
      [MIRROR / BACKUP] &lt;Descrição do projeto&gt;. Repositório canônico e issues em: https://codeberg.org/lumenpink/&lt;nome-do-repo&gt;</code><br />
    * Issues, pull requests e contribuições devem ser mantidos e tratados exclusivamente na forja canônica no Codeberg.</li>
-<li><strong>Estratégia de Sincronização de Branches e Tags:</strong><br />
-   * <strong>Dual Push Local:</strong> Configuração do remote local <code>origin</code> com destinos múltiplos de push para publicação simultânea em um único comando:<br />
+<li><strong>Estratégia de Sincronização e Espelhamento Soberano (Zero Dual Push Local):</strong><br />
+   * <strong>Push Unidirecional Local:</strong> O ambiente local do desenvolvedor mantém um único destino de push configurado no <code>origin</code>, apontando exclusivamente para a forja primária no Codeberg:<br />
 <code>bash
-     git remote set-url --add --push origin ssh://git@codeberg.org/lumenpink/&lt;nome-do-repo&gt;.git
-     git remote set-url --add --push origin git@github.com:lumenpink/&lt;nome-do-repo&gt;.git</code><br />
-   * <strong>CI Mirroring:</strong> Sincronização automática via workflow no Forgejo Actions acionando espelhamento autenticado para o backup a cada push na branch <code>main</code>.</li>
+     git remote set-url origin ssh://git@codeberg.org/lumenpink/&lt;nome-do-repo&gt;.git</code><br />
+     O desenvolvedor <strong>NUNCA</strong> faz push manual duplo local para ambas as forjas.<br />
+   * <strong>Push Secundário Automatizado a partir da Forja Principal:</strong> É responsabilidade estrita da infraestrutura do repositório canônico no Codeberg replicar as alterações para o espelho secundário:<br />
+     - <strong>Push Mirror Nativo do Codeberg / Forgejo (Recomendado):</strong> Configurado diretamente nas opções do repositório no Codeberg (<em>Configurações &gt; Repositório &gt; Espelhamento de Envio / Push Mirror</em>), onde a própria forja replica commits, branches e tags para o GitHub automaticamente após qualquer recebimento de push.<br />
+     - <strong>Job de Espelhamento no Forgejo Actions (CI):</strong> Como alternativa ou contingência, um workflow dedicado no CI acionado a cada push em branches e tags que executa o push espelhado para o GitHub autenticado via secret (<code>GITHUB_MIRROR_TOKEN</code> ou chave SSH).</li>
 </ol>
 <hr />
 <h2 id="3-gestao-de-commits-e-hooks-cccp">3. Gestão de Commits e Hooks (<code>cccp</code>)</h2>

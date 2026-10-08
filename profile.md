@@ -50,13 +50,15 @@ Todo repositório no perfil Kollontai deve implementar redundância geográfica 
      [MIRROR / BACKUP] <Descrição do projeto>. Repositório canônico e issues em: https://codeberg.org/lumenpink/<nome-do-repo>
      ```
    * Issues, pull requests e contribuições devem ser mantidos e tratados exclusivamente na forja canônica no Codeberg.
-3. **Estratégia de Sincronização de Branches e Tags:**
-   * **Dual Push Local:** Configuração do remote local `origin` com destinos múltiplos de push para publicação simultânea em um único comando:
+3. **Estratégia de Sincronização e Espelhamento Soberano (Zero Dual Push Local):**
+   * **Push Unidirecional Local:** O ambiente local do desenvolvedor mantém um único destino de push configurado no `origin`, apontando exclusivamente para a forja primária no Codeberg:
      ```bash
-     git remote set-url --add --push origin ssh://git@codeberg.org/lumenpink/<nome-do-repo>.git
-     git remote set-url --add --push origin git@github.com:lumenpink/<nome-do-repo>.git
+     git remote set-url origin ssh://git@codeberg.org/lumenpink/<nome-do-repo>.git
      ```
-   * **CI Mirroring:** Sincronização automática via workflow no Forgejo Actions acionando espelhamento autenticado para o backup a cada push na branch `main`.
+     O desenvolvedor **NUNCA** faz push manual duplo local para ambas as forjas.
+   * **Push Secundário Automatizado a partir da Forja Principal:** É responsabilidade estrita da infraestrutura do repositório canônico no Codeberg replicar as alterações para o espelho secundário:
+     - **Push Mirror Nativo do Codeberg / Forgejo (Recomendado):** Configurado diretamente nas opções do repositório no Codeberg (*Configurações > Repositório > Espelhamento de Envio / Push Mirror*), onde a própria forja replica commits, branches e tags para o GitHub automaticamente após qualquer recebimento de push.
+     - **Job de Espelhamento no Forgejo Actions (CI):** Como alternativa ou contingência, um workflow dedicado no CI acionado a cada push em branches e tags que executa o push espelhado para o GitHub autenticado via secret (`GITHUB_MIRROR_TOKEN` ou chave SSH).
 
 ---
 
