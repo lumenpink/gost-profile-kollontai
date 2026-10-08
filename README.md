@@ -13,7 +13,7 @@ Em projetos que adotam o padrão GOST sob o perfil Kollontai, declare a URL dest
 ```bash
 # GOSTVER — Declaração de Conformidade com o Padrão GOST
 GOST_VERSION="1.3.0"
-GOST_PROFILE_URL="https://codeberg.org/lumenpink/gost-profile-kollontai/raw/branch/main/profile.md"
+GOST_PROFILE_URL="https://kollontai.2lp.in/profile.md"
 GOST_LANGUAGES="shell,rust,php"
 ```
 
@@ -21,8 +21,9 @@ O CLI `cccp` utiliza essa diretiva para auditar e sincronizar as regras de confo
 
 ## 📄 Conteúdo do Perfil
 
-O documento canônico completo está disponível em:
-👉 **[`profile.md`](./profile.md)**
+O documento canônico completo está publicado na borda em:
+👉 **[kollontai.2lp.in](https://kollontai.2lp.in)** (HTML) ou **[`kollontai.2lp.in/profile.md`](https://kollontai.2lp.in/profile.md)** (Raw Markdown)
+Localmente no repositório: **[`profile.md`](./profile.md)**
 
 Tópicos cobertos:
 1. Forja de código e repositórios remotos (Codeberg/Forgejo)
