@@ -37,6 +37,27 @@ curl -X POST \
   "https://codeberg.org/api/v1/user/repos"
 ```
 
+### 2.3 Redundância Mandatória: Repositório de Backup / Espelho (*Mirror*)
+Todo repositório no perfil Kollontai deve implementar redundância geográfica e resiliência contra indisponibilidade de forjas através de um repositório secundário de backup:
+
+1. **Forja de Backup Padrão:**
+   * **Padrão Canônico:** **GitHub** (`https://github.com/lumenpink/<nome-do-repo>`), operando como espelho secundário de contingência e preservação.
+   * **Exceções Declaradas no `.cccprc`:** Repositórios com propósitos específicos (como notas/vaults do Obsidian em `tildegit.org` ou instâncias próprias) podem utilizar forjas alternativas, desde que declaradas explicitamente na chave `backup_forge` ou `backup_url` do `.cccprc`.
+2. **Paridade Estrita de Metadados & Sinalização de Espelho:**
+   * **Metadados Idênticos:** Nome do repositório, tópicos (*topics/tags*), homepage/website (`https://<nome-do-repo>.2lp.in`), licença e visibilidade (público/privado) **DEVEM** ser estritamente iguais entre o repositório principal e o backup.
+   * **Distinção Mandatória:** No repositório de backup, a descrição oficial (*About / Description*) **DEVE** declarar explicitamente que se trata de uma cópia de contingência, apontando diretamente para o repositório principal no Codeberg:
+     ```text
+     [MIRROR / BACKUP] <Descrição do projeto>. Repositório canônico e issues em: https://codeberg.org/lumenpink/<nome-do-repo>
+     ```
+   * Issues, pull requests e contribuições devem ser mantidos e tratados exclusivamente na forja canônica no Codeberg.
+3. **Estratégia de Sincronização de Branches e Tags:**
+   * **Dual Push Local:** Configuração do remote local `origin` com destinos múltiplos de push para publicação simultânea em um único comando:
+     ```bash
+     git remote set-url --add --push origin ssh://git@codeberg.org/lumenpink/<nome-do-repo>.git
+     git remote set-url --add --push origin git@github.com:lumenpink/<nome-do-repo>.git
+     ```
+   * **CI Mirroring:** Sincronização automática via workflow no Forgejo Actions acionando espelhamento autenticado para o backup a cada push na branch `main`.
+
 ---
 
 ## 3. Gestão de Commits e Hooks (`cccp`)
@@ -47,8 +68,19 @@ O ecossistema Kollontai utiliza a CLI **`cccp`** como ferramenta central de vers
 Todo repositório no perfil Kollontai **DEVE** conter na raiz o arquivo `.cccprc`:
 
 ```ini
+# Forja Canônica Primária (Codeberg)
 codeberg_owner = lumenpink
 codeberg_repo = <nome-do-repo>
+
+# Redundância & Repositório de Backup (Mandatório)
+# backup_forge padrão: github (opções: github, tildegit, gitlab, custom)
+backup_forge = github
+backup_owner = lumenpink
+backup_repo = <nome-do-repo>
+# Ou declaração direta de URL de transporte:
+# backup_url = git@github.com:lumenpink/<nome-do-repo>.git
+
+# Diretivas de Agentes e Idioma
 agent_md_url = https://gist.githubusercontent.com/lumenpink/ebaded4f8bfb956346c28b64f48754fb/raw/c48a2f9cfb4fd73dcb944c4e47a5b17b8f3a3a2e/AGENTS.md
 agent_var_lang = english
 ```
