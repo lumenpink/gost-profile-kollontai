@@ -142,6 +142,16 @@ Todos os artefatos de release são enviados diretamente para buckets Cloudflare 
 
 ### 4.6 Topologia de Serviços Dinâmicos no Perfil Kollontai
 Para repositórios que implementam serviços web dinâmicos, daemons ou REPLs (como o Matraca):
+
+### 4.7 Tipologia de Vitrines (`site_type: doc` vs `site_type: app`)
+No perfil Kollontai:
+- **Repositórios de Bibliotecas, Daemons, Ferramentas e Perfis (`site_type: doc`):** A raiz `site/index.html` expõe diretamente a vitrine de documentação do software.
+- **Repositórios de Aplicações Gráficas / Dioxus / WASM (`site_type: app`):** A raiz `site/index.html` hospeda o binário/SPA da aplicação (ex: Navalha, Joaju). A documentação, guias de usuário e presets residem obrigatoriamente sob `site/doc/`.
+
+### 4.8 Single Source of Truth para Documentação
+- Todo conteúdo autoral reside exclusivamente em Markdown (`docs/`, `SPEC.md`, `profile.md`, `CUSTOM.md`).
+- A documentação em `site/` consome ou compila os arquivos Markdown fonte automaticamente, proibindo edição manual de HTML concorrente.
+- O `README.md` funciona como portal conciso (até 50 linhas), delegando manuais extensos para a vitrine oficial `*.2lp.in`.
 1. **Camada Privada Primária (Mesh VPN):**
    - Acesso via **Tailscale** (`http://100.x.y.z:<porta>`).
    - Todo tráfego entre smartphones, laptops e estações de desenvolvimento permanece criptografado ponto a ponto na rede WireGuard privada sem abertura de portas no firewall.
