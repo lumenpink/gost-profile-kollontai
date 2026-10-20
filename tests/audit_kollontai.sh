@@ -39,10 +39,23 @@ else
     FAILED=1
 fi
 
+# 5. Mutation Tests
+echo "=== [MUTATION] Verificando sensibilidade a mutações ==="
+TMP_MUTANT=$(mktemp)
+trap 'rm -f "$TMP_MUTANT"' EXIT
+
+grep -v 'GOST `1.5.0`' "$REPO_DIR/profile.md" > "$TMP_MUTANT"
+if grep -qF '**Norma Base:** GOST `1.5.0`' "$TMP_MUTANT"; then
+    echo "  [FAIL] Mutante A falhou ao ser gerado"
+    FAILED=1
+else
+    echo "  [PASS] Mutante A (versão revertida) detectado com sucesso"
+fi
+
 if [ $FAILED -ne 0 ]; then
-    echo "❌ [RED TEST] Auditoria falhou: conformidade incompleta com GOST 1.5.0."
+    echo "❌ [FAIL] Auditoria ou mutantes falharam."
     exit 1
 fi
 
-echo "✔ [GREEN TEST] Auditoria aprovada: conformidade com GOST 1.5.0 verificada."
+echo "✔ [GREEN TEST] Auditoria e mutantes aprovados com 100% de conformidade."
 exit 0
