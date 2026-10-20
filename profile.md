@@ -1,6 +1,6 @@
 # Perfil de Implementação: Kollontai
 **Identificador do Perfil:** `kollontai`  
-**Norma Base:** GOST `1.3.0`  
+**Norma Base:** GOST `1.5.0`  
 **Autor:** lumenpink  
 **Status:** Ativo / Produção
 
