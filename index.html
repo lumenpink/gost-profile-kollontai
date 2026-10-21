@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil de Implementação Kollontai — GOST</title>
+  <meta name="description" content="Especificação canônica de infraestrutura, CI/CD, testes e ferramentas do perfil Kollontai para o padrão GOST.">
+
+  <!-- OpenGraph & Twitter Cards -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Perfil de Implementação Kollontai — GOST">
+  <meta property="og:description" content="Especificação canônica de infraestrutura, CI/CD, testes e ferramentas do perfil Kollontai para o padrão GOST.">
+  <meta property="og:url" content="https://kollontai.2lp.in">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Perfil de Implementação Kollontai — GOST">
+  <meta name="twitter:description" content="Especificação canônica de infraestrutura, CI/CD, testes e ferramentas do perfil Kollontai para o padrão GOST.">
+
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #ff79c6;
+      --accent-hover: #ff92d0;
+      --link: #58a6ff;
+      --code-bg: #1f242c;
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f6f8fa;
+        --card-bg: #ffffff;
+        --border: #d0d7de;
+        --text: #24292f;
+        --text-muted: #57606a;
+        --accent: #d03080;
+        --accent-hover: #e04090;
+        --link: #0969da;
+        --code-bg: #eaeef2;
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 2.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .badge-accent {
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .raw-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .raw-box-title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .raw-url {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--accent);
+      word-break: break-all;
+    }
+
+    article h1 { display: none; } /* Já no header */
+    article h2 {
+      font-size: 1.5rem;
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    article h3 {
+      font-size: 1.2rem;
+      margin-top: 1.75rem;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+    }
+
+    article h4 {
+      font-size: 1.05rem;
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    article p, article ul, article ol {
+      margin-bottom: 1rem;
+    }
+
+    article ul, article ol {
+      padding-left: 1.5rem;
+    }
+
+    article li {
+      margin-bottom: 0.35rem;
+    }
+
+    article a {
+      color: var(--link);
+      text-decoration: none;
+    }
+
+    article a:hover {
+      text-decoration: underline;
+    }
+
+    article hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    article code {
+      font-family: var(--font-mono);
+      font-size: 0.9em;
+      background: var(--code-bg);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    article pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin-bottom: 1.25rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    article pre code {
+      background: none;
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      font-size: inherit;
+    }
+
+    article table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      font-size: 0.92rem;
+    }
+
+    article th, article td {
+      border: 1px solid var(--border);
+      padding: 0.6rem 0.85rem;
+      text-align: left;
+    }
+
+    article th {
+      background: var(--card-bg);
+      font-weight: 600;
+    }
+
+    article blockquote {
+      border-left: 4px solid var(--accent);
+      padding: 0.5rem 1rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      background: var(--card-bg);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 1rem;
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .footer-canonical {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer-line-identity {
+      font-weight: 500;
+    }
+
+    .footer-line-metadata {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    .site-footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .site-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Perfil de Implementação: Kollontai</h1>
+      <p class="subtitle">Especificação canônica de infraestrutura, engenharia e ferramentas para repositórios GOST.</p>
+      
+      <div class="badges">
+        <span class="badge badge-accent">Perfil: kollontai</span>
+        <span class="badge">Norma Base: GOST v1.3.0</span>
+        <span class="badge">Status: Ativo / Produção</span>
+        <a class="badge" href="https://gost.2lp.in" target="_blank" rel="noopener">Norma Central: gost.2lp.in ↗</a>
+      </div>
+
+      <div class="raw-box">
+        <div class="raw-box-title">URL Canônica do Perfil (Agnóstica de Forja Git)</div>
+        <div class="raw-url">https://kollontai.2lp.in/profile.md</div>
+      </div>
+
+      <div class="quick-links">
+        <a class="btn" href="profile.md" download>📥 Baixar profile.md</a>
+        <a class="btn" href="kollontai.md">📄 Ver kollontai.md (Raw)</a>
+        <a class="btn" href="https://codeberg.org/lumenpink/gost-profile-kollontai" target="_blank" rel="noopener">🦊 Forja (Codeberg)</a>
+        <a class="btn" href="https://gost.2lp.in" target="_blank" rel="noopener">📜 Norma GOST</a>
+      </div>
+    </header>
+
+    <article>
+<h1 id="perfil-de-implementacao-kollontai">Perfil de Implementação: Kollontai</h1>
+<p><strong>Identificador do Perfil:</strong> <code>kollontai</code><br />
+<strong>Norma Base:</strong> GOST <code>1.3.0</code><br />
+<strong>Autor:</strong> lumenpink<br />
+<strong>Status:</strong> Ativo / Produção</p>
+<hr />
+<h2 id="1-visao-geral">1. Visão Geral</h2>
+<p>Este documento define as especificações concretas, serviços de nuvem, ferramentas de automação e infraestrutura adotadas no perfil <strong>Kollontai</strong> (homenagem à revolucionária soviética, feminista e diplomata Alexandra Kollontai) para satisfazer todos os requisitos normativos do padrão <strong>GOST</strong>.</p>
+<hr />
+<h2 id="2-forja-de-codigo-e-repositorios-remotos">2. Forja de Código e Repositórios Remotos</h2>
+<h3 id="21-forja-primaria">2.1 Forja Primária</h3>
+<ul>
+<li><strong>Instância:</strong> <a href="https://codeberg.org/">Codeberg</a> (Software Forgejo).</li>
+<li><strong>Organização / Usuário:</strong> <code>lumenpink</code>.</li>
+<li><strong>URL do Repositório:</strong> <code>https://codeberg.org/lumenpink/&lt;nome-do-repo&gt;</code>.</li>
+<li><strong>Remote Git SSH Padrão:</strong> <code>ssh://git@codeberg.org/lumenpink/&lt;nome-do-repo&gt;.git</code>.</li>
+<li><strong>Branch Padrão:</strong> <code>main</code>.</li>
+</ul>
+<h3 id="22-criacao-automatizada-via-api">2.2 Criação Automatizada via API</h3>
+<p>A criação de repositórios remotos utiliza a API v1 do Codeberg autenticada via <code>$CODEBERG_TOKEN</code>:</p>
+<pre><code class="language-bash">curl -X POST \
+  -H &quot;Authorization: token $CODEBERG_TOKEN&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;name&quot;: &quot;&lt;nome-do-repo&gt;&quot;,
+    &quot;description&quot;: &quot;&lt;Descrição curta e objetiva do projeto&gt;&quot;,
+    &quot;private&quot;: false,
+    &quot;auto_init&quot;: false
+  }' \
+  &quot;https://codeberg.org/api/v1/user/repos&quot;
+</code></pre>
+<h3 id="23-redundancia-mandatoria-repositorio-de-backup-espelho-mirror">2.3 Redundância Mandatória: Repositório de Backup / Espelho (<em>Mirror</em>)</h3>
+<p>Todo repositório no perfil Kollontai deve implementar redundância geográfica e resiliência contra indisponibilidade de forjas através de um repositório secundário de backup:</p>
+<ol>
+<li><strong>Forja de Backup Padrão:</strong><br />
+   * <strong>Padrão Canônico:</strong> <strong>GitHub</strong> (<code>https://github.com/lumenpink/&lt;nome-do-repo&gt;</code>), operando como espelho secundário de contingência e preservação.<br />
+   * <strong>Exceções Declaradas no <code>.cccprc</code>:</strong> Repositórios com propósitos específicos (como notas/vaults do Obsidian em <code>tildegit.org</code> ou instâncias próprias) podem utilizar forjas alternativas, desde que declaradas explicitamente na chave <code>backup_forge</code> ou <code>backup_url</code> do <code>.cccprc</code>.</li>
+<li><strong>Paridade Estrita de Metadados &amp; Sinalização de Espelho:</strong><br />
+   * <strong>Metadados Idênticos:</strong> Nome do repositório, tópicos (<em>topics/tags</em>), homepage/website (<code>https://&lt;nome-do-repo&gt;.2lp.in</code>), licença e visibilidade (público/privado) <strong>DEVEM</strong> ser estritamente iguais entre o repositório principal e o backup.<br />
+   * <strong>Distinção Mandatória:</strong> No repositório de backup, a descrição oficial (<em>About / Description</em>) <strong>DEVE</strong> declarar explicitamente que se trata de uma cópia de contingência, apontando diretamente para o repositório principal no Codeberg:<br />
+<code>text
+     [MIRROR / BACKUP] &lt;Descrição do projeto&gt;. Repositório canônico e issues em: https://codeberg.org/lumenpink/&lt;nome-do-repo&gt;</code><br />
+   * Issues, pull requests e contribuições devem ser mantidos e tratados exclusivamente na forja canônica no Codeberg.</li>
+<li><strong>Estratégia de Sincronização e Espelhamento Soberano (Zero Dual Push Local):</strong><br />
+   * <strong>Push Unidirecional Local:</strong> O ambiente local do desenvolvedor mantém um único destino de push configurado no <code>origin</code>, apontando exclusivamente para a forja primária no Codeberg:<br />
+<code>bash
+     git remote set-url origin ssh://git@codeberg.org/lumenpink/&lt;nome-do-repo&gt;.git</code><br />
+     O desenvolvedor <strong>NUNCA</strong> faz push manual duplo local para ambas as forjas.<br />
+   * <strong>Push Secundário Automatizado a partir da Forja Principal:</strong> É responsabilidade estrita da infraestrutura do repositório canônico no Codeberg replicar as alterações para o espelho secundário:<br />
+     - <strong>Push Mirror Nativo do Codeberg / Forgejo (Recomendado):</strong> Configurado diretamente nas opções do repositório no Codeberg (<em>Configurações &gt; Repositório &gt; Espelhamento de Envio / Push Mirror</em>), onde a própria forja replica commits, branches e tags para o GitHub automaticamente após qualquer recebimento de push.<br />
+     - <strong>Job de Espelhamento no Forgejo Actions (CI):</strong> Como alternativa ou contingência, um workflow dedicado no CI acionado a cada push em branches e tags que executa o push espelhado para o GitHub autenticado via secret (<code>GITHUB_MIRROR_TOKEN</code> ou chave SSH).</li>
+</ol>
+<hr />
+<h2 id="3-gestao-de-commits-e-hooks-cccp">3. Gestão de Commits e Hooks (<code>cccp</code>)</h2>
+<p>O ecossistema Kollontai utiliza a CLI <strong><code>cccp</code></strong> como ferramenta central de versionamento, hooks do Git e integridade semântica.</p>
+<h3 id="31-arquivo-cccprc">3.1 Arquivo <code>.cccprc</code></h3>
+<p>Todo repositório no perfil Kollontai <strong>DEVE</strong> conter na raiz o arquivo <code>.cccprc</code>:</p>
+<pre><code class="language-ini"># Forja Canônica Primária (Codeberg)
+codeberg_owner = lumenpink
+codeberg_repo = &lt;nome-do-repo&gt;
+
+# Redundância &amp; Repositório de Backup (Mandatório)
+# backup_forge padrão: github (opções: github, tildegit, gitlab, custom)
+backup_forge = github
+backup_owner = lumenpink
+backup_repo = &lt;nome-do-repo&gt;
+# Ou declaração direta de URL de transporte:
+# backup_url = git@github.com:lumenpink/&lt;nome-do-repo&gt;.git
+
+# Diretivas de Agentes e Idioma
+agent_md_url = https://gist.githubusercontent.com/lumenpink/ebaded4f8bfb956346c28b64f48754fb/raw/c48a2f9cfb4fd73dcb944c4e47a5b17b8f3a3a2e/AGENTS.md
+agent_var_lang = english
+</code></pre>
+<h3 id="32-ativacao-e-bloqueios-dos-hooks">3.2 Ativação e Bloqueios dos Hooks</h3>
+<p>Após criar ou clonar o projeto, os hooks <strong>DEVEM</strong> ser inicializados via:</p>
+<pre><code class="language-bash">cccp install
+</code></pre>
+<p>Isso instala:<br />
+* <strong><code>commit-msg</code>:</strong><br />
+  - Validador rigoroso de Conventional Commits.<br />
+  - <strong>Enforcement de Tickets:</strong> Rejeita qualquer commit que não contenha a referência explícita ao ticket da issue no padrão <code>(ref #&lt;id&gt;)</code> ou <code>(closes #&lt;id&gt;)</code>. Bloqueia commits sem ticket na raiz.<br />
+* <strong><code>post-commit</code>:</strong> Sincronizador atômico de versão (<code>VERSION</code>), atualização do <code>CHANGELOG.md</code> e metadados.<br />
+* <strong><code>pre-push</code>:</strong> Gate de CI local com <code>act</code> (ver Seção 5.8).</p>
+<hr />
+<h2 id="4-publicacao-web-e-documentacao-2lpin">4. Publicação Web e Documentação (<code>*.2lp.in</code>)</h2>
+<h3 id="41-infraestrutura-cloudflare-workers">4.1 Infraestrutura: Cloudflare Workers</h3>
+<p>A vitrine de documentação pública (<code>./site</code>) é publicada na borda da Cloudflare sob o domínio unificado <code>*.2lp.in</code>.</p>
+<h3 id="42-arquivo-wranglerjsonc">4.2 Arquivo <code>wrangler.jsonc</code></h3>
+<pre><code class="language-jsonc">{
+  &quot;$schema&quot;: &quot;node_modules/wrangler/config-schema.json&quot;,
+  &quot;name&quot;: &quot;&lt;nome-do-projeto&gt;&quot;,
+  &quot;compatibility_date&quot;: &quot;2024-09-23&quot;,
+  &quot;routes&quot;: [
+    {
+      &quot;pattern&quot;: &quot;&lt;nome-do-projeto&gt;.2lp.in&quot;,
+      &quot;custom_domain&quot;: true
+    }
+  ],
+  &quot;assets&quot;: {
+    &quot;directory&quot;: &quot;./site&quot;
+  }
+}
+</code></pre>
+<h3 id="43-cabecalhos-de-seguranca-site_headers">4.3 Cabeçalhos de Segurança (<code>site/_headers</code>)</h3>
+<pre><code class="language-http">/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+</code></pre>
+<h3 id="44-fallback-codeberg-pages-stateless-orphan-force-push">4.4 Fallback: Codeberg Pages (Stateless Orphan Force Push)</h3>
+<p>Como contingência e redundância estática, o pipeline de CI publica a pasta <code>./site</code> também no Codeberg Pages (<code>https://lumenpink.codeberg.page/&lt;nome-do-repo&gt;/</code>).<br />
+Para evitar acúmulo de histórico de builds e inchaço do repositório no Codeberg, o branch <code>pages</code> é tratado como estritamente efêmero: a publicação gera uma árvore órfã isolada com commit único do snapshot atual e executa <code>git push --force origin pages</code>.</p>
+<h3 id="45-armazenamento-canonico-de-artefatos-releases-cloudflare-r2">4.5 Armazenamento Canônico de Artefatos &amp; Releases (Cloudflare R2)</h3>
+<p>No ecossistema Kollontai, binários compilados (executáveis <code>musl</code>, APKs Android, bundles <code>.tar.gz</code>) <strong>NÃO</strong> são acumulados nem hospedados em releases no Codeberg.<br />
+Todos os artefatos de release são enviados diretamente para buckets Cloudflare R2 via <code>npx wrangler r2 object put</code> e distribuídos na borda sob <code>*.2lp.in</code> com suporte nativo a streaming HTTP Range (RFC 7233) e zero taxa de saída.</p>
+<h3 id="46-topologia-de-servicos-dinamicos-no-perfil-kollontai">4.6 Topologia de Serviços Dinâmicos no Perfil Kollontai</h3>
+<p>Para repositórios que implementam serviços web dinâmicos, daemons ou REPLs (como o Matraca):<br />
+1. <strong>Camada Privada Primária (Mesh VPN):</strong><br />
+   - Acesso via <strong>Tailscale</strong> (<code>http://100.x.y.z:&lt;porta&gt;</code>).<br />
+   - Todo tráfego entre smartphones, laptops e estações de desenvolvimento permanece criptografado ponto a ponto na rede WireGuard privada sem abertura de portas no firewall.<br />
+2. <strong>Camada de Borda Autenticada (Cloudflare Tunnel):</strong><br />
+   - Quando for conveniente o acesso web com certificado SSL público sem a VPN ativa no cliente móvel, utiliza-se o <strong><code>cloudflared</code></strong> direcionando para o subdomínio <code>app.&lt;repo&gt;.2lp.in</code> com autenticação obrigatória no aplicativo.</p>
+<hr />
+<h2 id="5-stack-e-ferramental-padrao-de-testes">5. Stack e Ferramental Padrão de Testes</h2>
+<p>Para atender aos requisitos de alta cobertura (&gt;90%, foco em 100%) e mutação da norma GOST, o ecossistema Kollontai adota as seguintes ferramentas padronizadas por linguagem:</p>
+<h3 id="51-shell-scripting-cli-de-sistema">5.1 Shell Scripting / CLI de Sistema</h3>
+<ul>
+<li><strong>Dialeto Canônico:</strong> POSIX Shell estrito (<code>/bin/sh</code>) como baseline universal portável; Bash 5.2+ (<code>#!/usr/bin/env bash</code>) quando recursos avançados (arrays, controle fino de processos) forem expressamente justificados.</li>
+<li><strong>Runner de Testes:</strong> <strong><code>shellspec</code></strong> (BDD framework para POSIX shell / bash).</li>
+<li><strong>Estrutura:</strong> Especificações organizadas sob <code>spec/</code> (ex: <code>spec/*_spec.sh</code>).</li>
+<li><strong>Cobertura:</strong> Mensuração via <code>kcov</code> integrada ao shellspec (<code>shellspec --kcov</code>), mantendo meta de bloqueio $\ge 90\%$.</li>
+<li><strong>Linter &amp; Formatação:</strong> <code>shellcheck</code> (zero avisos tolerados) e <code>shfmt -d -i 2 -ci -bn .</code>.</li>
+</ul>
+<h3 id="52-rust-sistemas-milters-daemons-cli-e-clientes">5.2 Rust (Sistemas, Milters, Daemons, CLI e Clientes)</h3>
+<ul>
+<li><strong>Compilador Canônico:</strong> <strong><code>rustc &gt;= 1.99.0</code></strong> (Estado da arte).</li>
+<li><strong>Edição Canônica Obrigatória:</strong> <strong><code>edition = "2024"</code></strong> e <code>rust-version = "1.99"</code> declarados em todo <code>Cargo.toml</code>.</li>
+<li><strong>Runner de Testes:</strong> <strong><code>cargo test</code></strong> (testes unitários in-source em <code>src/</code> e testes de integração em <code>tests/</code>).</li>
+<li><strong>Cobertura:</strong> <strong><code>cargo-tarpaulin</code></strong> ou <strong><code>cargo-llvm-cov</code></strong> (com flag obrigatória de bloqueio <code>--fail-under 90</code>).</li>
+<li><strong>Testes de Mutação:</strong> <strong><code>cargo-mutants</code></strong> para detecção de testes ineficazes e mutantes sobreviventes.</li>
+<li><strong>Target Estático de Distribuição:</strong> <code>x86_64-unknown-linux-musl</code> e <code>aarch64-unknown-linux-musl</code> (compilação estática pura sem glibc para distribuição hermética).</li>
+</ul>
+<h3 id="53-php-indieweb-apis-e-aplicacoes-web">5.3 PHP (IndieWeb, APIs e Aplicações Web)</h3>
+<ul>
+<li><strong>Versão Canônica:</strong> <strong><code>PHP &gt;= 8.5.0</code></strong> (Estado da arte).</li>
+<li><strong>Suporte Reverso Mandatório:</strong> Compatibilidade garantida com <strong><code>PHP &gt;= 8.2</code></strong> (<code>"php": "^8.2 || ^8.3 || ^8.4 || ^8.5"</code> no <code>composer.json</code>), proibindo quebras de sintaxe ou dependências exclusivas de versões superiores sem fallback seguro.</li>
+<li><strong>Tipagem Estrita:</strong> <code>declare(strict_types=1);</code> mandatório em 100% dos arquivos PHP.</li>
+<li><strong>Runner de Testes:</strong> <strong><code>pest</code></strong> (PHP Testing Framework elegante e veloz).</li>
+<li><strong>Cobertura:</strong> Execução contínua com verificação estrita:<br />
+<code>bash
+  vendor/bin/pest --coverage --min=90</code></li>
+<li><strong>Testes de Mutação:</strong> <strong><code>infection</code></strong> (<code>vendor/bin/infection --min-msi=80 --min-covered-msi=85</code>).</li>
+<li><strong>Análise Estática &amp; Estilo:</strong> <code>vendor/bin/phpstan analyse --level=max</code> (configurado com target 8.2 no baseline de compatibilidade) e <code>vendor/bin/pint --test</code>.</li>
+</ul>
+<h3 id="54-nodejs-typescript-servicos-workers-e-tooling">5.4 Node.js &amp; TypeScript (Serviços, Workers e Tooling)</h3>
+<ul>
+<li><strong>Runtime Canônico:</strong> <strong><code>Node.js &gt;= 24.16.0 LTS</code></strong> (Estado da arte).</li>
+<li><strong>Padrão de Módulos:</strong> <strong>ESM nativo obrigatório</strong> (<code>"type": "module"</code> no <code>package.json</code>).</li>
+<li><strong>TypeScript:</strong> <strong><code>TypeScript &gt;= 5.8</code></strong> sob modo estrito total (<code>"strict": true</code>).</li>
+<li><strong>Linter &amp; Formatação:</strong> <strong><code>biome</code></strong> (<code>npx biome check .</code> / <code>npx biome format .</code>) como ferramenta canônica e ultrarrápida baseada em Rust.</li>
+<li><strong>Runner de Testes:</strong> <strong><code>vitest</code></strong> ou <strong><code>node:test</code></strong> nativo com cobertura v8 $\ge 90\%$.</li>
+</ul>
+<h3 id="55-interfaces-de-usuario-web-mobile-dioxus-08">5.5 Interfaces de Usuário, Web &amp; Mobile: Dioxus 0.8</h3>
+<p>O framework declarativo universal adotado no perfil Kollontai para desenvolvimento de aplicações gráficas reativas (Desktop, Web WASM e Mobile) é o <strong>Dioxus 0.8</strong> (<code>dioxus = "0.8"</code>):</p>
+<ul>
+<li><strong>Multiplataforma Nativa:</strong></li>
+<li><strong>Desktop:</strong> Renderização rápida via Tao/Wry.</li>
+<li><strong>Web (WASM):</strong> Single Page Apps estáticas com renderização client-side ultra-rápida sem NodeJS em runtime.</li>
+<li><strong>Mobile:</strong> Android NDK e iOS compilados diretamente com Cargo.</li>
+<li><strong>Manifesto Canônico (<code>Dioxus.toml</code>):</strong><br />
+  Todo projeto Dioxus deve manter seu manifesto configurado com o identificador canônico <code>in.2lp.&lt;app&gt;</code> e metadados de empacotamento:<br />
+  ```toml<br />
+  [application]<br />
+  name = "<app>"<br />
+  default_platform = "web"</li>
+</ul>
+<p>[bundle]<br />
+  identifier = "in.2lp.<app>"<br />
+  publisher = "Lumen Pink"<br />
+  icon = ["assets/icon.png"]<br />
+<code>``
+* **Ergonomia Mobile e Layout Adaptativo:**
+  - Safe Area Insets respeitando entalhes e barras gestuais (</code>env(safe-area-inset-top)<code>e</code>env(safe-area-inset-bottom)<code>).
+  - Alvos de toque com</code>touch-action: manipulation` e dimensão mínima de <strong>48px</strong>.<br />
+  - Responsividade automática: navegação por barra inferior no celular (&lt; 640px) e barra lateral compacta (<em>rail</em>) em tablets (640px – 1024px).<br />
+* <strong>Componente de Rodapé Canônico:</strong><br />
+  Aplicações Dioxus devem embutir o componente reativo do rodapé oficial com tradução dinâmica para as 10 línguas normativas.</p>
+<h3 id="56-web-interfaces-e-ponta-a-ponta-e2e">5.6 Web, Interfaces e Ponta a Ponta (E2E)</h3>
+<ul>
+<li><strong>Runner E2E:</strong> <strong><code>playwright</code></strong> (<code>npx playwright test</code>).</li>
+<li><strong>Escopo:</strong> Navegação automatizada <em>headless</em> em Chromium, Firefox e WebKit simulando as jornadas reais do usuário e garantindo ausência de erros de console, layout e renderização.</li>
+</ul>
+<h3 id="57-analise-estatica-formatacao-deterministica-zero-warnings-por-stack">5.7 Análise Estática, Formatação Determinística &amp; Zero Warnings por Stack</h3>
+<p>O ecossistema adota um pipeline estrito onde <strong>erros de linter e desvios de formatação quebram o build</strong>:</p>
+<ul>
+<li><strong>Rust:</strong></li>
+<li>Linter: <code>cargo clippy --all-targets --all-features -- -D warnings</code></li>
+<li>Formatação: <code>cargo fmt -- --check</code></li>
+<li>Auditoria de Dependências: <code>cargo audit</code></li>
+<li><strong>PHP:</strong></li>
+<li>Análise Estática: <code>vendor/bin/phpstan analyse --level=max</code></li>
+<li>Formatação: <code>vendor/bin/pint --test</code></li>
+<li>Auditoria de Dependências: <code>composer audit</code></li>
+<li><strong>POSIX Shell:</strong></li>
+<li>Linter: <code>shellcheck</code> (zero avisos tolerados em todos os scripts)</li>
+<li>Formatação: <code>shfmt -d -i 2 -ci -bn .</code> (2 espaços, recuo de case, operadores no início)</li>
+<li><strong>Web, JS/TS, JSON, YAML e Markdown:</strong></li>
+<li>Formatação e Linter: <code>npx biome check .</code> (canônico) ou <code>npx prettier --check "**/*.{json,yaml,md,js,ts,html,css}"</code></li>
+<li><strong>Higiene Universal de Editores:</strong></li>
+<li>Arquivo <code>.editorconfig</code> na raiz de todo repositório para impor LF, UTF-8, ausência de trailing whitespaces e indentação correta.</li>
+</ul>
+<h3 id="58-gate-de-pre-push-com-act-ci-local-identico">5.8 Gate de Pre-Push com <code>act</code> (CI Local Idêntico)</h3>
+<p>O ecossistema Kollontai usa <strong><code>act</code></strong> — executor local de Forgejo/GitHub Actions baseado em Docker — para rodar o job <code>test</code> do pipeline em um ambiente <strong>bit-for-bit idêntico</strong> ao do Forgejo antes de cada <code>git push</code>.</p>
+<h4 id="ferramenta">Ferramenta</h4>
+<ul>
+<li><strong><code>act</code></strong> (<a href="https://github.com/nektos/act"><code>nektos/act</code></a>): lê <code>.forgejo/workflows/ci.yml</code> e executa os jobs dentro dos mesmos containers Docker usados pelo Forgejo Actions.</li>
+<li><strong>Pré-requisito:</strong> Docker em execução na máquina de desenvolvimento (sempre presente no ecossistema Kollontai).</li>
+</ul>
+<h4 id="comportamento-do-hook-pre-push">Comportamento do Hook <code>pre-push</code></h4>
+<pre><code>git push
+  └─► pre-push hook (instalado por cccp install)
+        ├─ Verifica se act + Docker estão disponíveis
+        │    └─ Não disponíveis: emite aviso, NÃO bloqueia push
+        ├─ Executa: act -j test --no-pull
+        │    └─ Saída completa → .git/act-logs/&lt;data&gt;_&lt;hora&gt;_&lt;branch&gt;_&lt;sha-curto&gt;.log
+        ├─ Mostra: spinner vivo + step atual + tempo decorrido
+        └─ Exit 0: push prossegue  |  Exit 1: push abortado + resumo + path do log
+</code></pre>
+<h4 id="formato-dos-logs">Formato dos Logs</h4>
+<pre><code>.git/act-logs/
+  2026-09-24_09-41_feat-42-rate-limit_a4b3c2d.log
+  2026-09-24_08-17_main_cd62fd5.log
+</code></pre>
+<ul>
+<li>Diretório <code>.git/act-logs/</code> é automaticamente ignorado pelo git.</li>
+<li>Consulta rápida ao log mais recente: <code>cccp act log</code></li>
+</ul>
+<h4 id="ux-do-gate-no-terminal">UX do Gate no Terminal</h4>
+<pre><code>⠸ [pre-push] Running CI gate locally...
+  Job: test › cargo clippy -- -D warnings     [0:12]
+  Log: .git/act-logs/2026-09-24_09-41_feat-42_a4b3c2d.log
+</code></pre>
+<p>Sucesso:</p>
+<pre><code>✅ CI gate passed (1m 34s) — pushing to origin/main
+</code></pre>
+<p>Falha:</p>
+<pre><code>❌ CI gate failed (0m 47s) — push aborted
+   → Step failed: cargo test (3 failures)
+   → Log: .git/act-logs/2026-09-24_09-41_feat-42_a4b3c2d.log
+   → Bypass consciente: git push --no-verify
+</code></pre>
+<h4 id="bypass-explicito">Bypass Explícito</h4>
+<pre><code class="language-bash">git push --no-verify  # bypass consciente e documentado — não use por hábito
+</code></pre>
+<hr />
+<h2 id="6-pipeline-de-cicd-forgejoworkflowsciyml">6. Pipeline de CI/CD (<code>.forgejo/workflows/ci.yml</code>)</h2>
+<p>O workflow no Forgejo Actions declara <strong>obrigatoriamente</strong> jobs separados: <code>test</code> (roda também localmente via <code>act</code>) e <code>deploy-site</code> (exclusivo do Forgejo, após push):</p>
+<pre><code class="language-yaml">name: &quot;CI / CD Pipeline&quot;
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  test:
+    name: &quot;Run Test Suite &amp; Enforce Coverage (&gt;90%)&quot;
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Passos da stack (ex: pest --coverage --min=90, cargo llvm-cov --fail-under 90, etc.)
+
+  deploy-site:
+    name: &quot;Deploy Documentation Site&quot;
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: &quot;Deploy to Cloudflare Workers&quot;
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n &quot;$CLOUDFLARE_API_TOKEN&quot; ]; then
+            npx wrangler deploy
+          fi
+      - name: &quot;Deploy to Codeberg Pages (Stateless Orphan Force Push)&quot;
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name &quot;actions-user&quot;
+          git config user.email &quot;actions@codeberg.org&quot;
+          WORKTREE_DIR=$(mktemp -d)
+          git worktree add --orphan -b pages &quot;$WORKTREE_DIR&quot;
+          rm -rf &quot;${WORKTREE_DIR:?}&quot;/*
+          cp -r site/* &quot;$WORKTREE_DIR/&quot;
+          cd &quot;$WORKTREE_DIR&quot;
+          git add -A
+          if git diff --staged --quiet; then
+            echo &quot;No site changes to deploy.&quot;
+          else
+            git commit -m &quot;docs(site): deploy documentation snapshot [skip ci]&quot;
+            git push --force origin pages
+          fi
+          cd - &gt;/dev/null
+          git worktree remove &quot;$WORKTREE_DIR&quot; --force || true
+</code></pre>
+<hr />
+<h2 id="7-registro-no-catalogo-central-srccatalogjson">7. Registro no Catálogo Central (<code>~/src/catalog.json</code>)</h2>
+<p>Todo repositório sob o perfil Kollontai deve ser registrado no arquivo central de descoberta <code>~/src/catalog.json</code>:</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;&lt;nome-do-projeto&gt;&quot;,
+  &quot;forge&quot;: &quot;codeberg&quot;,
+  &quot;slug&quot;: &quot;lumenpink/&lt;nome-do-projeto&gt;&quot;,
+  &quot;description&quot;: &quot;&lt;Descrição objetiva em uma linha&gt;&quot;,
+  &quot;topics&quot;: [&quot;palavra-chave-1&quot;, &quot;palavra-chave-2&quot;],
+  &quot;license&quot;: &quot;CC0-1.0&quot;,
+  &quot;website&quot;: &quot;https://&lt;nome-do-projeto&gt;.2lp.in&quot;,
+  &quot;is_upstream&quot;: false
+}
+</code></pre>
+<p>Isso garante indexação pelo <code>cccp catalog</code>, ferramentas de busca local e dashboards do ecossistema.</p>
+<hr />
+<h2 id="8-mapeamento-do-ciclo-dd-tdd-no-perfil-kollontai">8. Mapeamento do Ciclo DD-TDD no Perfil Kollontai</h2>
+<p>No dia a dia do ecossistema Kollontai, o ciclo DD-TDD opera integrado ao Codeberg Issues, branches dedicados e ao CLI <code>cccp</code>:</p>
+<h3 id="81-passo-a-passo-operacional">8.1 Passo a Passo Operacional:</h3>
+<ol>
+<li><strong>Abertura do Ticket:</strong><br />
+   - Criado via interface do Codeberg ou via CLI:<br />
+<code>bash
+     tea issue create --title "Rate limiting no endpoint de autenticação"
+     # Issue #42 criada</code></li>
+<li><strong>Criação do Branch Dedicado:</strong><br />
+   - Nunca commitar na <code>main</code>:<br />
+<code>bash
+     git checkout -b feat/42-rate-limit</code></li>
+<li><strong>Doc in develop (Commit):</strong><br />
+   - Documentação prévia dos contratos e schemas:<br />
+<code>bash
+     git commit -m "docs(auth): document rate limit headers and error payloads (ref #42)"</code></li>
+<li><strong>Failing Test (Commit):</strong><br />
+   - Teste automatizado que falha comprovando a ausência da proteção:<br />
+<code>bash
+     git commit -m "test(auth): add failing integration test for 61st request (ref #42)"</code></li>
+<li><strong>Fix / Code (Commit):</strong><br />
+   - Código que faz o teste passar com linter limpo (Zero Warnings):<br />
+<code>bash
+     git commit -m "feat(auth): implement token bucket rate limiter (ref #42)"</code></li>
+<li><strong>Finish Docs &amp; Close (Commit):</strong><br />
+   - Atualização da documentação no <code>./site</code>, <code>CHANGELOG.md</code> e fechamento formal:<br />
+<code>bash
+     git commit -m "docs(auth): update security guide and finalize tickets (closes #42)"</code></li>
+</ol>
+<h3 id="82-gestao-de-releases-e-publicacao-semantica">8.2 Gestão de Releases e Publicação Semântica</h3>
+<p>Quando um conjunto de tickets/milestones atinge maturidade:</p>
+<pre><code class="language-bash">cccp release minor   # ou patch / major
+git push --tags origin main
+</code></pre>
+<p>Isso consolida o <code>CHANGELOG.md</code>, atualiza <code>VERSION</code> para versão estável e cria a tag Git correspondente.</p>
+<h3 id="83-comandos-operacionais-para-agentes-de-ia-no-perfil-kollontai">8.3 Comandos Operacionais para Agentes de IA no Perfil Kollontai</h3>
+<p>No dia a dia com agentes de IA (assistentes CLI/IDE), o perfil Kollontai adota o protocolo canônico de comandos curtos:<br />
+* <strong><code>DCPD</code> (Do, Commit, Push, Deploy):</strong> Autorização expressa para implementação da demanda, validação local com testes e Zero Warnings, commit no padrão Conventional Commits com fechamento de issue (<code>closes #ID</code>), push da branch do ticket, merge na branch principal (<code>main</code>) e push remoto disparando o deploy contínuo no Cloudflare Workers / R2 e Codeberg Pages (via stateless single-commit force push).<br />
+* <strong><code>DCP</code> (Do, Commit, Push):</strong> Implementação, testes locais e push restritos à branch de trabalho (<code>feat/&lt;id&gt;-*</code>), gerando a URL do Pull Request no Codeberg para revisão humana prévia.<br />
+* <strong><code>PLAN</code> (Plan &amp; Propose):</strong> Pesquisa e diagnóstico aprofundado sem qualquer alteração em arquivos de código nem commits.<br />
+* <strong><code>TDD</code> (Ticket, Doc, Test, Do):</strong> Execução estrita das 5 etapas do ciclo GOST com commits separados para documentação (<code>docs: ... ref #ID</code>), teste quebrado (<code>test: ... ref #ID</code>) e código funcional.<br />
+* <strong><code>AUDIT</code> (Audit &amp; Check):</strong> Auditoria técnica passiva rodando linters no máximo (<code>-D warnings</code>), cobertura (<code>llvm-cov</code> / <code>pest --coverage</code>), testes de mutação (<code>cargo-mutants</code> / <code>infection</code>) e <code>composer/cargo audit</code>.<br />
+* <strong><code>FIX</code> (Fix &amp; Clean):</strong> Saneamento direcionado para eliminar alertas de análise estática e corrigir formatação com <code>cargo fmt</code>, <code>pint</code> ou <code>shfmt</code>.<br />
+* <strong><code>RELEASE</code> (Release &amp; Tag):</strong> Execução automatizada de <code>cccp release &lt;patch|minor|major&gt;</code> e sincronização com tags remotas.</p>
+<hr />
+<h2 id="9-internacionalizacao-no-perfil-kollontai">9. Internacionalização no Perfil Kollontai</h2>
+<p>O ecossistema Kollontai adota o padrão de arquitetura multilíngue validado no <code>indieinabox</code> com governança de idioma centralizada pelo <code>cccp</code>:</p>
+<h3 id="91-configuracao-da-lingua-primaria-cccprc">9.1 Configuração da Língua Primária (<code>.cccprc</code>)</h3>
+<p>A autoridade canônica do idioma padrão de cada repositório é configurada no <code>.cccprc</code>:</p>
+<pre><code class="language-ini">agent_var_lang = english   # ou portuguese, etc.
+</code></pre>
+<ul>
+<li>Serve de baseline para o ciclo DD-TDD e triagem de tickets via <code>diva</code>.</li>
+<li>Define o idioma de fallback automático do aplicativo caso alguma chave de tradução em outro idioma não esteja presente.</li>
+</ul>
+<h3 id="92-paridade-das-10-linguas-no-aplicativo-resourceslocales-ou-locales">9.2 Paridade das 10 Línguas no Aplicativo (<code>resources/locales/</code> ou <code>locales/</code>)</h3>
+<p>Todo software deve manter dicionários estruturados para as 10 línguas oficiais:<br />
+<code>en.json</code>, <code>pt-BR.json</code>, <code>es.json</code>, <code>fr.json</code>, <code>de.json</code>, <code>it.json</code>, <code>ru.json</code>, <code>zh.json</code>, <code>ja.json</code>, <code>ar.json</code>.<br />
+A suíte de testes de integração (ex: Pest, Cargo, ShellSpec) deve validar a paridade de 100% de chaves em relação ao arquivo de baseline.</p>
+<h3 id="93-roteador-estatico-cliente-siteindexhtml">9.3 Roteador Estático Cliente (<code>site/index.html</code>)</h3>
+<p>Na raiz de documentação <code>./site/index.html</code>, inclui-se o script de redirecionamento automático com detecção e persistência:</p>
+<pre><code class="language-html">&lt;script&gt;
+    (function() {
+        var supported = ['en', 'pt', 'es', 'fr', 'de', 'it', 'ru', 'zh', 'ja', 'ar'];
+        var saved = localStorage.getItem('doc_lang');
+        if (saved &amp;&amp; supported.indexOf(saved) !== -1) {
+            window.location.replace(saved + '/');
+            return;
+        }
+        var navLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase().substring(0, 2);
+        if (supported.indexOf(navLang) !== -1) {
+            window.location.replace(navLang + '/');
+        } else {
+            window.location.replace('en/');
+        }
+    })();
+&lt;/script&gt;
+</code></pre>
+<h3 id="94-suporte-obrigatorio-a-rtl-para-o-arabe-sitear">9.4 Suporte Obrigatório a RTL para o Árabe (<code>site/ar/</code>)</h3>
+<p>As páginas sob <code>site/ar/</code> e as interfaces da aplicação utilizam:</p>
+<pre><code class="language-html">&lt;html lang=&quot;ar&quot; dir=&quot;rtl&quot;&gt;
+</code></pre>
+<hr />
+<h2 id="10-banners-e-cards-sociais-padrao-kokorosim">10. Banners e Cards Sociais (Padrão KokoroSim)</h2>
+<p>Todo repositório Lumen que publique site estático deve manter a automação para geração do banner Open Graph em <code>./site/assets/og_preview.png</code>.</p>
+<h3 id="101-script-de-geracao-scriptsgenerate_og_imagepy">10.1 Script de Geração (<code>scripts/generate_og_image.py</code>)</h3>
+<p>Utiliza Python + Pillow para renderizar o banner em 1200x630 com Safe Zone 4:3 centralizada (largura de 720px a 840px), evitando cortes em pré-visualizações móveis e do WhatsApp:<br />
+- <strong>Resolução:</strong> 1200x630 px<br />
+- <strong>Safe Zone:</strong> Miolo central com sangria lateral mínima de 180px.<br />
+- <strong>Tipografia:</strong> Fonte condensada geométrica para títulos de alto impacto.</p>
+<h3 id="102-preview-de-cards-sitecard_previewhtml">10.2 Preview de Cards (<code>site/card_preview.html</code>)</h3>
+<p>Para validação visual fiel antes do deploy, recomenda-se incluir em <code>site/card_preview.html</code> a simulação de renderização em WhatsApp (Dark Mode) e Twitter/X (Summary Large Image), conforme arquitetura do KokoroSim.</p>
+<hr />
+<h2 id="11-arquitetura-pragmatica-estrutura-de-codigo-no-perfil-kollontai">11. Arquitetura Pragmática &amp; Estrutura de Código no Perfil Kollontai</h2>
+<p>O perfil Kollontai materializa os princípios de Inversão de Dependência (DIP), hermeticidade e anti-bloat através de padrões objetivos adaptados às linguagens centrais do ecossistema (<strong>Rust</strong> e <strong>PHP</strong>).</p>
+<h3 id="111-regra-de-gradacao-micro-ferramenta-vs-aplicacao">11.1 Regra de Gradação: Micro-ferramenta vs. Aplicação</h3>
+<ol>
+<li><strong>Micro-ferramentas e Scripts Utilitários:</strong> Ferramentas de escopo pontual (ex: CLI de 100 linhas ou filtro de texto) <strong>NÃO DEVEM</strong> ser fracionadas em múltiplas pastas cerimoniais. Ficam contidas diretamente em <code>src/main.rs</code> (Rust) ou arquivo executável único (PHP/Bash).</li>
+<li><strong>Aplicações e Serviços:</strong> Projetos que envolvam persistência, múltiplos protocolos ou casos de uso complexos <strong>DEVEM</strong> adotar a divisão canônica entre Domínio e Adaptadores.</li>
+</ol>
+<h3 id="112-padrao-de-diretorios-para-rust">11.2 Padrão de Diretórios para Rust</h3>
+<p>Em sistemas, daemons e milters:</p>
+<pre><code class="language-text">src/
+├── domain/             # Regras de negócio puras (sem dependências de I/O)
+│   ├── mod.rs
+│   ├── entity.rs       # Modelos e invariantes de domínio
+│   ├── status.rs       # Enums nativos para máquinas de estado
+│   └── ports.rs        # Traits de I/O (Output Ports: ex: MessageStore, ClientApi)
+├── application/        # Orquestração e Casos de Uso
+│   ├── mod.rs
+│   └── use_cases.rs    # Lógica que opera sobre os traits de domínio
+├── adapters/           # Implementações de I/O e interfaces de transporte
+│   ├── mod.rs
+│   ├── in_memory.rs    # Fake em memória para testes unitários herméticos
+│   ├── sqlite.rs       # Adaptador real de persistência
+│   └── cli.rs          # Entrada via linha de comando (ex: clap)
+└── main.rs             # Composition Root: instancia adaptadores e orquestra o bootstrap
+</code></pre>
+<h4 id="exemplo-canonico-de-fake-em-memoria-rust">Exemplo Canônico de Fake em Memória (Rust):</h4>
+<pre><code class="language-rust">// src/domain/ports.rs
+pub trait MessageStore {
+    fn save(&amp;mut self, id: &amp;str, content: &amp;str) -&gt; Result&lt;(), String&gt;;
+    fn find(&amp;self, id: &amp;str) -&gt; Option&lt;String&gt;;
+}
+
+// src/adapters/in_memory.rs
+use std::collections::HashMap;
+use crate::domain::ports::MessageStore;
+
+#[derive(Default)]
+pub struct InMemoryMessageStore {
+    items: HashMap&lt;String, String&gt;,
+}
+
+impl MessageStore for InMemoryMessageStore {
+    fn save(&amp;mut self, id: &amp;str, content: &amp;str) -&gt; Result&lt;(), String&gt; {
+        self.items.insert(id.to_string(), content.to_string());
+        Ok(())
+    }
+    fn find(&amp;self, id: &amp;str) -&gt; Option&lt;String&gt; {
+        self.items.get(id).cloned()
+    }
+}
+</code></pre>
+<p><em>Zero mocks dinâmicos:</em> Os testes unitários do caso de uso instanciam <code>InMemoryMessageStore</code> diretamente, rodando em microssegundos sem rede nem arquivos.</p>
+<h3 id="113-padrao-de-diretorios-para-php">11.3 Padrão de Diretórios para PHP</h3>
+<p>Em APIs, aplicações IndieWeb e serviços web:</p>
+<pre><code class="language-text">src/
+├── Domain/             # Núcleo de domínio (PHP puro, zero dependências externas)
+│   ├── Models/         # Entidades de negócio
+│   ├── Enums/          # Backed Enums nativos (estados e categorias)
+│   └── Ports/          # Contratos e Interfaces (Input/Output Ports)
+├── Application/        # Casos de uso e orquestração
+│   └── UseCases/       # Handlers executando fluxos de domínio
+└── Infrastructure/     # Adaptadores concretos
+    ├── Persistence/    # Implementações reais (SQLite/Pdo) e In-Memory Fakes
+    ├── Http/           # Controllers e Middlewares
+    └── Console/        # Comandos CLI
+tests/
+├── Unit/               # Testes herméticos usando In-Memory Fakes (milissegundos)
+└── Integration/        # Testes com fixtures de banco SQLite em arquivo temporário
+</code></pre>
+<h4 id="exemplo-canonico-de-fake-em-memoria-e-pest-php">Exemplo Canônico de Fake em Memória e Pest (PHP):</h4>
+<pre><code class="language-php">// src/Domain/Ports/TokenStorageInterface.php
+namespace App\Domain\Ports;
+
+interface TokenStorageInterface {
+    public function store(string $token, string $userId): void;
+    public function find(string $token): ?string;
+}
+
+// src/Infrastructure/Persistence/InMemoryTokenStorage.php
+namespace App\Infrastructure\Persistence;
+
+use App\Domain\Ports\TokenStorageInterface;
+
+final class InMemoryTokenStorage implements TokenStorageInterface {
+    /** @var array&lt;string, string&gt; */
+    private array $tokens = [];
+
+    public function store(string $token, string $userId): void {
+        $this-&gt;tokens[$token] = $userId;
+    }
+
+    public function find(string $token): ?string {
+        return $this-&gt;tokens[$token] ?? null;
+    }
+}
+</code></pre>
+<p>No teste Pest (<code>tests/Unit/AuthenticateUserTest.php</code>):</p>
+<pre><code class="language-php">test('autentica usuário com storage em memória', function () {
+    $storage = new \App\Infrastructure\Persistence\InMemoryTokenStorage();
+    $storage-&gt;store('tok-123', 'usr-456');
+
+    expect($storage-&gt;find('tok-123'))-&gt;toBe('usr-456')
+        -&gt;and($storage-&gt;find('inexistente'))-&gt;toBeNull();
+});
+</code></pre>
+<h3 id="114-filosofia-anti-bloat-tipos-primitivos-validacao-na-borda">11.4 Filosofia Anti-Bloat: Tipos Primitivos &amp; Validação na Borda</h3>
+<ul>
+<li><strong>Parse, Don't Validate na Entrada:</strong> A validação e desinfecção de strings, limites numéricos e decodificação JSON ocorrem no adaptador de entrada (ex: validação de request HTTP ou parser do CLI).</li>
+<li><strong>Primitivos Confiáveis no Domínio:</strong> Evita-se criar Value Objects cerimoniais (ex: <code>UsernameString</code>, <code>IdInt</code>) quando tipos primitivos nativos (<code>string</code>, <code>int</code>) com tipagem estrita da linguagem atendem com clareza.</li>
+<li><strong>Modelagem com Enums Nativos:</strong></li>
+<li>Rust: <code>pub enum TaskState { Pending, Running, Finished { exit_code: i32 } }</code></li>
+<li>PHP: <code>enum OrderStatus: string { case Pending = 'pending'; case Approved = 'approved'; case Cancelled = 'cancelled'; }</code></li>
+</ul>
+<hr />
+<h2 id="12-padroes-de-sistema-e-containers-no-perfil-kollontai">12. Padrões de Sistema e Containers no Perfil Kollontai</h2>
+<p>O ecossistema Kollontai adota padrões rígidos de interoperabilidade Unix, priorizando ferramentas leves e compatíveis com shell scripting e ambientes conteinerizados seguros.</p>
+<h3 id="121-resolucao-canonica-de-diretorios-xdg">12.1 Resolução Canônica de Diretórios XDG</h3>
+<p>Todo utilitário ou serviço Lumen implementa o mapeamento estrito da especificação XDG com fallbacks universais.</p>
+<h4 id="em-shell-scripting-posix">Em Shell Scripting (POSIX):</h4>
+<pre><code class="language-sh">APP_NAME=&quot;meu-app&quot;
+CONFIG_DIR=&quot;${XDG_CONFIG_HOME:-$HOME/.config}/$APP_NAME&quot;
+DATA_DIR=&quot;${XDG_DATA_HOME:-$HOME/.local/share}/$APP_NAME&quot;
+STATE_DIR=&quot;${XDG_STATE_HOME:-$HOME/.local/state}/$APP_NAME&quot;
+CACHE_DIR=&quot;${XDG_CACHE_HOME:-$HOME/.cache}/$APP_NAME&quot;
+RUNTIME_DIR=&quot;${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/$APP_NAME&quot;
+
+mkdir -p &quot;$CONFIG_DIR&quot; &quot;$DATA_DIR&quot; &quot;$STATE_DIR&quot; &quot;$CACHE_DIR&quot; 2&gt;/dev/null
+</code></pre>
+<h4 id="em-rust">Em Rust:</h4>
+<pre><code class="language-rust">pub fn config_path(app: &amp;str) -&gt; std::path::PathBuf {
+    let base = std::env::var(&quot;XDG_CONFIG_HOME&quot;)
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|_| {
+            let home = std::env::var(&quot;HOME&quot;).unwrap_or_else(|_| &quot;.&quot;.into());
+            std::path::PathBuf::from(home).join(&quot;.config&quot;)
+        });
+    base.join(app)
+}
+</code></pre>
+<h3 id="122-configuracao-plana-baseada-em-shell-e-env-keyvalor">12.2 Configuração Plana Baseada em Shell e Env (<code>KEY=VALOR</code>)</h3>
+<p>Para eliminar dependências pesadas de parsing (como bibliotecas TOML/YAML) em scripts de automação, os arquivos de configuração locais e de usuário adotam formato plano compatível com shell:</p>
+<pre><code class="language-bash"># $XDG_CONFIG_HOME/meu-app/config.env
+MATRACA_PORT=&quot;8080&quot;
+MATRACA_BIND=&quot;127.0.0.1&quot;
+MATRACA_LOG_LEVEL=&quot;info&quot;
+</code></pre>
+<h4 id="carregamento-nativo-em-shell">Carregamento Nativo em Shell:</h4>
+<pre><code class="language-sh">if [ -f &quot;$CONFIG_FILE&quot; ]; then
+    set -a
+    # shellcheck source=/dev/null
+    . &quot;$CONFIG_FILE&quot;
+    set +a
+fi
+</code></pre>
+<h3 id="123-dockerfiles-canonicos-no-perfil-kollontai">12.3 Dockerfiles Canônicos no Perfil Kollontai</h3>
+<h4 id="template-rust-multi-stage-scratch-estatico">Template Rust (Multi-stage + <code>scratch</code> estático):</h4>
+<pre><code class="language-dockerfile"># Estágio de compilação
+FROM rust:1.99-alpine AS builder
+RUN apk add --no-cache musl-dev
+WORKDIR /build
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
+RUN cargo build --release --target x86_64-unknown-linux-musl
+
+# Imagem final de produção (Zero Inchaço)
+FROM scratch
+USER 1000:1000
+COPY --from=builder /build/target/x86_64-unknown-linux-musl/release/app /usr/local/bin/app
+ENTRYPOINT [&quot;/usr/local/bin/app&quot;]
+</code></pre>
+<h4 id="template-php-multi-stage-alpine-com-non-root">Template PHP (Multi-stage + <code>alpine</code> com Non-root):</h4>
+<pre><code class="language-dockerfile"># Estágio de dependências
+FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+# Imagem final de execução
+FROM php:8.3-cli-alpine
+RUN adduser -D -u 1000 appuser
+WORKDIR /app
+COPY --chown=appuser:appuser . /app
+COPY --chown=appuser:appuser --from=vendor /app/vendor /app/vendor
+USER 1000:1000
+ENTRYPOINT [&quot;php&quot;, &quot;/app/bin/console&quot;]
+</code></pre>
+<h3 id="124-higiene-de-containers-dockerignore-e-composeyaml">12.4 Higiene de Containers (<code>.dockerignore</code> e <code>compose.yaml</code>)</h3>
+<p>Todo repositório com suporte a Docker <strong>DEVE</strong> incluir <code>.dockerignore</code> rigoroso na raiz:</p>
+<pre><code class="language-dockerignore">.git
+.env*
+!*.example
+target/
+vendor/
+tests/
+site/
+*.log
+</code></pre>
+<p>E para orquestração de desenvolvimento local, adotar <code>compose.yaml</code>:</p>
+<pre><code class="language-yaml">services:
+  app:
+    build: .
+    user: &quot;1000:1000&quot;
+    env_file:
+      - .env
+    ports:
+      - &quot;${APP_PORT:-8080}:8080&quot;
+    restart: unless-stopped
+</code></pre>
+<hr />
+<h2 id="13-rodape-canonico-multilingue-padrao-de-autoria-e-soberania">13. Rodapé Canônico Multilíngue (Padrão de Autoria e Soberania)</h2>
+<p>Todo aplicativo com interface gráfica, vitrine pública, documentação (<code>site/</code>) ou CLI com rodapé formatado no ecossistema Kollontai <strong>DEVE</strong> exibir o rodapé canônico em <strong>duas linhas rigorosamente estruturadas</strong>, com paridade de tradução nas <strong>10 Línguas Oficiais da Norma GOST</strong>.</p>
+<h3 id="131-arquitetura-do-rodape-em-duas-linhas">13.1 Arquitetura do Rodapé em Duas Linhas</h3>
+<ul>
+<li><strong>Linha 1 — Afirmação Identitária &amp; Transfeminista:</strong><br />
+<code>Orgulhosamente produzido por uma [travesti latina] 🏳️‍⚧️ :)</code>  </li>
+<li>O substantivo <strong>"travesti"</strong> permanece rigorosamente <strong>sem tradução</strong> em todos os idiomas, preservando sua singularidade geopolítica e conceitual sul-americana.</li>
+<li>O adjetivo <strong>"latina"</strong> é adaptado à gramática nativa de cada idioma.</li>
+<li>A expressão composta <code>travesti [latina]</code> <strong>DEVE</strong> atuar como hiperlink obrigatório direcionando para o artigo canônico de definição em <code>https://travesti.2lp.in/&lt;lang&gt;/</code>.</li>
+<li>
+<p>A bandeira trans (<code>🏳️‍⚧️</code>) sucede a expressão antes do sorriso <code>:)</code>.</p>
+</li>
+<li>
+<p><strong>Linha 2 — Metadados de Soberania, Autoria e Licenciamento:</strong><br />
+<code>{Nome do App} v{Versão} • [Lumen Pink](https://lumen.pink) • {Data/Hora ISO UTC} • {País / Brasil} 🇧🇷 • [{Licença}]</code>  </p>
+</li>
+<li><code>{Nome do App}</code>: Identificador público da aplicação ou biblioteca.</li>
+<li><code>v{Versão}</code>: Versão extraída diretamente do arquivo <code>VERSION</code> da raiz do repositório (ex: <code>v0.1.0-dev.1</code> ou <code>v1.0.0</code>).</li>
+<li><code>Lumen Pink</code>: Com link canônico para <code>https://lumen.pink</code>.</li>
+<li><code>{Data/Hora ISO UTC}</code>: Carimbo exato de data e hora da compilação/montagem no formato ISO 8601 UTC (ex: <code>2026-09-28T22:20:00Z</code>), no lugar do ano estático.</li>
+<li><code>{País / Brasil} 🇧🇷</code>: Nome do país adaptado ao idioma (ex: <code>Brasil 🇧🇷</code>, <code>Brazil 🇧🇷</code>, <code>Brésil 🇧🇷</code>, <code>Brasilien 🇧🇷</code>, <code>Brasile 🇧🇷</code>, <code>Бразилия 🇧🇷</code>, <code>巴西 🇧🇷</code>, <code>ブラジル 🇧🇷</code>, <code>البرازيل 🇧🇷</code>), acompanhado da bandeira nacional brasileira.</li>
+<li><code>[{Licença}]</code>: Identificador SPDX da licença (ex: <code>GPL-3.0-or-later</code>, <code>CC-BY-SA-4.0</code>, etc.) com link para o arquivo <code>LICENSE</code> do repositório.</li>
+</ul>
+<h3 id="132-matriz-canonica-das-10-linguas-oficiais-rodape">13.2 Matriz Canônica das 10 Línguas Oficiais (Rodapé)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Idioma</th>
+<th style="text-align: center;">ISO</th>
+<th>Linha 1 (Afirmação Identitária)</th>
+<th>Linha 2 (Metadados de Soberania)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>Português</strong></td>
+<td style="text-align: center;"><code>pt</code></td>
+<td>Orgulhosamente produzido por uma <a href="https://travesti.2lp.in/pt/">travesti latina</a> 🏳️‍⚧️ :)</td>
+<td>{App} v{Versão} • por <a href="https://lumen.pink">Lumen Pink</a> • {ISO_UTC} • Brasil 🇧🇷 • [{Licença}]</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Inglês</strong></td>
+<td style="text-align: center;"><code>en</code></td>
+<td>Proudly produced by a <a href="https://travesti.2lp.in/en/">Latin American travesti</a> 🏳️‍⚧️ :)</td>
+<td>{App} v{Versão} • by <a href="https://lumen.pink">Lumen Pink</a> • {ISO_UTC} • Brazil 🇧🇷 • [{Licença}]</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Espanhol</strong></td>
+<td style="text-align: center;"><code>es</code></td>
+<td>Orgullosamente producido por una <a href="https://travesti.2lp.in/es/">travesti latinoamericana</a> 🏳️‍⚧️ :)</td>
+<td>{App} v{Versão} • por <a href="https://lumen.pink">Lumen Pink</a> • {ISO_UTC} • Brasil 🇧🇷 • [{Licença}]</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Francês</strong></td>
+<td style="text-align: center;"><code>fr</code></td>
+<td>Fièrement produit par une <a href="https://travesti.2lp.in/fr/">travesti latino-américaine</a> 🏳️‍⚧️ :)</td>
+<td>{App} v{Versão} • par <a href="https://lumen.pink">Lumen Pink</a> • {ISO_UTC} • Brésil 🇧🇷 • [{Licença}]</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Alemão</strong></td>
+<td style="text-align: center;"><code>de</code></td>
+<td>Mit Stolz entwickelt von einer <a href="https://travesti.2lp.in/de/">lateinamerikanischen Travesti</a> 🏳️‍⚧️ :)</td>
+<td>{App} v{Versão} • von <a href="https://lumen.pink">Lumen Pink</a> • {ISO_UTC} • Brasilien 🇧🇷 • [{Licença}]</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Italiano</strong></td>
+<td style="text-align: center;"><code>it</code></td>
+<td>Orgogliosamente prodotto da una <a href="https://travesti.2lp.in/it/">travesti latinoamericana</a> 🏳️‍⚧️ :)</td>
+<td>{App} v{Versão} • da <a href="https://lumen.pink">Lumen Pink</a> • {ISO_UTC} • Brasile 🇧🇷 • [{Licença}]</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Russo</strong></td>
+<td style="text-align: center;"><code>ru</code></td>
+<td>С гордостью создано <a href="https://travesti.2lp.in/ru/">латиноамериканской travesti</a> 🏳️‍⚧️ :)</td>
+<td>{App} v{Versão} • от <a href="https://lumen.pink">Lumen Pink</a> • {ISO_UTC} • Бразилия 🇧🇷 • [{Licença}]</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Chinês</strong></td>
+<td style="text-align: center;"><code>zh</code></td>
+<td>由一位<a href="https://travesti.2lp.in/zh/">拉美 travesti</a> 自豪制作 🏳️‍⚧️ :)</td>
+<td>{App} v{Versão} • 来自 <a href="https://lumen.pink">Lumen Pink</a> • {ISO_UTC} • 巴西 🇧🇷 • [{Licença}]</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Japonês</strong></td>
+<td style="text-align: center;"><code>ja</code></td>
+<td><a href="https://travesti.2lp.in/ja/">ラテンアメリカの travesti</a> によって誇りを持って制作されました 🏳️‍⚧️ :)</td>
+<td>{App} v{Versão} • 制作: <a href="https://lumen.pink">Lumen Pink</a> • {ISO_UTC} • ブラジル 🇧🇷 • [{Licença}]</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Árabe (RTL)</strong></td>
+<td style="text-align: center;"><code>ar</code></td>
+<td>صُنع بكل فخر بواسطة <a href="https://travesti.2lp.in/ar/">travesti أمريكية لاتينية</a> 🏳️‍⚧️ :)</td>
+<td>{App} v{Versão} • بواسطة <a href="https://lumen.pink">Lumen Pink</a> • {ISO_UTC} • البرازيل 🇧🇷 • [{Licença}]</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="14-atualizacao-continua-de-containers-docker-watchtower">14. Atualização Contínua de Containers Docker (Watchtower)</h2>
+<p>Para garantir segurança, integridade e atualização contínua de imagens de containers em infraestruturas Docker / Docker Compose autohospedadas (como nos nós <code>obione</code>, <code>obitwo</code> e <code>baquara</code>), a automação adota o <strong>Watchtower</strong> sob as seguintes diretrizes obrigatórias:</p>
+<ol>
+<li><strong>Opt-in Rigoroso por Labels (<code>--label-enable</code>):</strong><br />
+   O Watchtower <strong>NUNCA</strong> monitora ou reinicia containers de modo indiscriminado. Apenas containers declarando explicitamente a label:<br />
+   ```yaml<br />
+   labels:<ul>
+<li>"com.centurylinklabs.watchtower.enable=true"<br />
+   ```<br />
+   serão atualizados. Containers com dependências sensíveis de migração de banco de dados ou volumes críticos sem backup permanecem intocados.</li>
+</ul>
+</li>
+<li><strong>Limpeza Compulsória de Imagens Órfãs (<code>WATCHTOWER_CLEANUP=true</code>):</strong><br />
+   Imagens antigas substituídas são purgadas imediatamente para evitar exaustão de armazenamento no host.</li>
+<li><strong>Modos de Acionamento Homologados:</strong><br />
+   - <strong>Agendamento Periódico:</strong> Polling programado com intervalo seguro (ex: diário ou a cada 2h).<br />
+   - <strong>Acionamento por Webhook (<code>WATCHTOWER_HTTP_API_TOKEN</code>):</strong> Disparo autenticado via POST HTTP disparado automaticamente pelo pipeline de CI/CD do Codeberg após a publicação da nova imagem no registry.</li>
+</ol>
+    </article>
+
+    <footer class="site-footer">
+      <div class="footer-canonical">
+        <div class="footer-line footer-line-identity">
+          Orgulhosamente produzido por uma <a href="https://travesti.2lp.in/pt/" target="_blank" rel="noopener">travesti latina</a> 🏳️‍⚧️ :)
+        </div>
+        <div class="footer-line footer-line-metadata">
+          Perfil de Implementação Kollontai • GOST v1.3.0 • por <a href="https://lumen.pink" target="_blank" rel="noopener">Lumen Pink</a> • Brasil 🇧🇷 • <a href="LICENSE" target="_blank" rel="noopener">CC-BY-SA-4.0</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
