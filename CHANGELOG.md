@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.0.0] - 2026-10-26
+
+### Features
+- **spec:** alinhar perfil Kollontai com a norma GOST v2.0.0 (closes #4)
+- **spec:** institucionalizar o Maestro cccp e parametrizar .cccprc (ref #4)
+- **spec:** fixar matriz de toolchain pinning para Rust, PHP, Shell, JS/TS, R, Go e Python (ref #4)
+- **spec:** padronizar protocolos de auto-atualizacao XDG e catalogo da Banca (ref #4)
+- **spec:** estabelecer esteira hermetica ci.yml de 3 filas e isolamento inbox/* (ref #4)
+- **spec:** expurgar Watchtower e obrigatoriedade de act em pre-push (ref #4)
+
 ## [Unreleased]
 
 ### Bug Fixes
