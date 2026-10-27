@@ -343,7 +343,7 @@ html_template = f"""<!DOCTYPE html>
       
       <div class="badges">
         <span class="badge badge-accent">Perfil: kollontai</span>
-        <span class="badge">Norma Base: GOST v1.3.0</span>
+        <span class="badge">Norma Base: GOST v2.0.0</span>
         <span class="badge">Status: Ativo / Produção</span>
         <a class="badge" href="https://gost.2lp.in" target="_blank" rel="noopener">Norma Central: gost.2lp.in ↗</a>
       </div>
@@ -367,11 +367,8 @@ html_template = f"""<!DOCTYPE html>
 
     <footer class="site-footer">
       <div class="footer-canonical">
-        <div class="footer-line footer-line-identity">
-          Orgulhosamente produzido por uma <a href="https://travesti.2lp.in/pt/" target="_blank" rel="noopener">travesti latina</a> 🏳️‍⚧️ :)
-        </div>
         <div class="footer-line footer-line-metadata">
-          Perfil de Implementação Kollontai • GOST v1.3.0 • por <a href="https://lumen.pink" target="_blank" rel="noopener">Lumen Pink</a> • Brasil 🇧🇷 • <a href="LICENSE" target="_blank" rel="noopener">CC-BY-SA-4.0</a>
+          Perfil de Implementação Kollontai • GOST v2.0.0 • <a href="LICENSE" target="_blank" rel="noopener">CC-BY-SA-4.0</a>
         </div>
       </div>
     </footer>
