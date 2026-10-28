@@ -12,6 +12,9 @@
 
 ## [Unreleased]
 
+### Bug Fixes
+- **ci:** remover step legado de pages e consolidar deploy no Cloudflare Workers (#6)
+
 ### Features
 - **spec(updater):** padronizar ciclo de vida de updates XDG com gestão central pela Jornaleira e persistência de canal (#5)
 
