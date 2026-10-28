@@ -12,6 +12,9 @@
 
 ## [Unreleased]
 
+### Features
+- **spec(updater):** padronizar ciclo de vida de updates XDG com gestão central pela Jornaleira e persistência de canal (#5)
+
 ### Bug Fixes
   - (footer) ajustar definicoes canonicas dos rodapes com timestamp ISO UTC (closes #1)
 
