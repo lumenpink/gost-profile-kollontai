@@ -110,42 +110,70 @@ Para aplicações gráficas multiplataforma em Rust (Web WASM, Desktop via Tao/W
 
 ## 4. Protocolo de Auto-Atualização Soberana (XDG) e Manifesto de Distribuição
 
-Todas as ferramentas de linha de comando (CLI) e aplicações desktop distribuídas sob o perfil Kollontai **DEVEM** implementar o mecanismo nativo de atualização conectado ao catálogo de distribuição do perfil (a **Banca**).
+Todas as ferramentas de linha de comando (CLI) e aplicações desktop distribuídas sob o perfil Kollontai **DEVEM** implementar o protocolo de auto-atualização conectado ao catálogo de distribuição soberano (a **Banca**) e interoperável com a **Jornaleira**.
 
-### 4.1 Caminhos XDG e Formato de Configuração
-Para manter conformidade com a regra anti-bloat da norma GOST (Seção 13.2), a configuração de atualização e o cache de estado residem em:
-1. **Configuração do Usuário:** `${XDG_CONFIG_HOME:-~/.config}/<slug>/config.env` (formato plano `CHAVE=VALOR` compatível com POSIX Shell, ou seção `[update]` em `config.toml` para apps em Rust que já utilizem serde/toml):
-   ```ini
-   UPDATE_CHANNEL="stable"           # "stable" ou "nightly"
+### 4.1 Caminhos XDG e Formato de Configuração (`config.env`)
+Para manter conformidade com a regra anti-bloat da norma GOST (Seção 13.2), a configuração e o cache de estado residem estritamente em caminhos XDG:
+1. **Configuração do Usuário:** `${XDG_CONFIG_HOME:-~/.config}/<slug>/config.env`  
+   Formato plano canônico `CHAVE="VALOR"` (compatível com POSIX Shell, Rust, Go e C):
+   ```sh
+   UPDATE_CHANNEL="stable"           # Canal rastreado: "stable" ou "nightly"
    UPDATE_PINNED="false"             # Se "true", bloqueia atualizações e silencia alertas
    UPDATE_PIN_VERSION=""             # Versão fixada quando UPDATE_PINNED="true"
-   UPDATE_AUTO_CHECK="true"          # Verificação periódica não-bloqueante
-   UPDATE_CHECK_INTERVAL_HOURS="24"  # Intervalo entre consultas remotas
-   UPDATE_AUTO_UPDATE="false"        # Substituição atômica em background (opt-in estrito)
+   UPDATE_AUTO_CHECK="true"          # Verificação periódica não-bloqueante em modo autônomo
+   UPDATE_CHECK_INTERVAL_HOURS="12"  # Frequência padrão de consulta (12 horas)
+   UPDATE_AUTO_UPDATE="false"        # Substituição atômica sem confirmação (opt-in estrito)
+   UPDATE_MANAGED_BY_JORNALEIRA=""   # Override: "" (auto-detectar), "true" ou "false"
    ```
-   *Precedência de Canal:* `--channel <c>` > variável `<APP>_CHANNEL` > arquivo de config > `"stable"`.
-2. **Estado e Cache de Verificação:** `${XDG_STATE_HOME:-~/.local/state}/<slug>/update_check.json`:
+   *Precedência de Resolução:* Flags CLI (`--channel`, `--pin`) > Variáveis de ambiente (`<SLUG_UPPER>_UPDATE_*` / `UPDATE_*`) > `${XDG_CONFIG_HOME}/<slug>/config.env` > Padrões normativos Kollontai.
+
+2. **Estado e Cache de Runtime:** `${XDG_STATE_HOME:-~/.local/state}/<slug>/update_check.json`  
+   Registro estruturado compartilhado entre o aplicativo e a Jornaleira:
    ```json
    {
      "last_check_timestamp": 1729411200,
-     "latest_remote_version": "0.5.1",
-     "channel": "stable"
+     "current_version": "0.1.0",
+     "latest_remote_version": "0.1.2",
+     "channel": "stable",
+     "update_available": true,
+     "last_check_status": "success",
+     "managed_by": "jornaleira"
    }
    ```
 
-### 4.2 Comportamento em Runtime e Alerta em `stderr`
-1. **Short-Circuit:** Se `UPDATE_AUTO_CHECK="false"` ou `UPDATE_PINNED="true"`, nenhuma consulta de rede é disparada.
-2. **Alerta Não-Intrusivo em `stderr`:** Se o cache local indicar `latest_remote_version > current_version`, imprime exclusivamente em `stderr` (preservando pipes em `stdout`):
-   ```text
-   💡 [<slug>] Nova versão disponível: vX.Y.Z (atual: vA.B.C). Execute '<slug> update' para atualizar.
-   ```
-3. **Consulta Remota Rápida:** Quando o intervalo de 24h expirar, consulta `<banca_url>/downloads/<slug>/<channel>-latest.version` com timeout máximo de $\le 1\text{s}$, descartando falhas de rede silenciosamente.
+### 4.2 A Jornaleira como Gestora Primária e Comportamento em Runtime
+1. **Hegemonia da Jornaleira:** A Jornaleira atua como a gestora primária do ecossistema.  
+   * **Detecção:** Se `UPDATE_MANAGED_BY_JORNALEIRA="true"` ou se `command -v jornaleira >/dev/null 2>&1` retornar sucesso (sem override explícito `"false"`):
+     * O **auto-check nativo dos aplicativos no startup permanece sumariamente desativado**.
+     * Nenhuma requisição de rede ou consulta DNS é disparada durante a invocação normal de comandos do aplicativo.
+     * A consulta remota periódica e a substituição de binários passam a ser orquestradas exclusivamente pelos timers e rotinas centrais da Jornaleira.
+2. **Modo Autônomo (Sem Jornaleira):**  
+   * Se a Jornaleira não estiver presente (ou `UPDATE_MANAGED_BY_JORNALEIRA="false"`), o utilitário assume a responsabilidade de verificar atualizações de forma não-bloqueante no startup caso o intervalo de 12 horas tenha expirado, com timeout estrito de $\le 1\text{s}$ descartando falhas silenciosamente.
+3. **Alerta Não-Intrusivo em `stderr`:**  
+   Se o arquivo `${XDG_STATE_HOME}/<slug>/update_check.json` indicar `update_available: true`, emite alerta exclusivamente em `stderr` (preservando pipelines em `stdout`):
+   * *Quando sob gestão da Jornaleira:*
+     ```text
+     💡 [<slug>] Nova versão disponível: vX.Y.Z (atual: vA.B.C). Execute 'jornaleira update <slug>' para atualizar.
+     ```
+   * *Quando em modo autônomo:*
+     ```text
+     💡 [<slug>] Nova versão disponível: vX.Y.Z (atual: vA.B.C). Execute '<slug> update' para atualizar.
+     ```
 
-### 4.3 Contrato de Subcomandos CLI
+### 4.3 Contrato de Subcomandos CLI e Persistência de Canais
 Todo binário distribuído **DEVE** responder aos subcomandos:
-* `<slug> update [--channel <stable|nightly>] [--pin <ver>] [--force] [--dry-run]`
-* `<slug> check-update [--channel <stable|nightly>]`
-* `<slug> config show | set-channel <c> | pin [<ver>] | unpin | set-auto-check <bool> | set-auto-update <bool>`
+* `<slug> check-update [--channel <stable|nightly>] [--stable] [--nightly]`  
+  Realiza consulta remota síncrona não-bloqueante na Banca, atualiza o arquivo `${XDG_STATE_HOME}/<slug>/update_check.json` e informa o status.
+* `<slug> update [--channel <stable|nightly>] [--stable] [--nightly] [--pin <ver>] [--force] [--dry-run]`  
+  Efetua a substituição atômica pelo binário mais recente da Banca respeitando o canal solicitado.
+* `<slug> config show | set-channel <c> | pin [<ver>] | unpin | set-auto-check <bool> | set-auto-update <bool>`  
+  Exibe ou altera de forma persistente as opções em `${XDG_CONFIG_HOME}/<slug>/config.env`.
+
+#### **Garantia de Persistência do Canal Nightly:**
+* A preferência declarada em `UPDATE_CHANNEL` (em `config.env`) define a assinatura duradoura de atualizações do usuário.
+* O comando pontual `<slug> update --stable` (ou `--channel stable`) instala a compilação estável requisitada naquele momento, **mas NUNCA altera o valor de `UPDATE_CHANNEL`** no arquivo `config.env`.
+* A reconfiguração persistente do canal exige comando explícito (`<slug> config set-channel stable` ou flag `--save-channel`).
+* Enquanto `UPDATE_CHANNEL="nightly"`, o verificador continuará consultando e alertando sobre novas compilações do canal `nightly` assim que publicadas na Banca, mesmo que o executável local em execução seja momentaneamente uma versão estável.
 
 ### 4.4 Topologia do Catálogo de Distribuição (Banca) e Retenção Estrita
 A esteira de CI publica os binários estáticos e mantém o armazenamento enxuto sob a seguinte estrutura canônica por aplicativo (`<slug>`):

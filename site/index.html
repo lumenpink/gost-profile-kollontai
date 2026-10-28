@@ -540,38 +540,69 @@ mirror_owner = &lt;mirror_owner&gt;
 * <strong>Ergonomia Mobile Obrigatória:</strong> Respeito a <code>env(safe-area-inset-top)</code> / <code>env(safe-area-inset-bottom)</code>, alvos de toque mínimos de <code>48px</code> com <code>touch-action: manipulation</code> e navegação adaptativa (barra inferior em telas <code>&lt; 640px</code> e barra lateral compacta em <code>640px–1024px</code>).</p>
 <hr />
 <h2 id="4-protocolo-de-auto-atualizacao-soberana-xdg-e-manifesto-de-distribuicao">4. Protocolo de Auto-Atualização Soberana (XDG) e Manifesto de Distribuição</h2>
-<p>Todas as ferramentas de linha de comando (CLI) e aplicações desktop distribuídas sob o perfil Kollontai <strong>DEVEM</strong> implementar o mecanismo nativo de atualização conectado ao catálogo de distribuição do perfil (a <strong>Banca</strong>).</p>
-<h3 id="41-caminhos-xdg-e-formato-de-configuracao">4.1 Caminhos XDG e Formato de Configuração</h3>
-<p>Para manter conformidade com a regra anti-bloat da norma GOST (Seção 13.2), a configuração de atualização e o cache de estado residem em:<br />
-1. <strong>Configuração do Usuário:</strong> <code>${XDG_CONFIG_HOME:-~/.config}/&lt;slug&gt;/config.env</code> (formato plano <code>CHAVE=VALOR</code> compatível com POSIX Shell, ou seção <code>[update]</code> em <code>config.toml</code> para apps em Rust que já utilizem serde/toml):<br />
-<code>ini
-   UPDATE_CHANNEL="stable"           # "stable" ou "nightly"
+<p>Todas as ferramentas de linha de comando (CLI) e aplicações desktop distribuídas sob o perfil Kollontai <strong>DEVEM</strong> implementar o protocolo de auto-atualização conectado ao catálogo de distribuição soberano (a <strong>Banca</strong>) e interoperável com a <strong>Jornaleira</strong>.</p>
+<h3 id="41-caminhos-xdg-e-formato-de-configuracao-configenv">4.1 Caminhos XDG e Formato de Configuração (<code>config.env</code>)</h3>
+<p>Para manter conformidade com a regra anti-bloat da norma GOST (Seção 13.2), a configuração e o cache de estado residem estritamente em caminhos XDG:<br />
+1. <strong>Configuração do Usuário:</strong> <code>${XDG_CONFIG_HOME:-~/.config}/&lt;slug&gt;/config.env</code><br />
+   Formato plano canônico <code>CHAVE="VALOR"</code> (compatível com POSIX Shell, Rust, Go e C):<br />
+<code>sh
+   UPDATE_CHANNEL="stable"           # Canal rastreado: "stable" ou "nightly"
    UPDATE_PINNED="false"             # Se "true", bloqueia atualizações e silencia alertas
    UPDATE_PIN_VERSION=""             # Versão fixada quando UPDATE_PINNED="true"
-   UPDATE_AUTO_CHECK="true"          # Verificação periódica não-bloqueante
-   UPDATE_CHECK_INTERVAL_HOURS="24"  # Intervalo entre consultas remotas
-   UPDATE_AUTO_UPDATE="false"        # Substituição atômica em background (opt-in estrito)</code><br />
-<em>Precedência de Canal:</em> <code>--channel &lt;c&gt;</code> &gt; variável <code>&lt;APP&gt;_CHANNEL</code> &gt; arquivo de config &gt; <code>"stable"</code>.<br />
-2. <strong>Estado e Cache de Verificação:</strong> <code>${XDG_STATE_HOME:-~/.local/state}/&lt;slug&gt;/update_check.json</code>:<br />
+   UPDATE_AUTO_CHECK="true"          # Verificação periódica não-bloqueante em modo autônomo
+   UPDATE_CHECK_INTERVAL_HOURS="12"  # Frequência padrão de consulta (12 horas)
+   UPDATE_AUTO_UPDATE="false"        # Substituição atômica sem confirmação (opt-in estrito)
+   UPDATE_MANAGED_BY_JORNALEIRA=""   # Override: "" (auto-detectar), "true" ou "false"</code><br />
+<em>Precedência de Resolução:</em> Flags CLI (<code>--channel</code>, <code>--pin</code>) &gt; Variáveis de ambiente (<code>&lt;SLUG_UPPER&gt;_UPDATE_*</code> / <code>UPDATE_*</code>) &gt; <code>${XDG_CONFIG_HOME}/&lt;slug&gt;/config.env</code> &gt; Padrões normativos Kollontai.</p>
+<ol start="2">
+<li><strong>Estado e Cache de Runtime:</strong> <code>${XDG_STATE_HOME:-~/.local/state}/&lt;slug&gt;/update_check.json</code><br />
+   Registro estruturado compartilhado entre o aplicativo e a Jornaleira:<br />
 <code>json
    {
      "last_check_timestamp": 1729411200,
-     "latest_remote_version": "0.5.1",
-     "channel": "stable"
-   }</code></p>
-<h3 id="42-comportamento-em-runtime-e-alerta-em-stderr">4.2 Comportamento em Runtime e Alerta em <code>stderr</code></h3>
-<ol>
-<li><strong>Short-Circuit:</strong> Se <code>UPDATE_AUTO_CHECK="false"</code> ou <code>UPDATE_PINNED="true"</code>, nenhuma consulta de rede é disparada.</li>
-<li><strong>Alerta Não-Intrusivo em <code>stderr</code>:</strong> Se o cache local indicar <code>latest_remote_version &gt; current_version</code>, imprime exclusivamente em <code>stderr</code> (preservando pipes em <code>stdout</code>):<br />
-<code>text
-   💡 [&lt;slug&gt;] Nova versão disponível: vX.Y.Z (atual: vA.B.C). Execute '&lt;slug&gt; update' para atualizar.</code></li>
-<li><strong>Consulta Remota Rápida:</strong> Quando o intervalo de 24h expirar, consulta <code>&lt;banca_url&gt;/downloads/&lt;slug&gt;/&lt;channel&gt;-latest.version</code> com timeout máximo de $\le 1\text{s}$, descartando falhas de rede silenciosamente.</li>
+     "current_version": "0.1.0",
+     "latest_remote_version": "0.1.2",
+     "channel": "stable",
+     "update_available": true,
+     "last_check_status": "success",
+     "managed_by": "jornaleira"
+   }</code></li>
 </ol>
-<h3 id="43-contrato-de-subcomandos-cli">4.3 Contrato de Subcomandos CLI</h3>
+<h3 id="42-a-jornaleira-como-gestora-primaria-e-comportamento-em-runtime">4.2 A Jornaleira como Gestora Primária e Comportamento em Runtime</h3>
+<ol>
+<li><strong>Hegemonia da Jornaleira:</strong> A Jornaleira atua como a gestora primária do ecossistema.<br />
+   * <strong>Detecção:</strong> Se <code>UPDATE_MANAGED_BY_JORNALEIRA="true"</code> ou se <code>command -v jornaleira &gt;/dev/null 2&gt;&amp;1</code> retornar sucesso (sem override explícito <code>"false"</code>):<ul>
+<li>O <strong>auto-check nativo dos aplicativos no startup permanece sumariamente desativado</strong>.</li>
+<li>Nenhuma requisição de rede ou consulta DNS é disparada durante a invocação normal de comandos do aplicativo.</li>
+<li>A consulta remota periódica e a substituição de binários passam a ser orquestradas exclusivamente pelos timers e rotinas centrais da Jornaleira.</li>
+</ul>
+</li>
+<li><strong>Modo Autônomo (Sem Jornaleira):</strong><br />
+   * Se a Jornaleira não estiver presente (ou <code>UPDATE_MANAGED_BY_JORNALEIRA="false"</code>), o utilitário assume a responsabilidade de verificar atualizações de forma não-bloqueante no startup caso o intervalo de 12 horas tenha expirado, com timeout estrito de $\le 1\text{s}$ descartando falhas silenciosamente.</li>
+<li><strong>Alerta Não-Intrusivo em <code>stderr</code>:</strong><br />
+   Se o arquivo <code>${XDG_STATE_HOME}/&lt;slug&gt;/update_check.json</code> indicar <code>update_available: true</code>, emite alerta exclusivamente em <code>stderr</code> (preservando pipelines em <code>stdout</code>):<br />
+   * <em>Quando sob gestão da Jornaleira:</em><br />
+<code>text
+     💡 [&lt;slug&gt;] Nova versão disponível: vX.Y.Z (atual: vA.B.C). Execute 'jornaleira update &lt;slug&gt;' para atualizar.</code><br />
+   * <em>Quando em modo autônomo:</em><br />
+<code>text
+     💡 [&lt;slug&gt;] Nova versão disponível: vX.Y.Z (atual: vA.B.C). Execute '&lt;slug&gt; update' para atualizar.</code></li>
+</ol>
+<h3 id="43-contrato-de-subcomandos-cli-e-persistencia-de-canais">4.3 Contrato de Subcomandos CLI e Persistência de Canais</h3>
 <p>Todo binário distribuído <strong>DEVE</strong> responder aos subcomandos:<br />
-* <code>&lt;slug&gt; update [--channel &lt;stable|nightly&gt;] [--pin &lt;ver&gt;] [--force] [--dry-run]</code><br />
-* <code>&lt;slug&gt; check-update [--channel &lt;stable|nightly&gt;]</code><br />
-* <code>&lt;slug&gt; config show | set-channel &lt;c&gt; | pin [&lt;ver&gt;] | unpin | set-auto-check &lt;bool&gt; | set-auto-update &lt;bool&gt;</code></p>
+* <code>&lt;slug&gt; check-update [--channel &lt;stable|nightly&gt;] [--stable] [--nightly]</code><br />
+  Realiza consulta remota síncrona não-bloqueante na Banca, atualiza o arquivo <code>${XDG_STATE_HOME}/&lt;slug&gt;/update_check.json</code> e informa o status.<br />
+* <code>&lt;slug&gt; update [--channel &lt;stable|nightly&gt;] [--stable] [--nightly] [--pin &lt;ver&gt;] [--force] [--dry-run]</code><br />
+  Efetua a substituição atômica pelo binário mais recente da Banca respeitando o canal solicitado.<br />
+* <code>&lt;slug&gt; config show | set-channel &lt;c&gt; | pin [&lt;ver&gt;] | unpin | set-auto-check &lt;bool&gt; | set-auto-update &lt;bool&gt;</code><br />
+  Exibe ou altera de forma persistente as opções em <code>${XDG_CONFIG_HOME}/&lt;slug&gt;/config.env</code>.</p>
+<h4 id="garantia-de-persistencia-do-canal-nightly"><strong>Garantia de Persistência do Canal Nightly:</strong></h4>
+<ul>
+<li>A preferência declarada em <code>UPDATE_CHANNEL</code> (em <code>config.env</code>) define a assinatura duradoura de atualizações do usuário.</li>
+<li>O comando pontual <code>&lt;slug&gt; update --stable</code> (ou <code>--channel stable</code>) instala a compilação estável requisitada naquele momento, <strong>mas NUNCA altera o valor de <code>UPDATE_CHANNEL</code></strong> no arquivo <code>config.env</code>.</li>
+<li>A reconfiguração persistente do canal exige comando explícito (<code>&lt;slug&gt; config set-channel stable</code> ou flag <code>--save-channel</code>).</li>
+<li>Enquanto <code>UPDATE_CHANNEL="nightly"</code>, o verificador continuará consultando e alertando sobre novas compilações do canal <code>nightly</code> assim que publicadas na Banca, mesmo que o executável local em execução seja momentaneamente uma versão estável.</li>
+</ul>
 <h3 id="44-topologia-do-catalogo-de-distribuicao-banca-e-retencao-estrita">4.4 Topologia do Catálogo de Distribuição (Banca) e Retenção Estrita</h3>
 <p>A esteira de CI publica os binários estáticos e mantém o armazenamento enxuto sob a seguinte estrutura canônica por aplicativo (<code>&lt;slug&gt;</code>):<br />
 * <code>&lt;banca_url&gt;/downloads/&lt;slug&gt;/install.sh</code>: Instalador POSIX puro (<code>#!/bin/sh</code>), verifica hash SHA-256 e instala em <code>~/.local/bin</code> (ou <code>/usr/local/bin</code> se root).<br />
