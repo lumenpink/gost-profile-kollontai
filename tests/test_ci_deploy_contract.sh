@@ -33,5 +33,28 @@ else
     exit 1
 fi
 
-echo "✔ [GREEN TEST] Contrato de deploy do workflow de CI aprovado com sucesso."
+echo "=== [MUTATION] Verificando sensibilidade dos testes normativos a mutações ==="
+
+TMP_MUTANT=$(mktemp)
+trap 'rm -f "$TMP_MUTANT"' EXIT
+
+# Mutante 1: Reintrodução de worktree add --orphan
+sed 's/npx wrangler deploy/git worktree add --orphan -b pages \/tmp/g' "$WORKFLOW" > "$TMP_MUTANT"
+if check_workflow "$TMP_MUTANT"; then
+    echo "  [FAIL] Mutante 1 (reintrodução de worktree orphan) não foi capturado!"
+    exit 1
+else
+    echo "  [PASS] Mutante 1 (reintrodução de worktree orphan) capturado com precisão"
+fi
+
+# Mutante 2: Remoção do deploy Cloudflare
+sed 's/npx wrangler deploy/echo skip/g' "$WORKFLOW" > "$TMP_MUTANT"
+if check_workflow "$TMP_MUTANT"; then
+    echo "  [FAIL] Mutante 2 (remoção de wrangler deploy) não foi capturado!"
+    exit 1
+else
+    echo "  [PASS] Mutante 2 (remoção de wrangler deploy) capturado com precisão"
+fi
+
+echo "✔ [GREEN TEST] Todas as asserções e mutações foram aprovadas com 100% de conformidade."
 exit 0
