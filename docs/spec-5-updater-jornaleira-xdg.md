@@ -9,7 +9,7 @@
 
 ## 1. Contexto & Motivação
 
-O perfil **Kollontai** define as normas de distribuição e auto-atualização para ferramentas de linha de comando (CLI) e aplicativos desktop no ecossistema soberano.
+O perfil **Kollontai** define as normas de distribuição e auto-atualização para ferramentas de linha de comando (CLI) e aplicativos desktop no ecossistema.
 
 Anteriormente, cada utilitário realizava verificações e auto-atualizações de forma isolada, gerando concorrência de rede em inicializações concomitantes e ausência de uma visão sistêmica de inventário e versões. Com a introdução da **Jornaleira** como gestora central de ciclo de vida e pacotes, faz-se necessária a revisão integral da **Seção 4** da especificação normativa Kollontai:
 

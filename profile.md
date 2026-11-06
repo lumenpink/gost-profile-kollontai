@@ -108,9 +108,9 @@ Para aplicações gráficas multiplataforma em Rust (Web WASM, Desktop via Tao/W
 
 ---
 
-## 4. Protocolo de Auto-Atualização Soberana (XDG) e Manifesto de Distribuição
+## 4. Protocolo de Auto-Atualização (XDG) e Manifesto de Distribuição
 
-Todas as ferramentas de linha de comando (CLI) e aplicações desktop distribuídas sob o perfil Kollontai **DEVEM** implementar o protocolo de auto-atualização conectado ao catálogo de distribuição soberano (a **Banca**) e interoperável com a **Jornaleira**.
+Todas as ferramentas de linha de comando (CLI) e aplicações desktop distribuídas sob o perfil Kollontai **DEVEM** implementar o protocolo de auto-atualização conectado ao catálogo de distribuição central (a **Banca**) e interoperável com a **Jornaleira**.
 
 ### 4.1 Caminhos XDG e Formato de Configuração (`config.env`)
 Para manter conformidade com a regra anti-bloat da norma GOST (Seção 13.2), a configuração e o cache de estado residem estritamente em caminhos XDG:
@@ -169,32 +169,36 @@ Todo binário distribuído **DEVE** responder aos subcomandos:
 * `<slug> config show | set-channel <c> | pin [<ver>] | unpin | set-auto-check <bool> | set-auto-update <bool>`  
   Exibe ou altera de forma persistente as opções em `${XDG_CONFIG_HOME}/<slug>/config.env`.
 
-#### **Garantia de Persistência do Canal Nightly:**
-* A preferência declarada em `UPDATE_CHANNEL` (em `config.env`) define a assinatura duradoura de atualizações do usuário.
+#### **Garantia de Persistência do Canal Dev / Nightly:**
+* A preferência declarada em `UPDATE_CHANNEL` (em `config.env`) define a assinatura duradoura de atualizações do usuário (`stable` ou `dev`/`nightly`).
 * O comando pontual `<slug> update --stable` (ou `--channel stable`) instala a compilação estável requisitada naquele momento, **mas NUNCA altera o valor de `UPDATE_CHANNEL`** no arquivo `config.env`.
 * A reconfiguração persistente do canal exige comando explícito (`<slug> config set-channel stable` ou flag `--save-channel`).
-* Enquanto `UPDATE_CHANNEL="nightly"`, o verificador continuará consultando e alertando sobre novas compilações do canal `nightly` assim que publicadas na Banca, mesmo que o executável local em execução seja momentaneamente uma versão estável.
+* Enquanto `UPDATE_CHANNEL="dev"` (ou `"nightly"`), o verificador continuará consultando e alertando sobre novas compilações do canal `dev` assim que publicadas na Banca, mesmo que o executável local em execução seja momentaneamente uma versão estável.
 
-### 4.4 Topologia do Catálogo de Distribuição (Banca) e Retenção Estrita
-A esteira de CI publica os binários estáticos e mantém o armazenamento enxuto sob a seguinte estrutura canônica por aplicativo (`<slug>`):
-* `<banca_url>/downloads/<slug>/install.sh`: Instalador POSIX puro (`#!/bin/sh`), verifica hash SHA-256 e instala em `~/.local/bin` (ou `/usr/local/bin` se root).
-* `<banca_url>/downloads/<slug>/<channel>-latest` e `<channel>-latest.version`: Ponteiros atômicos para a versão ativa de cada canal (`stable` e `nightly`).
-* `<banca_url>/downloads/<slug>/index.json`: Manifesto estruturado contendo metadados extraídos do `.gost/metadata.json` (`slug`, `title`, `tagline`, `summary`, `tags`), canais, URLs imutáveis, tamanho em bytes, data ISO-8601 e hashes `sha256`.
-* **Política de Retenção e Expurgo Automático:** A publicação na esteira retém estritamente as **5 versões `stable`** mais recentes e as **10 compilações `nightly`** mais recentes, expurgando artefatos antigos automaticamente.
+### 4.4 Topologia de Armazenamento e Distribuição Desacoplada
+A esteira de publicação opera sob o modelo **Produtor–Curador Desacoplado**:
+* **Produtor (Repositório do Software):** Compila o código na esteira, calcula os hashes de integridade (SHA-256), envia os artefatos diretamente para o storage de distribuição, atualiza a cópia de alias e despacha um evento de notificação via API (`repository_dispatch`).
+* **Curador (Repositório Central da Banca):** Ouve os eventos via esteira (`repository_dispatch`), executa auditoria estrita de existência e integridade dos arquivos novos e do histórico ativo, gerencia a retenção no storage conforme o perfil operacional (Lilya), atualiza o catálogo (`catalog.json`) e realiza o deploy.
+* **Topologia do Storage (Bucket Único Particionado):**
+  Todos os artefatos são mantidos sob o prefixo `banca-artifacts/{app}/{channel}/`:
+  - `{app}-{versao}-{target}.{ext}` e respectivo `.sha256`
+  - Cópias físicas de alias sobrescritas: `{app}-latest-{target}.{ext}` (em `stable`) ou `{app}-dev-latest-{target}.{ext}` (em `dev`), juntamente com seus arquivos `.sha256`.
 
-### 4.5 Segregação de Canais, Aliases de Distribuição e Versões Canônicas
-A publicação e o consumo de artefatos de distribuição (pacotes genéricos, staticlibs, contêineres e releases na Banca) devem respeitar a segregação estrita entre canais:
-1. **Canal Estável (`refs/tags/v*`):**
-   - Possui **exclusividade absoluta** sobre o alias primário `latest` e versões limpas desprovidas de sufixo (`X.Y.Z`).
-   - É expressamente vedado a compilações de branches ou commits não tagueados registrar ou sobrescrever artefatos sob versões limpas ou sob o alias `latest`.
-2. **Canal Nightly/Desenvolvimento (`main` / `dev.XX`):**
-   - Publicação obrigatória sob a versão canônica exata do build (`X.Y.Z-dev.NN+build`).
-   - Para conveniência de consumo contínuo e distribuição, os artefatos são disponibilizados sob aliases segregados de desenvolvimento:
-     - Alias primário de desenvolvimento: `latest-dev`.
-     - Alias nominal de desenvolvimento: `${BASE_VERSION}-dev` (ou `X.Y.Z-dev`, ex.: `0.1.0-dev`).
+### 4.5 Nomenclatura de Canais e Aliases Canônicos
+A publicação e o consumo de artefatos de distribuição respeitam os canais canônicos:
+1. **Canal Estável (`stable`):**
+   - Rótulo na interface: *Versão Recomendada*.
+   - Sufixo / padrão de versão: SemVer 2.0 (`x.y.z`).
+   - Alias canônico: `*-latest.*` (ex.: `{app}-latest-{target}.{ext}`).
+   - Possui **exclusividade absoluta** sobre o alias primário `latest` e versões desprovidas de sufixo.
+2. **Canal de Desenvolvimento (`dev`):**
+   - Rótulo na interface: *Versão Experimental*.
+   - Sufixo / padrão de versão: `x.y.z-dev.{n}+{YYYYMMDD}.{commit}`.
+   - Alias canônico: `*-dev-latest.*` (ex.: `{app}-dev-latest-{target}.{ext}`).
 3. **Consumo de Versões Canônicas Recomendado:**
    - Em manifestos de build (`Cargo.toml`, etc.), a fixação em versões canônicas exatas (`=`) é formalmente **recomendada** (*SHOULD* / *DEVERIA*) para garantir reprodutibilidade hermética em cascata.
-   - Não são impostas travas sintáticas ou bloqueios de linter contra o consumo de aliases quando apropriado, assegurando a flexibilidade de consumo para a qual os aliases foram concebidos.
+4. **Tolerância Zero a Links Quebrados:**
+   - Se qualquer artefato declarado (novo ou histórico ativo) falhar na verificação de rede ou apresentar divergência de checksum, a publicação do catálogo é abortada imediatamente.
 
 ---
 
@@ -247,7 +251,36 @@ jobs:
 
 * **Isolamento da Quarentena (`inbox/*`):** Para branches `refs/heads/inbox/*`, apenas o job `test` é executado em modo desprivilegiado (sem acesso a secrets de deploy ou chaves da Banca).
 
-### 5.1 Idempotência na Publicação e Pre-Delete de Aliases Mutáveis
+### 5.1 Contrato de Notificação via API (`repository_dispatch`)
+O repositório produtor do software notifica a esteira central da Banca via chamada HTTP:
+`POST /api/v1/repos/{owner}/banca/dispatches` com `event_type: "release-published"`.
+
+#### Schema do Payload (`client_payload`):
+```json
+{
+  "event_type": "release-published",
+  "client_payload": {
+    "app": "slug",
+    "channel": "stable",
+    "version": "x.y.z",
+    "commit": "hash",
+    "repo_slug": "owner/slug",
+    "run_id": "1842",
+    "assets": [
+      {
+        "filename": "app-0.1.0-linux-x86_64.tar.gz",
+        "alias": "app-latest-linux-x86_64.tar.gz",
+        "type": "archive",
+        "format": "tar.gz",
+        "target": "linux-x86_64",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  }
+}
+```
+
+### 5.2 Idempotência na Publicação e Pre-Delete de Aliases Mutáveis
 Para forjas de pacotes que rejeitam sobrescrita direta de arquivos com o mesmo nome sob uma versão (como os Generic Packages do Forgejo, gerando erros `HTTP 409 Conflict`), a esteira de CI/CD **DEVE** garantir idempotência:
 * Antes de executar o envio (`PUT`) para aliases mutáveis (`latest-dev`, `${BASE_VERSION}-dev`, `latest`), a esteira deve executar uma limpeza prévia com deleção idempotente (`curl -s -X DELETE ... || true`).
 * Essa prática previne falhas espúrias de publicação e assegura que a forja atualize o ponteiro do alias sem interrupções.
