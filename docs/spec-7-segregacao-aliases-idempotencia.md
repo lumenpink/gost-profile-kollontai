@@ -52,3 +52,14 @@ Anteriormente, artefatos de desenvolvimento eram frequentemente publicados sob a
 - **Fase 7 (Mutation Test)**: Adicionar mutantes a `tests/test_distribution_channels_spec.sh` comprovando que qualquer desvio nas regras de canal ou idempotência é capturado.
 - **Fase 8 (Quality Gate)**: Executar todas as suítes de testes locais e auditoria estrita `cccp check --strict`.
 - **Fase 9 (Finish & Close)**: Fechamento com Laudo Textual de Resolução após autorização prévia da usuária.
+
+---
+
+## 4. Registro de Execução das Fases
+
+- **Fase 3 (Spec)**: Especificação estruturada e versionada.
+- **Fase 4 (Red Test)**: Criado `tests/test_distribution_channels_spec.sh` com 4 falhas comprovadas.
+- **Fase 5 (Green Implement)**: Inseridas as cláusulas 4.5 e 5.1 no `profile.md`, recompilado o site e atualizado `CHANGELOG.md`.
+- **Fase 6 (Refactor)**: Scripts de teste refatorados e alinhados aos padrões do repositório.
+- **Fase 7 (Mutation Test)**: Implementados 3 mutantes sintéticos em `tests/test_distribution_channels_spec.sh` (omissão de `latest-dev`, remoção de pre-delete contra 409 e remoção de recomendação canônica). Todos os mutantes foram eliminados com 100% de precisão.
+
