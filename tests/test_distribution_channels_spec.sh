@@ -51,3 +51,39 @@ else
     echo "❌ [FAIL] Auditoria falhou no perfil oficial."
     exit 1
 fi
+
+echo "=== [MUTATION] Verificando sensibilidade dos testes normativos a mutações ==="
+
+TMP_MUTANT=$(mktemp)
+trap 'rm -f "$TMP_MUTANT"' EXIT
+
+# Mutante 1: Omissão do alias de desenvolvimento latest-dev
+sed 's/latest-dev/latest/g' "$PROFILE" > "$TMP_MUTANT"
+if check_profile_channels "$TMP_MUTANT" >/dev/null 2>&1; then
+    echo "  [FAIL] Mutante 1 (omissão do alias latest-dev) não foi capturado!"
+    exit 1
+else
+    echo "  [PASS] Mutante 1 (omissão do alias latest-dev) capturado com precisão"
+fi
+
+# Mutante 2: Remoção do pre-delete idempotente e menção a HTTP 409
+sed 's/HTTP 409 Conflict/HTTP 200 OK/g' "$PROFILE" > "$TMP_MUTANT"
+if check_profile_channels "$TMP_MUTANT" >/dev/null 2>&1; then
+    echo "  [FAIL] Mutante 2 (remoção de prevenção a HTTP 409) não foi capturado!"
+    exit 1
+else
+    echo "  [PASS] Mutante 2 (remoção de prevenção a HTTP 409) capturado com precisão"
+fi
+
+# Mutante 3: Remoção da recomendação de versões canônicas
+sed -E 's/versões canônicas/versões quaisquer/gI' "$PROFILE" > "$TMP_MUTANT"
+if check_profile_channels "$TMP_MUTANT" >/dev/null 2>&1; then
+    echo "  [FAIL] Mutante 3 (remoção de recomendação canônica) não foi capturado!"
+    exit 1
+else
+    echo "  [PASS] Mutante 3 (remoção de recomendação canônica) capturado com precisão"
+fi
+
+echo "✔ [GREEN TEST] Todas as asserções e mutações foram aprovadas com 100% de conformidade."
+exit 0
+
