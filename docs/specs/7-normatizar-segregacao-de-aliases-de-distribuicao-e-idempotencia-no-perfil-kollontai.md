@@ -1,0 +1,1 @@
+../spec-7-segregacao-aliases-idempotencia.md
