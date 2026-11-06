@@ -18,27 +18,33 @@ check_profile_channels() {
         failed=1
     fi
 
-    # 2. Aliases segregados de desenvolvimento: latest-dev e BASE_VERSION-dev
-    if grep -qF "latest-dev" "$target" && grep -E -q "(\$\{BASE_VERSION\}|X\.Y\.Z)-dev" "$target"; then
+    # 2. Aliases segregados de desenvolvimento: *-dev-latest.* e canal dev
+    if grep -qF "*-dev-latest.*" "$target" && grep -qi "canal.*dev" "$target"; then
         true
     else
-        echo "  [FAIL] Cláusula de aliases segregados de desenvolvimento (latest-dev e X.Y.Z-dev) ausente"
+        echo "  [FAIL] Cláusula de canal 'dev' e alias '*-dev-latest.*' ausente"
         failed=1
     fi
 
-    # 3. Idempotência na publicação com deleção prévia (pre-delete) e prevenção de HTTP 409
-    if grep -qi "idempotên" "$target" && grep -qi "delete" "$target" && grep -qF "409" "$target"; then
+    # 3. Contrato da esteira desacoplada (repository_dispatch e release-published)
+    if grep -qF "repository_dispatch" "$target" && grep -qF "release-published" "$target" && grep -qF "client_payload" "$target"; then
         true
     else
-        echo "  [FAIL] Cláusula de idempotência com deleção prévia de aliases mutáveis (evitando HTTP 409) ausente"
+        echo "  [FAIL] Contrato de notificação repository_dispatch e release-published ausente"
         failed=1
     fi
 
-    # 4. Uso de versão canônica como recomendação (não trava mandatória)
-    if grep -qi "versões canônicas" "$target" && grep -qi "recomenda" "$target"; then
+    # 4. Topologia de storage em bucket único particionado
+    if grep -qF "banca-artifacts/{app}/{channel}/" "$target"; then
         true
     else
-        echo "  [FAIL] Cláusula de recomendação de uso de versões canônicas ausente"
+        echo "  [FAIL] Topologia de storage banca-artifacts/{app}/{channel}/ ausente"
+        failed=1
+    fi
+
+    # 5. Ausência de termos imperialistas no perfil
+    if grep -iE "soberan[ao]|sovereign" "$target" >/dev/null 2>&1; then
+        echo "  [FAIL] Termos imperialistas detectados no perfil"
         failed=1
     fi
 
