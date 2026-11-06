@@ -12,6 +12,9 @@
 
 ## [Unreleased]
 
+### Features
+- **spec(channels):** normatizar segregação de aliases de distribuição (latest vs latest-dev e X.Y.Z-dev) e idempotência de publicação com pre-delete contra HTTP 409 (#7)
+
 ### Bug Fixes
 - **ci:** remover step legado de pages e consolidar deploy no Cloudflare Workers (#6)
 

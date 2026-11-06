@@ -609,6 +609,19 @@ mirror_owner = &lt;mirror_owner&gt;
 * <code>&lt;banca_url&gt;/downloads/&lt;slug&gt;/&lt;channel&gt;-latest</code> e <code>&lt;channel&gt;-latest.version</code>: Ponteiros atômicos para a versão ativa de cada canal (<code>stable</code> e <code>nightly</code>).<br />
 * <code>&lt;banca_url&gt;/downloads/&lt;slug&gt;/index.json</code>: Manifesto estruturado contendo metadados extraídos do <code>.gost/metadata.json</code> (<code>slug</code>, <code>title</code>, <code>tagline</code>, <code>summary</code>, <code>tags</code>), canais, URLs imutáveis, tamanho em bytes, data ISO-8601 e hashes <code>sha256</code>.<br />
 * <strong>Política de Retenção e Expurgo Automático:</strong> A publicação na esteira retém estritamente as <strong>5 versões <code>stable</code></strong> mais recentes e as <strong>10 compilações <code>nightly</code></strong> mais recentes, expurgando artefatos antigos automaticamente.</p>
+<h3 id="45-segregacao-de-canais-aliases-de-distribuicao-e-versoes-canonicas">4.5 Segregação de Canais, Aliases de Distribuição e Versões Canônicas</h3>
+<p>A publicação e o consumo de artefatos de distribuição (pacotes genéricos, staticlibs, contêineres e releases na Banca) devem respeitar a segregação estrita entre canais:<br />
+1. <strong>Canal Estável (<code>refs/tags/v*</code>):</strong><br />
+   - Possui <strong>exclusividade absoluta</strong> sobre o alias primário <code>latest</code> e versões limpas desprovidas de sufixo (<code>X.Y.Z</code>).<br />
+   - É expressamente vedado a compilações de branches ou commits não tagueados registrar ou sobrescrever artefatos sob versões limpas ou sob o alias <code>latest</code>.<br />
+2. <strong>Canal Nightly/Desenvolvimento (<code>main</code> / <code>dev.XX</code>):</strong><br />
+   - Publicação obrigatória sob a versão canônica exata do build (<code>X.Y.Z-dev.NN+build</code>).<br />
+   - Para conveniência de consumo contínuo e distribuição, os artefatos são disponibilizados sob aliases segregados de desenvolvimento:<br />
+     - Alias primário de desenvolvimento: <code>latest-dev</code>.<br />
+     - Alias nominal de desenvolvimento: <code>${BASE_VERSION}-dev</code> (ou <code>X.Y.Z-dev</code>, ex.: <code>0.1.0-dev</code>).<br />
+3. <strong>Consumo de Versões Canônicas Recomendado:</strong><br />
+   - Em manifestos de build (<code>Cargo.toml</code>, etc.), a fixação em versões canônicas exatas (<code>=</code>) é formalmente <strong>recomendada</strong> (<em>SHOULD</em> / <em>DEVERIA</em>) para garantir reprodutibilidade hermética em cascata.<br />
+   - Não são impostas travas sintáticas ou bloqueios de linter contra o consumo de aliases quando apropriado, assegurando a flexibilidade de consumo para a qual os aliases foram concebidos.</p>
 <hr />
 <h2 id="5-esteira-de-cicd-hermetica-forgejoworkflowsciyml">5. Esteira de CI/CD Hermética (<code>.forgejo/workflows/ci.yml</code>)</h2>
 <p>Em conformidade com a Seção 10 da norma GOST, todo repositório Kollontai possui um único arquivo <code>.forgejo/workflows/ci.yml</code> executando em containers locais pré-provisionados (sem downloads externos em runtime), dividido nas filas canônicas:</p>
@@ -655,8 +668,11 @@ jobs:
 </code></pre>
 <ul>
 <li><strong>Isolamento da Quarentena (<code>inbox/*</code>):</strong> Para branches <code>refs/heads/inbox/*</code>, apenas o job <code>test</code> é executado em modo desprivilegiado (sem acesso a secrets de deploy ou chaves da Banca).</li>
-<li><strong>Publicação Stateless em Branch <code>pages</code>:</strong> O espelhamento estático para forjas secundárias utiliza worktree órfã (<code>git worktree add --orphan -b pages</code>) com commit único (<code>docs(site): deploy snapshot [skip ci]</code>) e <code>git push --force</code>, impedindo inflação do histórico Git.</li>
 </ul>
+<h3 id="51-idempotencia-na-publicacao-e-pre-delete-de-aliases-mutaveis">5.1 Idempotência na Publicação e Pre-Delete de Aliases Mutáveis</h3>
+<p>Para forjas de pacotes que rejeitam sobrescrita direta de arquivos com o mesmo nome sob uma versão (como os Generic Packages do Forgejo, gerando erros <code>HTTP 409 Conflict</code>), a esteira de CI/CD <strong>DEVE</strong> garantir idempotência:<br />
+* Antes de executar o envio (<code>PUT</code>) para aliases mutáveis (<code>latest-dev</code>, <code>${BASE_VERSION}-dev</code>, <code>latest</code>), a esteira deve executar uma limpeza prévia com deleção idempotente (<code>curl -s -X DELETE ... || true</code>).<br />
+* Essa prática previne falhas espúrias de publicação e assegura que a forja atualize o ponteiro do alias sem interrupções.</p>
 <hr />
 <h2 id="6-vitrine-web-internacionalizacao-e-gerador-de-banners">6. Vitrine Web, Internacionalização e Gerador de Banners</h2>
 <h3 id="61-roteador-estatico-cliente-siteindexhtml-para-site_type-doc">6.1 Roteador Estático Cliente (<code>site/index.html</code>) para <code>site_type: doc</code></h3>

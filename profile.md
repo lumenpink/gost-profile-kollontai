@@ -182,6 +182,20 @@ A esteira de CI publica os binários estáticos e mantém o armazenamento enxuto
 * `<banca_url>/downloads/<slug>/index.json`: Manifesto estruturado contendo metadados extraídos do `.gost/metadata.json` (`slug`, `title`, `tagline`, `summary`, `tags`), canais, URLs imutáveis, tamanho em bytes, data ISO-8601 e hashes `sha256`.
 * **Política de Retenção e Expurgo Automático:** A publicação na esteira retém estritamente as **5 versões `stable`** mais recentes e as **10 compilações `nightly`** mais recentes, expurgando artefatos antigos automaticamente.
 
+### 4.5 Segregação de Canais, Aliases de Distribuição e Versões Canônicas
+A publicação e o consumo de artefatos de distribuição (pacotes genéricos, staticlibs, contêineres e releases na Banca) devem respeitar a segregação estrita entre canais:
+1. **Canal Estável (`refs/tags/v*`):**
+   - Possui **exclusividade absoluta** sobre o alias primário `latest` e versões limpas desprovidas de sufixo (`X.Y.Z`).
+   - É expressamente vedado a compilações de branches ou commits não tagueados registrar ou sobrescrever artefatos sob versões limpas ou sob o alias `latest`.
+2. **Canal Nightly/Desenvolvimento (`main` / `dev.XX`):**
+   - Publicação obrigatória sob a versão canônica exata do build (`X.Y.Z-dev.NN+build`).
+   - Para conveniência de consumo contínuo e distribuição, os artefatos são disponibilizados sob aliases segregados de desenvolvimento:
+     - Alias primário de desenvolvimento: `latest-dev`.
+     - Alias nominal de desenvolvimento: `${BASE_VERSION}-dev` (ou `X.Y.Z-dev`, ex.: `0.1.0-dev`).
+3. **Consumo de Versões Canônicas Recomendado:**
+   - Em manifestos de build (`Cargo.toml`, etc.), a fixação em versões canônicas exatas (`=`) é formalmente **recomendada** (*SHOULD* / *DEVERIA*) para garantir reprodutibilidade hermética em cascata.
+   - Não são impostas travas sintáticas ou bloqueios de linter contra o consumo de aliases quando apropriado, assegurando a flexibilidade de consumo para a qual os aliases foram concebidos.
+
 ---
 
 ## 5. Esteira de CI/CD Hermética (`.forgejo/workflows/ci.yml`)
@@ -232,7 +246,11 @@ jobs:
 ```
 
 * **Isolamento da Quarentena (`inbox/*`):** Para branches `refs/heads/inbox/*`, apenas o job `test` é executado em modo desprivilegiado (sem acesso a secrets de deploy ou chaves da Banca).
-* **Publicação Stateless em Branch `pages`:** O espelhamento estático para forjas secundárias utiliza worktree órfã (`git worktree add --orphan -b pages`) com commit único (`docs(site): deploy snapshot [skip ci]`) e `git push --force`, impedindo inflação do histórico Git.
+
+### 5.1 Idempotência na Publicação e Pre-Delete de Aliases Mutáveis
+Para forjas de pacotes que rejeitam sobrescrita direta de arquivos com o mesmo nome sob uma versão (como os Generic Packages do Forgejo, gerando erros `HTTP 409 Conflict`), a esteira de CI/CD **DEVE** garantir idempotência:
+* Antes de executar o envio (`PUT`) para aliases mutáveis (`latest-dev`, `${BASE_VERSION}-dev`, `latest`), a esteira deve executar uma limpeza prévia com deleção idempotente (`curl -s -X DELETE ... || true`).
+* Essa prática previne falhas espúrias de publicação e assegura que a forja atualize o ponteiro do alias sem interrupções.
 
 ---
 
