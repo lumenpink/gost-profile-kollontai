@@ -13,6 +13,7 @@
 ## [Unreleased]
 
 ### Features
+- **spec(channels):** padronizar canais stable e dev com contrato de esteira desacoplada (closes #8)
 - **spec(channels):** normatizar segregação de aliases de distribuição (latest vs latest-dev e X.Y.Z-dev) e idempotência de publicação com pre-delete contra HTTP 409 (#7)
 
 ### Bug Fixes
