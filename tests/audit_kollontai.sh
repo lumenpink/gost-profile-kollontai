@@ -23,11 +23,11 @@ else
     FAILED=1
 fi
 
-# 3. Norma Base e target_gost em profile.md
-if grep -qF 'target_gost: "2.0.0"' "$REPO_DIR/profile.md"; then
-    echo "  [PASS] target_gost em profile.md atualizado para 2.0.0"
+# 3. Norma Base e inherits_from em profile.md
+if grep -qF 'standard: "gosplan"' "$REPO_DIR/profile.md" && grep -qF 'tier: "tactical"' "$REPO_DIR/profile.md"; then
+    echo "  [PASS] inherits_from e tier: tactical em profile.md atualizados"
 else
-    echo "  [FAIL] target_gost em profile.md desatualizado (esperado 'target_gost: \"2.0.0\"')"
+    echo "  [FAIL] inherits_from ou tier em profile.md desatualizados"
     FAILED=1
 fi
 
@@ -68,12 +68,12 @@ echo "=== [MUTATION] Verificando sensibilidade a mutações ==="
 TMP_MUTANT=$(mktemp)
 trap 'rm -f "$TMP_MUTANT"' EXIT
 
-grep -v 'target_gost: "2.0.0"' "$REPO_DIR/profile.md" > "$TMP_MUTANT"
-if grep -qF 'target_gost: "2.0.0"' "$TMP_MUTANT"; then
+grep -v 'standard: "gosplan"' "$REPO_DIR/profile.md" > "$TMP_MUTANT"
+if grep -qF 'standard: "gosplan"' "$TMP_MUTANT"; then
     echo "  [FAIL] Mutante A falhou ao ser gerado"
     FAILED=1
 else
-    echo "  [PASS] Mutante A (versão revertida) detectado com sucesso"
+    echo "  [PASS] Mutante A (herança ausente) detectado com sucesso"
 fi
 
 if [ $FAILED -ne 0 ]; then

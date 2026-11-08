@@ -1,0 +1,122 @@
+# Kollontai v2.1.0 — Regras Táticas (rules.toml)
+
+[rules.KOLLONTAI-001]
+name = "CCCPRC-FILE-REQUIRED"
+severity = "error"
+scope = "project"
+docs_url = "https://kollontai.2lp.in/2.1.0/rules/KOLLONTAI-001"
+description = "Every repository must have a .cccprc configuration file at the root"
+script = '''
+if not gost.file_exists(".cccprc") then
+    return false, "ERR_CCCPRC_MISSING", {}
+end
+return true
+'''
+[rules.KOLLONTAI-001.messages]
+ERR_CCCPRC_MISSING = "Configuration file '.cccprc' is missing from repository root"
+
+[rules.KOLLONTAI-002]
+name = "PRIMARY-FORGE-TYPE-DECLARED"
+severity = "error"
+scope = "project"
+docs_url = "https://kollontai.2lp.in/2.1.0/rules/KOLLONTAI-002"
+description = "The .cccprc configuration file must declare primary_forge_type"
+script = '''
+if not gost.file_exists(".cccprc") then
+    return false, "ERR_CCCPRC_MISSING", {}
+end
+local content = gost.read_file(".cccprc") or ""
+if not content:match("primary_forge_type%s*=") then
+    return false, "ERR_PRIMARY_FORGE_TYPE_MISSING", {}
+end
+return true
+'''
+[rules.KOLLONTAI-002.messages]
+ERR_CCCPRC_MISSING = "Configuration file '.cccprc' is missing"
+ERR_PRIMARY_FORGE_TYPE_MISSING = "Property 'primary_forge_type' is not declared in .cccprc"
+
+[rules.KOLLONTAI-003]
+name = "AGENT-VAR-LANG-DECLARED"
+severity = "error"
+scope = "project"
+docs_url = "https://kollontai.2lp.in/2.1.0/rules/KOLLONTAI-003"
+description = "The .cccprc configuration file must declare agent_var_lang"
+script = '''
+if not gost.file_exists(".cccprc") then
+    return false, "ERR_CCCPRC_MISSING", {}
+end
+local content = gost.read_file(".cccprc") or ""
+if not content:match("agent_var_lang%s*=") then
+    return false, "ERR_AGENT_VAR_LANG_MISSING", {}
+end
+return true
+'''
+[rules.KOLLONTAI-003.messages]
+ERR_CCCPRC_MISSING = "Configuration file '.cccprc' is missing"
+ERR_AGENT_VAR_LANG_MISSING = "Property 'agent_var_lang' is not declared in .cccprc"
+
+[rules.KOLLONTAI-004]
+name = "FORBIDDEN-TERMS-PROHIBITED"
+severity = "error"
+scope = "docs"
+docs_url = "https://kollontai.2lp.in/2.1.0/rules/KOLLONTAI-004"
+description = "Documentation files must not contain prohibited imperialist terms"
+script = '''
+local files = gost.list_files("docs") or {}
+for _, file in ipairs(files) do
+    if file:match("%.md$") then
+        local content = gost.read_file(file) or ""
+        if content:lower():match("soberan") then
+            return false, "ERR_FORBIDDEN_TERM_FOUND", { file = file }
+        end
+    end
+end
+return true
+'''
+[rules.KOLLONTAI-004.messages]
+ERR_FORBIDDEN_TERM_FOUND = "Forbidden imperialist term found in documentation file '{file}'"
+
+[rules.KOLLONTAI-005]
+name = "VERSION-FILE-REQUIRED"
+severity = "error"
+scope = "project"
+docs_url = "https://kollontai.2lp.in/2.1.0/rules/KOLLONTAI-005"
+description = "Repository root must contain a canonical VERSION file"
+script = '''
+if not gost.file_exists("VERSION") then
+    return false, "ERR_VERSION_FILE_MISSING", {}
+end
+return true
+'''
+[rules.KOLLONTAI-005.messages]
+ERR_VERSION_FILE_MISSING = "Canonical 'VERSION' file is missing from repository root"
+
+[rules.KOLLONTAI-006]
+name = "CHANGELOG-FILE-REQUIRED"
+severity = "error"
+scope = "project"
+docs_url = "https://kollontai.2lp.in/2.1.0/rules/KOLLONTAI-006"
+description = "Repository root must contain a CHANGELOG.md file"
+script = '''
+if not gost.file_exists("CHANGELOG.md") then
+    return false, "ERR_CHANGELOG_MISSING", {}
+end
+return true
+'''
+[rules.KOLLONTAI-006.messages]
+ERR_CHANGELOG_MISSING = "File 'CHANGELOG.md' is missing from repository root"
+
+[rules.KOLLONTAI-007]
+name = "EDITORCONFIG-FILE-REQUIRED"
+severity = "error"
+scope = "project"
+docs_url = "https://kollontai.2lp.in/2.1.0/rules/KOLLONTAI-007"
+description = "Repository root must contain an .editorconfig file"
+script = '''
+if not gost.file_exists(".editorconfig") then
+    return false, "ERR_EDITORCONFIG_MISSING", {}
+end
+return true
+'''
+[rules.KOLLONTAI-007.messages]
+ERR_EDITORCONFIG_MISSING = "File '.editorconfig' is missing from repository root"

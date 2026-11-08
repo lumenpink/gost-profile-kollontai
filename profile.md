@@ -1,14 +1,18 @@
-# Perfil de Implementação GOST: Kollontai
+---
+standard: "kollontai"
+tier: "tactical"
+version: "2.1.0"
+locale: "pt-br"
+authority: "Standards Committee"
+published_at: "2026-11-08"
+inherits_from:
+  standard: "gosplan"
+  tier: "strategic"
+  version: "1.0.0"
+  base_url: "https://gosplan.2lp.in/1.0.0/"
+---
 
-```yaml
----
-id: kollontai
-name: "Perfil de Implementação Kollontai"
-extends: "https://gost.2lp.in/SPEC.md"
-target_gost: "2.0.0"
-status: "Ativo / Produção"
----
-```
+# Perfil de Implementação GOST: Kollontai
 
 > **Sobre este Perfil:**  
 > O perfil **Kollontai** (em homenagem à revolucionária soviética, feminista e diplomata Alexandra Kollontai) define o ferramental concreto de engenharia, a implementação oficial do Maestro de Governança (**`cccp`**), a matriz de versões de compiladores, o protocolo de auto-atualização de binários e a arquitetura de distribuição para projetos aderentes ao padrão **GOST**.  
@@ -62,7 +66,7 @@ mirror_owner = <mirror_owner>
 
 ## 2. Topologia de Forjas, Espelhos e Fronteira
 
-### 2.1 Soberania da Forja Primária e Espelhamento Passivo
+### 2.1 Autoridade da Forja Primária e Espelhamento Passivo
 1. **Unidirecionalidade Local (`Zero Dual Push`):** O ambiente local mantém o remote `origin` apontando exclusivamente para a forja primária definida no perfil final. A replicação de código para espelhos externos (Codeberg, GitHub) é responsabilidade exclusiva do *Push Mirror* automático da forja primária (`sync_on_commit: true`).
 2. **Sinalização de Espelhos e Paridade de Metadados:**
    - O comando `cccp gost sync` mantém `description` (extraído de `summary`), `website` e `topics` (extraídos de `tags` no `.gost/metadata.json`) idênticos entre a forja primária e os espelhos.

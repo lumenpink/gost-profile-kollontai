@@ -1,0 +1,31 @@
+# Kollontai v2.1.0 — Catálogo de Localização em Português Brasileiro
+
+[rules.KOLLONTAI-001]
+description = "Todo repositório deve obrigatoriamente possuir um arquivo de configuração .cccprc na raiz"
+messages.ERR_CCCPRC_MISSING = "Arquivo de configuração '.cccprc' ausente na raiz do repositório"
+
+[rules.KOLLONTAI-002]
+description = "O arquivo de configuração .cccprc deve declarar primary_forge_type"
+messages.ERR_CCCPRC_MISSING = "Arquivo de configuração '.cccprc' ausente"
+messages.ERR_PRIMARY_FORGE_TYPE_MISSING = "Propriedade 'primary_forge_type' não declarada no .cccprc"
+
+[rules.KOLLONTAI-003]
+description = "O arquivo de configuração .cccprc deve declarar agent_var_lang"
+messages.ERR_CCCPRC_MISSING = "Arquivo de configuração '.cccprc' ausente"
+messages.ERR_AGENT_VAR_LANG_MISSING = "Propriedade 'agent_var_lang' não declarada no .cccprc"
+
+[rules.KOLLONTAI-004]
+description = "Arquivos de documentação não devem conter termos proibidos (imperialistas)"
+messages.ERR_FORBIDDEN_TERM_FOUND = "Termo proibido encontrado no arquivo de documentação '{file}'"
+
+[rules.KOLLONTAI-005]
+description = "A raiz do repositório deve conter um arquivo VERSION canônico"
+messages.ERR_VERSION_FILE_MISSING = "Arquivo de versão 'VERSION' ausente na raiz do repositório"
+
+[rules.KOLLONTAI-006]
+description = "A raiz do repositório deve conter um arquivo CHANGELOG.md"
+messages.ERR_CHANGELOG_MISSING = "Arquivo 'CHANGELOG.md' ausente na raiz do repositório"
+
+[rules.KOLLONTAI-007]
+description = "A raiz do repositório deve conter um arquivo .editorconfig"
+messages.ERR_EDITORCONFIG_MISSING = "Arquivo '.editorconfig' ausente na raiz do repositório"
