@@ -1,0 +1,1 @@
+../spec-9-subordinar-kollontai-a-gosplan-e-rules-tridigital.md
