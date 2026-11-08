@@ -60,6 +60,16 @@ else
     FAILED=1
 fi
 
+# 6. Padrões Táticos de Conteinerização e Compose (#10)
+if grep -qF "Padrões Táticos de Conteinerização Obrigatória" "$PROFILE" && \
+   grep -qF 'user: "1000:1000"' "$PROFILE" && \
+   grep -qF 'compose.yaml' "$PROFILE"; then
+    echo "  [PASS] Padrões de conteinerização e compose presentes em profile.md"
+else
+    echo "  [FAIL] Padrões de conteinerização ausentes em profile.md"
+    FAILED=1
+fi
+
 # 6. Verificação de Mutantes
 echo "=== [MUTATION] Verificando sensibilidade a mutações ==="
 TMP_MUT=$(mktemp)
