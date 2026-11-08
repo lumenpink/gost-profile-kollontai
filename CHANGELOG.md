@@ -3,6 +3,7 @@
 ## [2.1.0] - 2026-11-08
 
 ### Features
+- **docker:** estabelecer padroes taticos de conteinerizacao e compose (closes #10)
 - **spec:** subordinar perfil Kollontai ao GOSPLAN v1.0.0 com tier tático (closes #9)
 - **rules:** migrar catálogo de validação para rules.toml com scripts Lua e locales (ref #9)
 - **hygiene:** purgar terminologias proibidas e adotar frontmatter universal (ref #9)
