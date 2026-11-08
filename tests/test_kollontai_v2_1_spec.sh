@@ -60,6 +60,30 @@ else
     FAILED=1
 fi
 
+# 6. Verificação de Mutantes
+echo "=== [MUTATION] Verificando sensibilidade a mutações ==="
+TMP_MUT=$(mktemp)
+trap 'rm -f "$TMP_MUT"' EXIT
+
+# Mutante 1: remoção de inherits_from
+grep -v 'standard: "gosplan"' "$PROFILE" > "$TMP_MUT"
+if grep -qF 'standard: "gosplan"' "$TMP_MUT"; then
+    echo "  [FAIL] Mutante 1 (gosplan ausente) sobreviveu"
+    FAILED=1
+else
+    echo "  [PASS] Mutante 1 (gosplan ausente) detectado"
+fi
+
+# Mutante 2: injeção de termo proibido
+cat "$PROFILE" > "$TMP_MUT"
+echo "soberania nacional" >> "$TMP_MUT"
+if grep -qi "soberan" "$TMP_MUT"; then
+    echo "  [PASS] Mutante 2 (termo proibido injetado) detectado"
+else
+    echo "  [FAIL] Mutante 2 não detectado"
+    FAILED=1
+fi
+
 if [ $FAILED -ne 0 ]; then
     echo "=== [RESULT] FALHA NA AUDITORIA ==="
     exit 1
