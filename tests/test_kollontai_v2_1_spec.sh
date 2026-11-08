@@ -94,6 +94,15 @@ else
     FAILED=1
 fi
 
+# Mutante 3: remoção de padrões de conteinerização
+grep -v 'user: "1000:1000"' "$PROFILE" > "$TMP_MUT"
+if grep -qF 'user: "1000:1000"' "$TMP_MUT"; then
+    echo "  [FAIL] Mutante 3 (user desprivilegiado ausente) sobreviveu"
+    FAILED=1
+else
+    echo "  [PASS] Mutante 3 (user desprivilegiado ausente) detectado"
+fi
+
 if [ $FAILED -ne 0 ]; then
     echo "=== [RESULT] FALHA NA AUDITORIA ==="
     exit 1
