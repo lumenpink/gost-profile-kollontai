@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Features
+- **rules:** implementar regra KOLLONTAI-010 smoke test pos-build (closes #12)
 - **rules:** introduzir validadores de contratos de api e containerizacao com scope project (closes #11)
 
 ## [2.1.0] - 2026-11-08
