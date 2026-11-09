@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Features
+- **rules:** criar regra KOLLONTAI-016 de proibição de dependências via path (closes #14)
 - **rules:** sanear catálogo tático com os 15 decretos de engenharia (closes #13)
 - **rules:** implementar regra KOLLONTAI-010 smoke test pos-build (closes #12)
 - **rules:** introduzir validadores de contratos de api e containerizacao com scope project (closes #11)
