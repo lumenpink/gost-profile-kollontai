@@ -125,6 +125,15 @@ else
     echo "  [PASS] Mutante 3 (user desprivilegiado ausente) detectado"
 fi
 
+# Mutante 4: KOLLONTAI-010 sem post-build
+sed 's/scope = "post-build"/scope = "project"/g' "$RULES" > "$TMP_MUT"
+if grep -qF '[rules.KOLLONTAI-010]' "$TMP_MUT" && ! grep -A 5 '\[rules.KOLLONTAI-010\]' "$TMP_MUT" | grep -qF 'scope = "post-build"'; then
+    echo "  [PASS] Mutante 4 (KOLLONTAI-010 sem escopo post-build) detectado"
+else
+    echo "  [FAIL] Mutante 4 nao detectado"
+    FAILED=1
+fi
+
 if [ $FAILED -ne 0 ]; then
     echo "=== [RESULT] FALHA NA AUDITORIA ==="
     exit 1
