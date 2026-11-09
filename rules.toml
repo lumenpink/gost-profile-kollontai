@@ -120,3 +120,63 @@ return true
 '''
 [rules.KOLLONTAI-007.messages]
 ERR_EDITORCONFIG_MISSING = "File '.editorconfig' is missing from repository root"
+
+[rules.KOLLONTAI-008]
+name = "CONTAINER-CONFORMANCE"
+severity = "error"
+scope = "project"
+docs_url = "https://kollontai.2lp.in/2.1.0/rules/KOLLONTAI-008"
+description = "If Dockerfile or compose.yaml exists, non-root user 1000:1000 and healthcheck must be configured"
+script = '''
+if gost.file_exists("compose.yaml") or gost.file_exists("docker-compose.yml") then
+    local path = gost.file_exists("compose.yaml") and "compose.yaml" or "docker-compose.yml"
+    local content = gost.read_file(path) or ""
+    if not (content:match('user:%s*"1000:1000"') or content:match("user:%s*'1000:1000'") or content:match("user:%s*1000:1000")) then
+        return false, "ERR_CONTAINER_NON_ROOT_MISSING", { file = path }
+    end
+    if not content:match("healthcheck:") then
+        return false, "ERR_CONTAINER_HEALTHCHECK_MISSING", { file = path }
+    end
+end
+if gost.file_exists("Dockerfile") then
+    local content = gost.read_file("Dockerfile") or ""
+    if not (content:match("USER%s+1000:1000") or content:match("USER%s+1000") or content:match("user:%s*\"1000:1000\"")) then
+        return false, "ERR_DOCKERFILE_NON_ROOT_MISSING", { file = "Dockerfile" }
+    end
+end
+return true
+'''
+[rules.KOLLONTAI-008.messages]
+ERR_CONTAINER_NON_ROOT_MISSING = "Container specification in '{file}' must declare non-root user '1000:1000'"
+ERR_CONTAINER_HEALTHCHECK_MISSING = "Container specification in '{file}' must declare a healthcheck probe"
+ERR_DOCKERFILE_NON_ROOT_MISSING = "Dockerfile must declare non-root user 'USER 1000:1000'"
+
+[rules.KOLLONTAI-009]
+name = "API-CONTRACT-CONFORMANCE"
+severity = "error"
+scope = "project"
+docs_url = "https://kollontai.2lp.in/2.1.0/rules/KOLLONTAI-009"
+description = "API contract files (docs/openapi.yaml or docs/external/*.yaml) must be valid OpenAPI 3.x"
+script = '''
+if gost.file_exists("docs/openapi.yaml") then
+    local content = gost.read_file("docs/openapi.yaml") or ""
+    if not content:match("openapi:%s*3%.") then
+        return false, "ERR_OPENAPI_SPEC_INVALID", { file = "docs/openapi.yaml" }
+    end
+end
+if gost.is_dir("docs/external") then
+    local files = gost.list_files("docs/external") or {}
+    for _, file in ipairs(files) do
+        if file:match("%.ya?ml$") then
+            local content = gost.read_file(file) or ""
+            if not content:match("openapi:%s*3%.") then
+                return false, "ERR_OPENAPI_SPEC_INVALID", { file = file }
+            end
+        end
+    end
+end
+return true
+'''
+[rules.KOLLONTAI-009.messages]
+ERR_OPENAPI_SPEC_INVALID = "API contract schema in '{file}' must declare OpenAPI 3.x ('openapi: 3.x.x')"
+

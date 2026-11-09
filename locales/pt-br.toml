@@ -29,3 +29,14 @@ messages.ERR_CHANGELOG_MISSING = "Arquivo 'CHANGELOG.md' ausente na raiz do repo
 [rules.KOLLONTAI-007]
 description = "A raiz do repositório deve conter um arquivo .editorconfig"
 messages.ERR_EDITORCONFIG_MISSING = "Arquivo '.editorconfig' ausente na raiz do repositório"
+
+[rules.KOLLONTAI-008]
+description = "Se houver Dockerfile ou compose.yaml, usuário não-root 1000:1000 e healthcheck devem estar configurados"
+messages.ERR_CONTAINER_NON_ROOT_MISSING = "Especificação do container em '{file}' deve declarar usuário não-root '1000:1000'"
+messages.ERR_CONTAINER_HEALTHCHECK_MISSING = "Especificação do container em '{file}' deve declarar probe de integridade (healthcheck)"
+messages.ERR_DOCKERFILE_NON_ROOT_MISSING = "Dockerfile deve declarar usuário não-root 'USER 1000:1000'"
+
+[rules.KOLLONTAI-009]
+description = "Contratos de API (docs/openapi.yaml ou docs/external/*.yaml) devem seguir a especificação OpenAPI 3.x"
+messages.ERR_OPENAPI_SPEC_INVALID = "Schema de contrato de API em '{file}' deve declarar OpenAPI 3.x ('openapi: 3.x.x')"
+
