@@ -118,6 +118,13 @@ else
     FAILED=1
 fi
 
+# Mutante 3: ID com letras (KOLLONTAI-001A)
+python3 -c '
+import re
+assert not re.match(r"^KOLLONTAI-\d{3}$", "KOLLONTAI-001A"), "Deveria rejeitar sufixo alfabético"
+' || FAILED=1
+echo "  [PASS] Mutante 3 (ID alfanumérico rejeitado) detectado"
+
 if [ $FAILED -ne 0 ]; then
     echo "=== [RESULT] FALHA NA AUDITORIA ==="
     exit 1
