@@ -126,6 +126,25 @@ assert not re.match(r"^KOLLONTAI-\d{3}$", "KOLLONTAI-001A"), "Deveria rejeitar s
 ' || FAILED=1
 echo "  [PASS] Mutante 3 (ID alfanumérico rejeitado) detectado"
 
+# Mutante 4: detecção de path dependency proibida
+python3 -c '
+import re
+test_cargo = """
+[dependencies]
+lunokhod = { path = "../lunokhod" }
+"""
+has_path = bool(re.search(r"path\s*=\s*[\x22\x27]\s*\.\.", test_cargo) or re.search(r"path\s*=\s*[\x22\x27]\s*/", test_cargo))
+assert has_path, "Mutante 4: deve detectar path = \"../lunokhod\""
+
+clean_cargo = """
+[dependencies]
+lunokhod = { version = \"0.1\", registry = \"gambi\" }
+"""
+clean_path = bool(re.search(r"path\s*=\s*[\x22\x27]\s*\.\.", clean_cargo) or re.search(r"path\s*=\s*[\x22\x27]\s*/", clean_cargo))
+assert not clean_path, "Mutante 4: nao deve alertar em registro canonico"
+' || FAILED=1
+echo "  [PASS] Mutante 4 (path dependency detectada e registry permitido) conforme"
+
 if [ $FAILED -ne 0 ]; then
     echo "=== [RESULT] FALHA NA AUDITORIA ==="
     exit 1
