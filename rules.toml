@@ -180,3 +180,32 @@ return true
 [rules.KOLLONTAI-009.messages]
 ERR_OPENAPI_SPEC_INVALID = "API contract schema in '{file}' must declare OpenAPI 3.x ('openapi: 3.x.x')"
 
+[rules.KOLLONTAI-010]
+name = "SMOKE-TEST-SANITY-POST-BUILD"
+severity = "error"
+scope = "post-build"
+docs_url = "https://kollontai.2lp.in/2.1.0/rules/KOLLONTAI-010"
+description = "Compiled binary artifacts must pass a basic smoke test without SIGSEGV or panic"
+script = '''
+local bin = gost.target_binary()
+if not bin or bin == "" then
+    return true
+end
+
+local res = gost.exec_artifact(bin, { "--help" }, 3000)
+if not res.ok then
+    if res.signal == 11 or res.exit_code == 139 then
+        return false, "ERR_SMOKE_SEGFAULT", { binary = bin }
+    elseif res.stderr and res.stderr:match("panicked at") then
+        return false, "ERR_SMOKE_PANIC", { binary = bin, error = res.stderr }
+    else
+        return false, "ERR_SMOKE_EXEC_FAILED", { binary = bin, exit_code = res.exit_code or -1 }
+    end
+end
+return true
+'''
+[rules.KOLLONTAI-010.messages]
+ERR_SMOKE_SEGFAULT = "Post-build smoke test failed: binary '{binary}' terminated with Segmentation Fault (SIGSEGV)"
+ERR_SMOKE_PANIC = "Post-build smoke test failed: binary '{binary}' panicked on startup: {error}"
+ERR_SMOKE_EXEC_FAILED = "Post-build smoke test failed: binary '{binary}' exited with non-zero status ({exit_code})"
+

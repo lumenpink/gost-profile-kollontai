@@ -40,3 +40,9 @@ messages.ERR_DOCKERFILE_NON_ROOT_MISSING = "Dockerfile deve declarar usuário n�
 description = "Contratos de API (docs/openapi.yaml ou docs/external/*.yaml) devem seguir a especificação OpenAPI 3.x"
 messages.ERR_OPENAPI_SPEC_INVALID = "Schema de contrato de API em '{file}' deve declarar OpenAPI 3.x ('openapi: 3.x.x')"
 
+[rules.KOLLONTAI-010]
+description = "Artefatos binários compilados devem passar em teste básico de smoke sem falha de segmentação ou pânico"
+messages.ERR_SMOKE_SEGFAULT = "Teste de smoke pós-compilação falhou: binário '{binary}' abortou com Falha de Segmentação (SIGSEGV)"
+messages.ERR_SMOKE_PANIC = "Teste de smoke pós-compilação falhou: binário '{binary}' entrou em pânico na inicialização: {error}"
+messages.ERR_SMOKE_EXEC_FAILED = "Teste de smoke pós-compilação falhou: binário '{binary}' encerrou com status diferente de zero ({exit_code})"
+

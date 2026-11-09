@@ -361,3 +361,13 @@ Em cumprimento à diretriz estratégica do GOSPLAN, todo serviço de backend, mi
 1. **Extensão Canônica:** A declaração de orquestração utiliza estritamente o nome `compose.yaml` (sendo expressamente banido o uso da extensão obsoleta `.yml`).
 2. **Política de Reinício e Healthcheck:** Todo serviço em produção declara `restart: unless-stopped` e uma probe ativa de integridade (`healthcheck` com `interval`, `timeout` e `retries`).
 3. **Isolamento de Rede:** Serviços internos operam em redes privadas OCI (`networks: default: internal: true` ou isoladas). Portas só devem ser expostas se o serviço for explicitamente um ponto de ingresso público.
+
+---
+
+## 9. Padrão Tático de Sanidade Pós-Compilação (*Smoke Tests*)
+
+Todo artefato executável gerado no perfil Kollontai está sujeito a validação no escopo canônico `post-build`:
+
+1. **Execução Dinâmica Rápida:** O binário gerado é executado com argumentos de inspeção inofensivos em tempo limite estrito ($\le 3$ segundos).
+2. **Prevenção de Falhas Críticas:** O teste detecta e bloqueia falhas de segmentação (`SIGSEGV` / sinal 11), *panics* imediatos de runtime ou ausência de dependências dinâmicas compartilhadas (*shared libraries* faltantes no ambiente).
+3. **Isolamento e Limpeza:** A execução não deve deixar processos zumbis ou arquivos temporários não tratados no host.
