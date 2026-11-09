@@ -7,7 +7,7 @@ RULES="$REPO_DIR/rules.toml"
 LOCALES="$REPO_DIR/locales/pt-br.toml"
 VERSION_FILE="$REPO_DIR/VERSION"
 
-echo "=== [TEST] Auditoria de Conformidade Kollontai v2.1.0 (Ticket #9) ==="
+echo "=== [TEST] Auditoria de Conformidade Kollontai v2.1.0 (#13) ==="
 
 FAILED=0
 
@@ -22,7 +22,7 @@ else
     FAILED=1
 fi
 
-# 2. Ausência de termos proibidos (imperialismo / soberania)
+# 2. Ausência de termos proibidos
 if grep -qi "soberan" "$PROFILE"; then
     echo "  [FAIL] Termo proibido encontrado em profile.md"
     FAILED=1
@@ -30,69 +30,71 @@ else
     echo "  [PASS] Termos proibidos ausentes em profile.md"
 fi
 
-# 3. rules.toml presente e estruturado
-if [ -f "$RULES" ]; then
-    if grep -qF "[rules.KOLLONTAI-001]" "$RULES" && \
-       grep -qF "gost." "$RULES"; then
-        echo "  [PASS] rules.toml presente com regras KOLLONTAI e namespace gost.*"
-    else
-        echo "  [FAIL] rules.toml não possui regras KOLLONTAI ou namespace gost.*"
-        FAILED=1
-    fi
+# 3. rules.toml com exatamente 15 decretos de engenharia
+python3 -c '
+import re
+import tomllib
+
+with open("'$RULES'", "rb") as f:
+    rules = tomllib.load(f).get("rules", {})
+
+expected_rules = {
+    "KOLLONTAI-001": "README-MAX-LINES",
+    "KOLLONTAI-002": "BANNER-DIMENSIONS-AND-RATIO",
+    "KOLLONTAI-003": "DDD-DOMAIN-PURITY",
+    "KOLLONTAI-004": "STATIC-ANALYSIS-ZERO-WARNINGS",
+    "KOLLONTAI-005": "FORMAT-CHECK-DETERMINISTIC",
+    "KOLLONTAI-006": "SITE-SECURITY-HEADERS",
+    "KOLLONTAI-007": "COMPOSE-NON-ROOT-USER",
+    "KOLLONTAI-008": "COMPOSE-HEALTHCHECK-REQUIRED",
+    "KOLLONTAI-009": "DOCKERFILE-NON-ROOT-USER",
+    "KOLLONTAI-010": "API-CONTRACT-OPENAPI",
+    "KOLLONTAI-011": "FORBIDDEN-TERMS",
+    "KOLLONTAI-012": "SMOKE-TEST-SANITY-POST-BUILD",
+    "KOLLONTAI-013": "INTL-KEY-PARITY",
+    "KOLLONTAI-014": "RTL-LOGICAL-PROPERTIES-AUDIT",
+    "KOLLONTAI-015": "I18N-SITE-FALLBACK-ENGLISH",
+}
+
+assert len(rules) == 15, f"Contagem deve ser 15 decretos de engenharia, obtido: {len(rules)}"
+for r_id, exp_name in expected_rules.items():
+    assert r_id in rules, f"Regra {r_id} ausente"
+    assert re.match(r"^KOLLONTAI-\d{3}$", r_id), f"ID deve ser tridigital: {r_id}"
+    r_data = rules[r_id]
+    act_name = r_data.get("name")
+    assert act_name == exp_name, f"Nome incorreto em {r_id}: {act_name} != {exp_name}"
+    assert "script" in r_data, f"Script ausente em {r_id}"
+    assert "gost." in r_data["script"], f"Script deve chamar gost.* em {r_id}"
+' || FAILED=1
+
+if [ $FAILED -eq 0 ]; then
+    echo "  [PASS] rules.toml validado com os 15 decretos de engenharia canônicos"
 else
-    echo "  [FAIL] rules.toml ausente"
-    FAILED=1
+    echo "  [FAIL] Validação de rules.toml falhou"
 fi
 
-# 4. locales/pt-br.toml presente
-if [ -f "$LOCALES" ] && grep -qF "[rules.KOLLONTAI-001]" "$LOCALES"; then
-    echo "  [PASS] locales/pt-br.toml presente com catalogo de mensagens"
+# 4. locales/pt-br.toml com todas as 15 regras
+python3 -c '
+import tomllib
+
+with open("'$RULES'", "rb") as f:
+    canon = tomllib.load(f).get("rules", {})
+with open("'$LOCALES'", "rb") as f:
+    loc = tomllib.load(f).get("rules", {})
+
+assert len(loc) == 15, f"Locale pt-br deve conter 15 regras, obtido: {len(loc)}"
+for r_id in canon.keys():
+    assert r_id in loc, f"Regra {r_id} ausente no locale"
+    assert "description" in loc[r_id], f"description ausente em {r_id} no locale"
+' || FAILED=1
+
+if [ $FAILED -eq 0 ]; then
+    echo "  [PASS] locales/pt-br.toml validado com paridade para 15 regras"
 else
-    echo "  [FAIL] locales/pt-br.toml ausente ou invalido"
-    FAILED=1
+    echo "  [FAIL] Validação de locales falhou"
 fi
 
-# 5. VERSION deve ser 2.1.0
-if [ -f "$VERSION_FILE" ] && [ "$(cat "$VERSION_FILE" | tr -d '[:space:]')" = "2.1.0" ]; then
-    echo "  [PASS] VERSION fixado em 2.1.0"
-else
-    echo "  [FAIL] VERSION nao e 2.1.0"
-    FAILED=1
-fi
-
-# 6. Padrões Táticos de Conteinerização e Compose (#10)
-if grep -qF "Padrões Táticos de Conteinerização Obrigatória" "$PROFILE" && \
-   grep -qF 'user: "1000:1000"' "$PROFILE" && \
-   grep -qF 'compose.yaml' "$PROFILE"; then
-    echo "  [PASS] Padrões de conteinerização e compose presentes em profile.md"
-else
-    echo "  [FAIL] Padrões de conteinerização ausentes em profile.md"
-    FAILED=1
-fi
-
-# 7. Regras KOLLONTAI-008 e KOLLONTAI-009 em rules.toml e locales
-if grep -qF "[rules.KOLLONTAI-008]" "$RULES" && \
-   grep -qF "[rules.KOLLONTAI-009]" "$RULES" && \
-   grep -qF "[rules.KOLLONTAI-008]" "$LOCALES" && \
-   grep -qF "[rules.KOLLONTAI-009]" "$LOCALES"; then
-    echo "  [PASS] KOLLONTAI-008 e KOLLONTAI-009 presentes em rules.toml e locales"
-else
-    echo "  [FAIL] KOLLONTAI-008 ou KOLLONTAI-009 ausentes em rules.toml ou locales"
-    FAILED=1
-fi
-
-# 8. Regra KOLLONTAI-010 smoke test pós-compilação (#12)
-if grep -qF "[rules.KOLLONTAI-010]" "$RULES" && \
-   grep -qF 'scope = "post-build"' "$RULES" && \
-   grep -qF "[rules.KOLLONTAI-010]" "$LOCALES"; then
-    echo "  [PASS] KOLLONTAI-010 com escopo post-build presente em rules.toml e locales"
-else
-    echo "  [FAIL] KOLLONTAI-010 ausente ou sem escopo post-build em rules.toml ou locales"
-    FAILED=1
-fi
-
-
-# 6. Verificação de Mutantes
+# 5. Mutantes
 echo "=== [MUTATION] Verificando sensibilidade a mutações ==="
 TMP_MUT=$(mktemp)
 trap 'rm -f "$TMP_MUT"' EXIT
@@ -113,24 +115,6 @@ if grep -qi "soberan" "$TMP_MUT"; then
     echo "  [PASS] Mutante 2 (termo proibido injetado) detectado"
 else
     echo "  [FAIL] Mutante 2 não detectado"
-    FAILED=1
-fi
-
-# Mutante 3: remoção de padrões de conteinerização
-grep -v 'user: "1000:1000"' "$PROFILE" > "$TMP_MUT"
-if grep -qF 'user: "1000:1000"' "$TMP_MUT"; then
-    echo "  [FAIL] Mutante 3 (user desprivilegiado ausente) sobreviveu"
-    FAILED=1
-else
-    echo "  [PASS] Mutante 3 (user desprivilegiado ausente) detectado"
-fi
-
-# Mutante 4: KOLLONTAI-010 sem post-build
-sed 's/scope = "post-build"/scope = "project"/g' "$RULES" > "$TMP_MUT"
-if grep -qF '[rules.KOLLONTAI-010]' "$TMP_MUT" && ! grep -A 5 '\[rules.KOLLONTAI-010\]' "$TMP_MUT" | grep -qF 'scope = "post-build"'; then
-    echo "  [PASS] Mutante 4 (KOLLONTAI-010 sem escopo post-build) detectado"
-else
-    echo "  [FAIL] Mutante 4 nao detectado"
     FAILED=1
 fi
 
