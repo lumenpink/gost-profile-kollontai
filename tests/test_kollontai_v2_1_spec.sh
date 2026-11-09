@@ -54,9 +54,10 @@ expected_rules = {
     "KOLLONTAI-013": "INTL-KEY-PARITY",
     "KOLLONTAI-014": "RTL-LOGICAL-PROPERTIES-AUDIT",
     "KOLLONTAI-015": "I18N-SITE-FALLBACK-ENGLISH",
+    "KOLLONTAI-016": "FORBIDDEN-PATH-DEPENDENCIES",
 }
 
-assert len(rules) == 15, f"Contagem deve ser 15 decretos de engenharia, obtido: {len(rules)}"
+assert len(rules) == 16, f"Contagem deve ser 16 decretos de engenharia, obtido: {len(rules)}"
 for r_id, exp_name in expected_rules.items():
     assert r_id in rules, f"Regra {r_id} ausente"
     assert re.match(r"^KOLLONTAI-\d{3}$", r_id), f"ID deve ser tridigital: {r_id}"
@@ -82,7 +83,7 @@ with open("'$RULES'", "rb") as f:
 with open("'$LOCALES'", "rb") as f:
     loc = tomllib.load(f).get("rules", {})
 
-assert len(loc) == 15, f"Locale pt-br deve conter 15 regras, obtido: {len(loc)}"
+assert len(loc) == 16, f"Locale pt-br deve conter 16 regras, obtido: {len(loc)}"
 for r_id in canon.keys():
     assert r_id in loc, f"Regra {r_id} ausente no locale"
     assert "description" in loc[r_id], f"description ausente em {r_id} no locale"
