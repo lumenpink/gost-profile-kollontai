@@ -1,48 +1,79 @@
-# Kollontai v2.1.0 — Catálogo de Localização em Português Brasileiro
+# Kollontai v2.1.0 — Catálogo de Tradução das Regras Táticas (pt-BR)
 
 [rules.KOLLONTAI-001]
-description = "Todo repositório deve obrigatoriamente possuir um arquivo de configuração .cccprc na raiz"
-messages.ERR_CCCPRC_MISSING = "Arquivo de configuração '.cccprc' ausente na raiz do repositório"
+description = "O arquivo README.md deve ter no máximo 50 linhas de documentação concisa"
+[rules.KOLLONTAI-001.messages]
+ERR_README_EXCEEDS_50_LINES = "README.md ultrapassa o teto de 50 linhas (encontradas {lines} linhas). Mantenha o README conciso e direcione detalhes para docs/."
 
 [rules.KOLLONTAI-002]
-description = "O arquivo de configuração .cccprc deve declarar primary_forge_type"
-messages.ERR_CCCPRC_MISSING = "Arquivo de configuração '.cccprc' ausente"
-messages.ERR_PRIMARY_FORGE_TYPE_MISSING = "Propriedade 'primary_forge_type' não declarada no .cccprc"
+description = "O banner institucional do produto deve respeitar as dimensões canônicas de 1200x630 (proporção 1.91:1)"
+[rules.KOLLONTAI-002.messages]
+ERR_BANNER_DIMENSIONS_INVALID = "O banner do produto não atende às dimensões canônicas de 1200x630 ou safe zone"
 
 [rules.KOLLONTAI-003]
-description = "O arquivo de configuração .cccprc deve declarar agent_var_lang"
-messages.ERR_CCCPRC_MISSING = "Arquivo de configuração '.cccprc' ausente"
-messages.ERR_AGENT_VAR_LANG_MISSING = "Propriedade 'agent_var_lang' não declarada no .cccprc"
+description = "Pureza de domínio: o núcleo em src/domain/ não deve importar I/O, rede ou bibliotecas de banco de dados"
+[rules.KOLLONTAI-003.messages]
+ERR_DOMAIN_IMPURE_IMPORT = "Violação de pureza de domínio: o arquivo '{file}' importa módulos externos de I/O ou rede"
 
 [rules.KOLLONTAI-004]
-description = "Arquivos de documentação não devem conter termos proibidos (imperialistas)"
-messages.ERR_FORBIDDEN_TERM_FOUND = "Termo proibido encontrado no arquivo de documentação '{file}'"
+description = "A esteira de integração contínua deve exigir zero avisos de compilação/linter (-D warnings ou flags estritas)"
+[rules.KOLLONTAI-004.messages]
+ERR_CI_ZERO_WARNINGS_NOT_ENFORCED = "A esteira de CI não impõe explicitamente tolerância zero a avisos de compilação/linter"
 
 [rules.KOLLONTAI-005]
-description = "A raiz do repositório deve conter um arquivo VERSION canônico"
-messages.ERR_VERSION_FILE_MISSING = "Arquivo de versão 'VERSION' ausente na raiz do repositório"
+description = "A esteira de CI deve validar a formatação determinística de código (fmt --check)"
+[rules.KOLLONTAI-005.messages]
+ERR_CI_FORMAT_CHECK_NOT_ENFORCED = "A esteira de CI não executa a verificação determinística de formatação de código"
 
 [rules.KOLLONTAI-006]
-description = "A raiz do repositório deve conter um arquivo CHANGELOG.md"
-messages.ERR_CHANGELOG_MISSING = "Arquivo 'CHANGELOG.md' ausente na raiz do repositório"
+description = "O site estático deve incluir cabeçalhos HTTP de segurança em site/_headers"
+[rules.KOLLONTAI-006.messages]
+ERR_SECURITY_HEADERS_MISSING = "Configuração obrigatória de segurança 'site/_headers' não encontrada"
+ERR_SECURITY_HEADERS_INCOMPLETE = "O arquivo site/_headers deve conter X-Frame-Options e X-Content-Type-Options"
 
 [rules.KOLLONTAI-007]
-description = "A raiz do repositório deve conter um arquivo .editorconfig"
-messages.ERR_EDITORCONFIG_MISSING = "Arquivo '.editorconfig' ausente na raiz do repositório"
+description = "Manifestos compose devem declarar usuário desprivilegiado '1000:1000'"
+[rules.KOLLONTAI-007.messages]
+ERR_COMPOSE_NON_ROOT_MISSING = "A especificação compose em '{file}' deve declarar usuário desprivilegiado '1000:1000'"
 
 [rules.KOLLONTAI-008]
-description = "Se houver Dockerfile ou compose.yaml, usuário não-root 1000:1000 e healthcheck devem estar configurados"
-messages.ERR_CONTAINER_NON_ROOT_MISSING = "Especificação do container em '{file}' deve declarar usuário não-root '1000:1000'"
-messages.ERR_CONTAINER_HEALTHCHECK_MISSING = "Especificação do container em '{file}' deve declarar probe de integridade (healthcheck)"
-messages.ERR_DOCKERFILE_NON_ROOT_MISSING = "Dockerfile deve declarar usuário não-root 'USER 1000:1000'"
+description = "Manifestos compose devem declarar sondas de integridade ativas (healthcheck)"
+[rules.KOLLONTAI-008.messages]
+ERR_COMPOSE_HEALTHCHECK_MISSING = "A especificação compose em '{file}' deve declarar uma sonda de healthcheck"
 
 [rules.KOLLONTAI-009]
-description = "Contratos de API (docs/openapi.yaml ou docs/external/*.yaml) devem seguir a especificação OpenAPI 3.x"
-messages.ERR_OPENAPI_SPEC_INVALID = "Schema de contrato de API em '{file}' deve declarar OpenAPI 3.x ('openapi: 3.x.x')"
+description = "Arquivos Dockerfile devem declarar usuário não-root (USER 1000:1000)"
+[rules.KOLLONTAI-009.messages]
+ERR_DOCKERFILE_NON_ROOT_MISSING = "O Dockerfile deve declarar usuário desprivilegiado 'USER 1000:1000'"
 
 [rules.KOLLONTAI-010]
-description = "Artefatos binários compilados devem passar em teste básico de smoke sem falha de segmentação ou pânico"
-messages.ERR_SMOKE_SEGFAULT = "Teste de smoke pós-compilação falhou: binário '{binary}' abortou com Falha de Segmentação (SIGSEGV)"
-messages.ERR_SMOKE_PANIC = "Teste de smoke pós-compilação falhou: binário '{binary}' entrou em pânico na inicialização: {error}"
-messages.ERR_SMOKE_EXEC_FAILED = "Teste de smoke pós-compilação falhou: binário '{binary}' encerrou com status diferente de zero ({exit_code})"
+description = "Contratos de API devem ser especificações válidas no padrão OpenAPI 3.x"
+[rules.KOLLONTAI-010.messages]
+ERR_OPENAPI_SPEC_INVALID = "O contrato de API em '{file}' deve declarar conformidade com OpenAPI 3.x ('openapi: 3.x.x')"
 
+[rules.KOLLONTAI-011]
+description = "Arquivos de documentação e markdown não devem conter termos proibidos"
+[rules.KOLLONTAI-011.messages]
+ERR_FORBIDDEN_TERM_FOUND = "Termo proibido encontrado no arquivo de documentação '{file}'"
+
+[rules.KOLLONTAI-012]
+description = "Binários compilados devem passar por smoke test básico de sanidade sem falha de segmentação ou pânico"
+[rules.KOLLONTAI-012.messages]
+ERR_SMOKE_SEGFAULT = "Falha no smoke test pós-compilação: binário '{binary}' abortou com Falha de Segmentação (SIGSEGV)"
+ERR_SMOKE_PANIC = "Falha no smoke test pós-compilação: binário '{binary}' entrou em pânico na inicialização: {error}"
+ERR_SMOKE_EXEC_FAILED = "Falha no smoke test pós-compilação: binário '{binary}' encerrou com status não-zero ({exit_code})"
+
+[rules.KOLLONTAI-013]
+description = "Paridade de chaves nos dicionários de internacionalização entre as línguas declaradas em GOSTVER"
+[rules.KOLLONTAI-013.messages]
+ERR_INTL_PARITY_MISMATCH = "Dicionários de tradução não compartilham paridade de chaves para as línguas declaradas"
+
+[rules.KOLLONTAI-014]
+description = "Propriedades lógicas CSS e atributo dir=rtl devem ser adotados quando idiomas RTL forem declarados"
+[rules.KOLLONTAI-014.messages]
+ERR_RTL_SUPPORT_MISSING = "Idioma RTL declarado no GOSTVER mas o site não adota propriedades lógicas CSS ou dir='rtl'"
+
+[rules.KOLLONTAI-015]
+description = "O roteador do site deve adotar inglês (en) como fallback padrão quando o idioma do visitante não estiver disponível"
+[rules.KOLLONTAI-015.messages]
+ERR_FALLBACK_NOT_ENGLISH = "O roteador do site em '{file}' deve configurar inglês ('en') como idioma padrão de fallback"
