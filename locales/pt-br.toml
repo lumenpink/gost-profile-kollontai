@@ -77,3 +77,8 @@ ERR_RTL_SUPPORT_MISSING = "Idioma RTL declarado no GOSTVER mas o site não adota
 description = "O roteador do site deve adotar inglês (en) como fallback padrão quando o idioma do visitante não estiver disponível"
 [rules.KOLLONTAI-015.messages]
 ERR_FALLBACK_NOT_ENGLISH = "O roteador do site em '{file}' deve configurar inglês ('en') como idioma padrão de fallback"
+
+[rules.KOLLONTAI-016]
+description = "Manifestos de pacotes não devem conter dependências apontando para caminhos do sistema de arquivos local"
+[rules.KOLLONTAI-016.messages]
+ERR_PATH_DEPENDENCY_FORBIDDEN = "Dependência local via caminho do sistema de arquivos detectada no manifesto '{file}'. Utilize registros canônicos de pacotes."

@@ -69,12 +69,12 @@ for r_id, exp_name in expected_rules.items():
 ' || FAILED=1
 
 if [ $FAILED -eq 0 ]; then
-    echo "  [PASS] rules.toml validado com os 15 decretos de engenharia canônicos"
+    echo "  [PASS] rules.toml validado com os 16 decretos de engenharia canônicos"
 else
     echo "  [FAIL] Validação de rules.toml falhou"
 fi
 
-# 4. locales/pt-br.toml com todas as 15 regras
+# 4. locales/pt-br.toml com todas as 16 regras
 python3 -c '
 import tomllib
 
@@ -90,7 +90,7 @@ for r_id in canon.keys():
 ' || FAILED=1
 
 if [ $FAILED -eq 0 ]; then
-    echo "  [PASS] locales/pt-br.toml validado com paridade para 15 regras"
+    echo "  [PASS] locales/pt-br.toml validado com paridade para 16 regras"
 else
     echo "  [FAIL] Validação de locales falhou"
 fi

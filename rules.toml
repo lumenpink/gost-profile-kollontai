@@ -344,3 +344,27 @@ return true
 '''
 [rules.KOLLONTAI-015.messages]
 ERR_FALLBACK_NOT_ENGLISH = "Website router in '{file}' must configure English ('en') as default fallback language"
+
+[rules.KOLLONTAI-016]
+name = "FORBIDDEN-PATH-DEPENDENCIES"
+severity = "error"
+scope = "project"
+docs_url = "https://kollontai.2lp.in/2.1.0/rules/KOLLONTAI-016"
+description = "Package manifests must not contain local filesystem path dependencies (path = '...')"
+script = '''
+local manifests = {"Cargo.toml", "package.json", "go.mod", "pyproject.toml"}
+for _, m in ipairs(manifests) do
+    if gost.file_exists(m) then
+        local content = gost.read_file(m) or ""
+        if m == "Cargo.toml" and (content:match('path%s*=%s*["\']%s*%.%.') or content:match('path%s*=%s*["\']%s*/')) then
+            return false, "ERR_PATH_DEPENDENCY_FORBIDDEN", { file = m }
+        end
+        if m == "package.json" and (content:match('"file:') or content:match('"link:')) then
+            return false, "ERR_PATH_DEPENDENCY_FORBIDDEN", { file = m }
+        end
+    end
+end
+return true
+'''
+[rules.KOLLONTAI-016.messages]
+ERR_PATH_DEPENDENCY_FORBIDDEN = "Local filesystem path dependency detected in manifest '{file}'. Use canonical package registries."
