@@ -70,6 +70,18 @@ else
     FAILED=1
 fi
 
+# 7. Regras KOLLONTAI-008 e KOLLONTAI-009 em rules.toml e locales
+if grep -qF "[rules.KOLLONTAI-008]" "$RULES" && \
+   grep -qF "[rules.KOLLONTAI-009]" "$RULES" && \
+   grep -qF "[rules.KOLLONTAI-008]" "$LOCALES" && \
+   grep -qF "[rules.KOLLONTAI-009]" "$LOCALES"; then
+    echo "  [PASS] KOLLONTAI-008 e KOLLONTAI-009 presentes em rules.toml e locales"
+else
+    echo "  [FAIL] KOLLONTAI-008 ou KOLLONTAI-009 ausentes em rules.toml ou locales"
+    FAILED=1
+fi
+
+
 # 6. Verificação de Mutantes
 echo "=== [MUTATION] Verificando sensibilidade a mutações ==="
 TMP_MUT=$(mktemp)
