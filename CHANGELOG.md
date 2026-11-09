@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Features
+- **rules:** introduzir validadores de contratos de api e containerizacao com scope project (closes #11)
+
 ## [2.1.0] - 2026-11-08
 
 ### Features
