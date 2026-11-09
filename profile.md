@@ -371,3 +371,28 @@ Todo artefato executável gerado no perfil Kollontai está sujeito a validação
 1. **Execução Dinâmica Rápida:** O binário gerado é executado com argumentos de inspeção inofensivos em tempo limite estrito ($\le 3$ segundos).
 2. **Prevenção de Falhas Críticas:** O teste detecta e bloqueia falhas de segmentação (`SIGSEGV` / sinal 11), *panics* imediatos de runtime ou ausência de dependências dinâmicas compartilhadas (*shared libraries* faltantes no ambiente).
 3. **Isolamento e Limpeza:** A execução não deve deixar processos zumbis ou arquivos temporários não tratados no host.
+
+
+---
+
+## 10. Decretos Regulamentadores de Engenharia (KOLLONTAI-001 a KOLLONTAI-015)
+
+O catálogo tático do perfil Kollontai estabelece parâmetros objetivos de engenharia e conformidade técnica para todos os projetos subordinados:
+
+| ID | Nome Canônico | Escopo | Descrição Sumária |
+| :--- | :--- | :--- | :--- |
+| **KOLLONTAI-001** | `README-MAX-LINES` | `project` | Teto rigoroso de 50 linhas para o arquivo `README.md`. |
+| **KOLLONTAI-002** | `BANNER-DIMENSIONS-AND-RATIO` | `project` | Banner institucional exatamente em 1200x630 (proporção 1.91:1) com safe zone. |
+| **KOLLONTAI-003** | `DDD-DOMAIN-PURITY` | `project` | Pureza de domínio: `src/domain/` com zero I/O, rede ou dependências de frameworks. |
+| **KOLLONTAI-004** | `STATIC-ANALYSIS-ZERO-WARNINGS` | `ci` | Linters e análise estática executando com zero advertências (`-D warnings` ou `--strict`). |
+| **KOLLONTAI-005** | `FORMAT-CHECK-DETERMINISTIC` | `ci` | Verificação determinística de formatação de código (`fmt --check`) na esteira. |
+| **KOLLONTAI-006** | `SITE-SECURITY-HEADERS` | `project` | Cabeçalhos de segurança HTTP em `site/_headers` (anti-sniffing e anti-framing). |
+| **KOLLONTAI-007** | `COMPOSE-NON-ROOT-USER` | `project` | Usuário desprivilegiado `user: "1000:1000"` obrigatório em manifestos compose. |
+| **KOLLONTAI-008** | `COMPOSE-HEALTHCHECK-REQUIRED` | `project` | Sonda de integridade ativa (`healthcheck:`) obrigatória em manifestos compose. |
+| **KOLLONTAI-009** | `DOCKERFILE-NON-ROOT-USER` | `project` | Usuário desprivilegiado `USER 1000:1000` obrigatório em Dockerfiles. |
+| **KOLLONTAI-010** | `API-CONTRACT-OPENAPI` | `project` | Contratos de API em `docs/openapi.yaml` ou `docs/external/` em padrão OpenAPI 3.x. |
+| **KOLLONTAI-011** | `FORBIDDEN-TERMS` | `docs` | Tabela curada de termos proibidos (sem etiqueta imperialista na norma). |
+| **KOLLONTAI-012** | `SMOKE-TEST-SANITY-POST-BUILD` | `post-build` | Smoke test pós-compilação atestando ausência de SIGSEGV (139) e panics. |
+| **KOLLONTAI-013** | `INTL-KEY-PARITY` | `project` | Paridade genérica de chaves entre dicionários das línguas listadas em `LANGUAGES`. |
+| **KOLLONTAI-014** | `RTL-LOGICAL-PROPERTIES-AUDIT` | `project` | Auditoria de propriedades lógicas CSS e atributo `dir="rtl"` para idiomas RTL. |
+| **KOLLONTAI-015** | `I18N-SITE-FALLBACK-ENGLISH` | `project` | Roteador cliente do site adota inglês (`en`) como fallback na ausência do idioma do visitante. |
