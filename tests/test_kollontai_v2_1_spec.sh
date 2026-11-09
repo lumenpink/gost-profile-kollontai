@@ -81,6 +81,16 @@ else
     FAILED=1
 fi
 
+# 8. Regra KOLLONTAI-010 smoke test pós-compilação (#12)
+if grep -qF "[rules.KOLLONTAI-010]" "$RULES" && \
+   grep -qF 'scope = "post-build"' "$RULES" && \
+   grep -qF "[rules.KOLLONTAI-010]" "$LOCALES"; then
+    echo "  [PASS] KOLLONTAI-010 com escopo post-build presente em rules.toml e locales"
+else
+    echo "  [FAIL] KOLLONTAI-010 ausente ou sem escopo post-build em rules.toml ou locales"
+    FAILED=1
+fi
+
 
 # 6. Verificação de Mutantes
 echo "=== [MUTATION] Verificando sensibilidade a mutações ==="
