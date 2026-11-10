@@ -72,9 +72,10 @@ expected_rules = {
     "KOLLONTAI-015": "I18N-SITE-FALLBACK-ENGLISH",
     "KOLLONTAI-016": "FORBIDDEN-PATH-DEPENDENCIES",
     "KOLLONTAI-017": "LICENSING-MATRIX-COMPLIANCE",
+    "KOLLONTAI-018": "GIT-HOOKS-MAESTRO-PARITY",
 }
 
-assert len(rules) == 17, f"Contagem deve ser 17 decretos de engenharia, obtido: {len(rules)}"
+assert len(rules) == 18, f"Contagem deve ser 18 decretos de engenharia, obtido: {len(rules)}"
 for r_id, exp_name in expected_rules.items():
     assert r_id in rules, f"Regra {r_id} ausente"
     assert re.match(r"^KOLLONTAI-\d{3}$", r_id), f"ID deve ser tridigital: {r_id}"
@@ -99,7 +100,7 @@ with open("'$RULES'", "rb") as f:
 with open("'$LOCALES'", "rb") as f:
     loc = tomllib.load(f).get("rules", {})
 
-assert len(loc) == 17, f"Locale pt-br deve conter 17 regras, obtido: {len(loc)}"
+assert len(loc) == 18, f"Locale pt-br deve conter 18 regras, obtido: {len(loc)}"
 for r_id in canon.keys():
     assert r_id in loc, f"Regra {r_id} ausente no locale"
     assert "description" in loc[r_id], f"description ausente em {r_id} no locale"
@@ -205,6 +206,18 @@ assert not is_valid_license("MIT License")
 assert not is_valid_license("BSD 3-Clause License")
 ' || FAILED=1
 echo "  [PASS] Mutante 7 (matriz de licenciamento e rejeição a licenças não-GOST) conforme"
+
+# Mutante 8: validação de conformidade de git hooks com o maestro
+python3 -c '
+def is_maestro_hook(content):
+    return "cccp-hook-" in content or "cccp hook" in content
+
+assert is_maestro_hook("#!/bin/sh\n# cccp-hook-version: 3.2.0\nexec cccp hook commit-msg \"$@\"")
+assert is_maestro_hook("if command -v cccp; then exec cccp hook pre-push \"$@\"; fi")
+assert not is_maestro_hook("#!/bin/sh\necho custom script without maestro")
+assert not is_maestro_hook("")
+' || FAILED=1
+echo "  [PASS] Mutante 8 (git hooks do maestro e rejeição a scripts sem assinatura) conforme"
 
 if [ $FAILED -ne 0 ]; then
     echo "=== [RESULT] FALHA NA AUDITORIA ==="
