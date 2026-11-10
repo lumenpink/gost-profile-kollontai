@@ -38,6 +38,14 @@ else
     echo "  [PASS] site/profile.md sincronizado com profile.md"
 fi
 
+# 2.2 Paridade de site/rules.toml com rules.toml
+if ! cmp -s "$RULES" "$REPO_DIR/site/rules.toml"; then
+    echo "  [FAIL] site/rules.toml diverge ou ausente em relacao a rules.toml"
+    FAILED=1
+else
+    echo "  [PASS] site/rules.toml sincronizado com rules.toml"
+fi
+
 # 3. rules.toml com exatamente 16 decretos de engenharia
 if python3 -c '
 import re
