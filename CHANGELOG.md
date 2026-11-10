@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Features
+- **rules:** normatizar paridade de git hooks com o maestro via KOLLONTAI-018 (closes #18)
 - **rules:** criar regra KOLLONTAI-017 de matriz de licenciamento (closes #17)
 - **site:** disponibilizar rules.toml em site/rules.toml (closes #16)
 - **site:** sincronizar site/profile.md e purgar termos proibidos do site (closes #15)
