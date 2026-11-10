@@ -71,9 +71,10 @@ expected_rules = {
     "KOLLONTAI-014": "RTL-LOGICAL-PROPERTIES-AUDIT",
     "KOLLONTAI-015": "I18N-SITE-FALLBACK-ENGLISH",
     "KOLLONTAI-016": "FORBIDDEN-PATH-DEPENDENCIES",
+    "KOLLONTAI-017": "LICENSING-MATRIX-COMPLIANCE",
 }
 
-assert len(rules) == 16, f"Contagem deve ser 16 decretos de engenharia, obtido: {len(rules)}"
+assert len(rules) == 17, f"Contagem deve ser 17 decretos de engenharia, obtido: {len(rules)}"
 for r_id, exp_name in expected_rules.items():
     assert r_id in rules, f"Regra {r_id} ausente"
     assert re.match(r"^KOLLONTAI-\d{3}$", r_id), f"ID deve ser tridigital: {r_id}"
@@ -83,13 +84,13 @@ for r_id, exp_name in expected_rules.items():
     assert "script" in r_data, f"Script ausente em {r_id}"
     assert "gost." in r_data["script"], f"Script deve chamar gost.* em {r_id}"
 '; then
-    echo "  [PASS] rules.toml validado com os 16 decretos de engenharia canônicos"
+    echo "  [PASS] rules.toml validado com os 17 decretos de engenharia canônicos"
 else
     echo "  [FAIL] Validação de rules.toml falhou"
     FAILED=1
 fi
 
-# 4. locales/pt-br.toml com todas as 16 regras
+# 4. locales/pt-br.toml com todas as 17 regras
 if python3 -c '
 import tomllib
 
@@ -98,7 +99,7 @@ with open("'$RULES'", "rb") as f:
 with open("'$LOCALES'", "rb") as f:
     loc = tomllib.load(f).get("rules", {})
 
-assert len(loc) == 16, f"Locale pt-br deve conter 16 regras, obtido: {len(loc)}"
+assert len(loc) == 17, f"Locale pt-br deve conter 17 regras, obtido: {len(loc)}"
 for r_id in canon.keys():
     assert r_id in loc, f"Regra {r_id} ausente no locale"
     assert "description" in loc[r_id], f"description ausente em {r_id} no locale"
