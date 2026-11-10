@@ -1,14 +1,18 @@
-# Perfil de Implementação GOST: Kollontai
+---
+standard: "kollontai"
+tier: "tactical"
+version: "2.1.0"
+locale: "pt-br"
+authority: "Standards Committee"
+published_at: "2026-11-08"
+inherits_from:
+  standard: "gosplan"
+  tier: "strategic"
+  version: "1.0.0"
+  base_url: "https://gosplan.2lp.in/1.0.0/"
+---
 
-```yaml
----
-id: kollontai
-name: "Perfil de Implementação Kollontai"
-extends: "https://gost.2lp.in/SPEC.md"
-target_gost: "2.0.0"
-status: "Ativo / Produção"
----
-```
+# Perfil de Implementação GOST: Kollontai
 
 > **Sobre este Perfil:**  
 > O perfil **Kollontai** (em homenagem à revolucionária soviética, feminista e diplomata Alexandra Kollontai) define o ferramental concreto de engenharia, a implementação oficial do Maestro de Governança (**`cccp`**), a matriz de versões de compiladores, o protocolo de auto-atualização de binários e a arquitetura de distribuição para projetos aderentes ao padrão **GOST**.  
@@ -62,7 +66,7 @@ mirror_owner = <mirror_owner>
 
 ## 2. Topologia de Forjas, Espelhos e Fronteira
 
-### 2.1 Soberania da Forja Primária e Espelhamento Passivo
+### 2.1 Autoridade da Forja Primária e Espelhamento Passivo
 1. **Unidirecionalidade Local (`Zero Dual Push`):** O ambiente local mantém o remote `origin` apontando exclusivamente para a forja primária definida no perfil final. A replicação de código para espelhos externos (Codeberg, GitHub) é responsabilidade exclusiva do *Push Mirror* automático da forja primária (`sync_on_commit: true`).
 2. **Sinalização de Espelhos e Paridade de Metadados:**
    - O comando `cccp gost sync` mantém `description` (extraído de `summary`), `website` e `topics` (extraídos de `tags` no `.gost/metadata.json`) idênticos entre a forja primária e os espelhos.
@@ -341,3 +345,55 @@ Todo repositório inicializado ou sincronizado pelo `cccp` registra seus metadad
   "website": "<public_site_url>"
 }
 ```
+
+---
+
+## 8. Padrões Táticos de Conteinerização Obrigatória de Serviços
+
+Em cumprimento à diretriz estratégica do GOSPLAN, todo serviço de backend, microsserviço ou daemon distribuído no perfil Kollontai DEVE atender aos seguintes padrões de conteinerização:
+
+### 8.1 Anatomia de Imagem (`Dockerfile` / `Containerfile`)
+1. **Multi-Stage Hermético:** O estágio de build compila o software hermeticamente; o estágio final copia apenas o binário compilado e artefatos estritamente necessários para uma imagem base minimalista (`alpine` ou `scratch`).
+2. **Execução Desprivilegiada Mandatória:** O container DEVE executar sob usuário não-root explicitamente (`user: "1000:1000"`). É proibida a execução contínua como `root`.
+3. **Imutabilidade e Efemeridade:** O sistema de arquivos do container é considerado volátil, delegando persistência a volumes nomeados ou bind-mounts explicitados no compose.
+
+### 8.2 Orquestração Declarativa Local (`compose.yaml`)
+1. **Extensão Canônica:** A declaração de orquestração utiliza estritamente o nome `compose.yaml` (sendo expressamente banido o uso da extensão obsoleta `.yml`).
+2. **Política de Reinício e Healthcheck:** Todo serviço em produção declara `restart: unless-stopped` e uma probe ativa de integridade (`healthcheck` com `interval`, `timeout` e `retries`).
+3. **Isolamento de Rede:** Serviços internos operam em redes privadas OCI (`networks: default: internal: true` ou isoladas). Portas só devem ser expostas se o serviço for explicitamente um ponto de ingresso público.
+
+---
+
+## 9. Padrão Tático de Sanidade Pós-Compilação (*Smoke Tests*)
+
+Todo artefato executável gerado no perfil Kollontai está sujeito a validação no escopo canônico `post-build`:
+
+1. **Execução Dinâmica Rápida:** O binário gerado é executado com argumentos de inspeção inofensivos em tempo limite estrito ($\le 3$ segundos).
+2. **Prevenção de Falhas Críticas:** O teste detecta e bloqueia falhas de segmentação (`SIGSEGV` / sinal 11), *panics* imediatos de runtime ou ausência de dependências dinâmicas compartilhadas (*shared libraries* faltantes no ambiente).
+3. **Isolamento e Limpeza:** A execução não deve deixar processos zumbis ou arquivos temporários não tratados no host.
+
+
+---
+
+## 10. Decretos Regulamentadores de Engenharia (KOLLONTAI-001 a KOLLONTAI-016)
+
+O catálogo tático do perfil Kollontai estabelece parâmetros objetivos de engenharia e conformidade técnica para todos os projetos subordinados:
+
+| ID | Nome Canônico | Escopo | Descrição Sumária |
+| :--- | :--- | :--- | :--- |
+| **KOLLONTAI-001** | `README-MAX-LINES` | `project` | Teto rigoroso de 50 linhas para o arquivo `README.md`. |
+| **KOLLONTAI-002** | `BANNER-DIMENSIONS-AND-RATIO` | `project` | Banner institucional exatamente em 1200x630 (proporção 1.91:1) com safe zone. |
+| **KOLLONTAI-003** | `DDD-DOMAIN-PURITY` | `project` | Pureza de domínio: `src/domain/` com zero I/O, rede ou dependências de frameworks. |
+| **KOLLONTAI-004** | `STATIC-ANALYSIS-ZERO-WARNINGS` | `ci` | Linters e análise estática executando com zero advertências (`-D warnings` ou `--strict`). |
+| **KOLLONTAI-005** | `FORMAT-CHECK-DETERMINISTIC` | `ci` | Verificação determinística de formatação de código (`fmt --check`) na esteira. |
+| **KOLLONTAI-006** | `SITE-SECURITY-HEADERS` | `project` | Cabeçalhos de segurança HTTP em `site/_headers` (anti-sniffing e anti-framing). |
+| **KOLLONTAI-007** | `COMPOSE-NON-ROOT-USER` | `project` | Usuário desprivilegiado `user: "1000:1000"` obrigatório em manifestos compose. |
+| **KOLLONTAI-008** | `COMPOSE-HEALTHCHECK-REQUIRED` | `project` | Sonda de integridade ativa (`healthcheck:`) obrigatória em manifestos compose. |
+| **KOLLONTAI-009** | `DOCKERFILE-NON-ROOT-USER` | `project` | Usuário desprivilegiado `USER 1000:1000` obrigatório em Dockerfiles. |
+| **KOLLONTAI-010** | `API-CONTRACT-OPENAPI` | `project` | Contratos de API em `docs/openapi.yaml` ou `docs/external/` em padrão OpenAPI 3.x. |
+| **KOLLONTAI-011** | `FORBIDDEN-TERMS` | `docs` | Tabela curada de termos proibidos (sem etiqueta imperialista na norma). |
+| **KOLLONTAI-012** | `SMOKE-TEST-SANITY-POST-BUILD` | `post-build` | Smoke test pós-compilação atestando ausência de SIGSEGV (139) e panics. |
+| **KOLLONTAI-013** | `INTL-KEY-PARITY` | `project` | Paridade genérica de chaves entre dicionários das línguas listadas em `LANGUAGES`. |
+| **KOLLONTAI-014** | `RTL-LOGICAL-PROPERTIES-AUDIT` | `project` | Auditoria de propriedades lógicas CSS e atributo `dir="rtl"` para idiomas RTL. |
+| **KOLLONTAI-015** | `I18N-SITE-FALLBACK-ENGLISH` | `project` | Roteador cliente do site adota inglês (`en`) como fallback na ausência do idioma do visitante. |
+| **KOLLONTAI-016** | `FORBIDDEN-PATH-DEPENDENCIES` | `project` | Proibição de dependências locais via caminho (path = "...") em manifestos de pacotes. |
