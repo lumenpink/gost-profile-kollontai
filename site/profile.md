@@ -375,7 +375,7 @@ Todo artefato executável gerado no perfil Kollontai está sujeito a validação
 
 ---
 
-## 10. Decretos Regulamentadores de Engenharia (KOLLONTAI-001 a KOLLONTAI-017)
+## 10. Decretos Regulamentadores de Engenharia (KOLLONTAI-001 a KOLLONTAI-018)
 
 O catálogo tático do perfil Kollontai estabelece parâmetros objetivos de engenharia e conformidade técnica para todos os projetos subordinados:
 
@@ -398,3 +398,4 @@ O catálogo tático do perfil Kollontai estabelece parâmetros objetivos de enge
 | **KOLLONTAI-015** | `I18N-SITE-FALLBACK-ENGLISH` | `project` | Roteador cliente do site adota inglês (`en`) como fallback na ausência do idioma do visitante. |
 | **KOLLONTAI-016** | `FORBIDDEN-PATH-DEPENDENCIES` | `project` | Proibição de dependências locais via caminho (path = "...") em manifestos de pacotes. |
 | **KOLLONTAI-017** | `LICENSING-MATRIX-COMPLIANCE` | `project` | Conformidade da matriz de licenciamento (GPL-3.0 padrão em software e satélites modulares). |
+| **KOLLONTAI-018** | `GIT-HOOKS-MAESTRO-PARITY` | `project` | Hooks essenciais do Git instalados e ativamente gerenciados pelo maestro `cccp`. |

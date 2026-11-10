@@ -85,13 +85,13 @@ for r_id, exp_name in expected_rules.items():
     assert "script" in r_data, f"Script ausente em {r_id}"
     assert "gost." in r_data["script"], f"Script deve chamar gost.* em {r_id}"
 '; then
-    echo "  [PASS] rules.toml validado com os 17 decretos de engenharia canônicos"
+    echo "  [PASS] rules.toml validado com os 18 decretos de engenharia canônicos"
 else
     echo "  [FAIL] Validação de rules.toml falhou"
     FAILED=1
 fi
 
-# 4. locales/pt-br.toml com todas as 17 regras
+# 4. locales/pt-br.toml com todas as 18 regras
 if python3 -c '
 import tomllib
 
@@ -105,7 +105,7 @@ for r_id in canon.keys():
     assert r_id in loc, f"Regra {r_id} ausente no locale"
     assert "description" in loc[r_id], f"description ausente em {r_id} no locale"
 '; then
-    echo "  [PASS] locales/pt-br.toml validado com paridade para 17 regras"
+    echo "  [PASS] locales/pt-br.toml validado com paridade para 18 regras"
 else
     echo "  [FAIL] Validação de locales falhou"
     FAILED=1

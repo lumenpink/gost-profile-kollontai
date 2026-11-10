@@ -89,3 +89,9 @@ description = "Repositórios devem conter uma licença raiz autorizada (GPL-3.0 
 ERR_LICENSE_FILE_MISSING = "Arquivo de licença raiz '{file}' é obrigatório mas não foi encontrado"
 ERR_LICENSE_INVALID_SPDX = "Licença raiz em '{file}' deve ser uma licença autorizada pelo GOST (GPL-3.0, AGPL-3.0, Apache-2.0 ou CC-BY-SA-4.0)"
 ERR_SATELLITE_LICENSE_INVALID = "Licença satélite modular '{file}' não corresponde aos termos canônicos exigidos"
+
+[rules.KOLLONTAI-018]
+description = "Os hooks do Git devem estar instalados e ativamente gerenciados pelo maestro cccp"
+[rules.KOLLONTAI-018.messages]
+ERR_GIT_HOOK_MISSING = "O git hook '{hook}' está ausente. Execute 'cccp hook install' para instalar os hooks do maestro."
+ERR_GIT_HOOK_NOT_MANAGED = "O git hook '{hook}' não é gerenciado pelo maestro cccp. Execute 'cccp hook install --force' para sincronizar os hooks."
