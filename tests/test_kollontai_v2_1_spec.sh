@@ -251,6 +251,25 @@ assert not ok and "ERR_GIT_HOOK_NOT_MANAGED: commit-msg" == err
 ' || FAILED=1
 echo "  [PASS] Mutante 8 (git hooks do maestro e rejeição a scripts sem assinatura) conforme"
 
+# Mutante 9: verificação de rejeição caso a proibição de contagem global de commits seja violada
+python3 -c '
+def validate_semver_rule(text):
+    has_rel = "desde a última tag estável" in text or "distância relativa" in text
+    has_forbid = "proibido utilizar a contagem acumulada absoluta" in text or "proibido utilizar a contagem acumulada" in text
+    return has_rel and has_forbid
+
+valid_text = """
+O contador {n} representa estritamente o número de commits desde a última tag estável. É expressamente proibido utilizar a contagem acumulada absoluta de commits do repositório.
+"""
+mutant_permissive = """
+O contador {n} representa o total de commits do repositório git rev-list --count HEAD.
+"""
+
+assert validate_semver_rule(valid_text) is True
+assert validate_semver_rule(mutant_permissive) is False
+' || FAILED=1
+echo "  [PASS] Mutante 9 (semver dev e rejeição a contagem absoluta de commits) conforme"
+
 if [ $FAILED -ne 0 ]; then
     echo "=== [RESULT] FALHA NA AUDITORIA ==="
     exit 1
