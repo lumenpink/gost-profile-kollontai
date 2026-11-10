@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Features
+- **rules:** criar regra KOLLONTAI-017 de matriz de licenciamento (closes #17)
 - **site:** disponibilizar rules.toml em site/rules.toml (closes #16)
 - **site:** sincronizar site/profile.md e purgar termos proibidos do site (closes #15)
 - **rules:** criar regra KOLLONTAI-016 de proibição de dependências via path (closes #14)
