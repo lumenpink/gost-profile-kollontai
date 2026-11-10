@@ -212,10 +212,33 @@ python3 -c '
 def is_maestro_hook(content):
     return "cccp-hook-" in content or "cccp hook" in content
 
-assert is_maestro_hook("#!/bin/sh\n# cccp-hook-version: 3.2.0\nexec cccp hook commit-msg \"$@\"")
-assert is_maestro_hook("if command -v cccp; then exec cccp hook pre-push \"$@\"; fi")
-assert not is_maestro_hook("#!/bin/sh\necho custom script without maestro")
-assert not is_maestro_hook("")
+def audit_hooks(files, required=("commit-msg", "pre-commit", "pre-push")):
+    for hook in required:
+        if hook not in files:
+            return False, f"ERR_GIT_HOOK_MISSING: {hook}"
+        if not is_maestro_hook(files[hook]):
+            return False, f"ERR_GIT_HOOK_NOT_MANAGED: {hook}"
+    return True, "OK"
+
+valid_suite = {
+    "commit-msg": "#!/bin/sh\n# cccp-hook-version: 3.2.0\nexec cccp hook commit-msg \"$@\"",
+    "pre-commit": "#!/bin/sh\n# cccp-hook-version: 3.2.0\nexec cccp hook pre-commit \"$@\"",
+    "pre-push": "if command -v cccp; then exec cccp hook pre-push \"$@\"; fi",
+}
+
+assert audit_hooks(valid_suite)[0] is True
+
+# Ausência de hook essencial
+missing_pre_push = dict(valid_suite)
+del missing_pre_push["pre-push"]
+ok, err = audit_hooks(missing_pre_push)
+assert not ok and "ERR_GIT_HOOK_MISSING: pre-push" == err
+
+# Hook com script não assinado pelo maestro
+unmanaged_commit_msg = dict(valid_suite)
+unmanaged_commit_msg["commit-msg"] = "#!/bin/sh\necho custom script without maestro"
+ok, err = audit_hooks(unmanaged_commit_msg)
+assert not ok and "ERR_GIT_HOOK_NOT_MANAGED: commit-msg" == err
 ' || FAILED=1
 echo "  [PASS] Mutante 8 (git hooks do maestro e rejeição a scripts sem assinatura) conforme"
 
