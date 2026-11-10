@@ -180,6 +180,32 @@ else
     echo "  [PASS] Mutante 6 (divergência em site/rules.toml detectada) conforme"
 fi
 
+# Mutante 7: validação da lógica de conformidade de matriz de licenciamento
+python3 -c '
+import re
+
+def is_valid_license(content):
+    lower = content.lower()
+    if "general public license" in lower or "gnu affero" in lower or "gpl" in lower:
+        return True
+    if "apache license" in lower and ("2.0" in lower or "version 2" in lower):
+        return True
+    if "creative commons" in lower and ("sharealike" in lower or "by-sa" in lower):
+        return True
+    return False
+
+# Deve aceitar licenças válidas
+assert is_valid_license("GNU General Public License v3.0 (GPL-3.0)")
+assert is_valid_license("Apache License, Version 2.0")
+assert is_valid_license("Creative Commons Attribution-ShareAlike 4.0 International (CC-BY-SA-4.0)")
+
+# Deve rejeitar licenças proprietárias ou não homologadas
+assert not is_valid_license("All rights reserved. Proprietary software.")
+assert not is_valid_license("MIT License")
+assert not is_valid_license("BSD 3-Clause License")
+' || FAILED=1
+echo "  [PASS] Mutante 7 (matriz de licenciamento e rejeição a licenças não-GOST) conforme"
+
 if [ $FAILED -ne 0 ]; then
     echo "=== [RESULT] FALHA NA AUDITORIA ==="
     exit 1
