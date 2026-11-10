@@ -169,6 +169,16 @@ else
     FAILED=1
 fi
 
+# Mutante 6: detecção de divergência em site/rules.toml
+cp "$RULES" "$TMP_MUT"
+echo "[rules.MUTANT]" >> "$TMP_MUT"
+if cmp -s "$RULES" "$TMP_MUT"; then
+    echo "  [FAIL] Mutante 6 não detectou divergência"
+    FAILED=1
+else
+    echo "  [PASS] Mutante 6 (divergência em site/rules.toml detectada) conforme"
+fi
+
 if [ $FAILED -ne 0 ]; then
     echo "=== [RESULT] FALHA NA AUDITORIA ==="
     exit 1
