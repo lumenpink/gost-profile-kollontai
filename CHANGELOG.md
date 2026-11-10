@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Features
+- **site:** sincronizar site/profile.md e purgar termos proibidos do site (closes #15)
 - **rules:** criar regra KOLLONTAI-016 de proibição de dependências via path (closes #14)
 - **rules:** sanear catálogo tático com os 15 decretos de engenharia (closes #13)
 - **rules:** implementar regra KOLLONTAI-010 smoke test pos-build (closes #12)
