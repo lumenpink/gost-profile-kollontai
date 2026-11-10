@@ -198,6 +198,7 @@ A publicação e o consumo de artefatos de distribuição respeitam os canais ca
 2. **Canal de Desenvolvimento (`dev`):**
    - Rótulo na interface: *Versão Experimental*.
    - Sufixo / padrão de versão: `x.y.z-dev.{n}+{YYYYMMDD}.{commit}`.
+   - **Semântica Canônica de `{n}` (Commit Count):** O contador `{n}` representa estritamente o número de commits desde a última tag estável (`git rev-list vX.Y.Z..HEAD --count`), mensurando a distância relativa do incremento em relação à versão estável base. É expressamente proibido utilizar a contagem acumulada absoluta de commits do repositório (`git rev-list --count HEAD`), prevenindo contaminações e saltos artificiais de numeração no SemVer. Quando o `HEAD` coincidir com a tag estável, `{n}` é `0`. Se o repositório não possuir tags estáveis anteriores (estado inaugural/gênese), `{n}` recai sobre a contagem a partir da gênese sobre a base `0.0.0-dev.{n}`.
    - Alias canônico: `*-dev-latest.*` (ex.: `{app}-dev-latest-{target}.{ext}`).
 3. **Consumo de Versões Canônicas Recomendado:**
    - Em manifestos de build (`Cargo.toml`, etc.), a fixação em versões canônicas exatas (`=`) é formalmente **recomendada** (*SHOULD* / *DEVERIA*) para garantir reprodutibilidade hermética em cascata.
