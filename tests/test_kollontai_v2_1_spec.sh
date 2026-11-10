@@ -46,6 +46,15 @@ else
     echo "  [PASS] site/rules.toml sincronizado com rules.toml"
 fi
 
+# 2.3 Convenção de SemVer para canal dev (commit count desde última tag estável - #19)
+if grep -qF 'desde a última tag estável' "$PROFILE" && \
+   grep -qi 'rev-list.*HEAD.*--count' "$PROFILE"; then
+    echo "  [PASS] Convenção SemVer do canal dev com commit count relativo conforme (#19)"
+else
+    echo "  [FAIL] Cláusula explicativa de commit count relativo ausente em profile.md (#19)"
+    FAILED=1
+fi
+
 # 3. rules.toml com exatamente 16 decretos de engenharia
 if python3 -c '
 import re
