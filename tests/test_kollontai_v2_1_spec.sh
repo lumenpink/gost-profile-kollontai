@@ -104,7 +104,7 @@ for r_id in canon.keys():
     assert r_id in loc, f"Regra {r_id} ausente no locale"
     assert "description" in loc[r_id], f"description ausente em {r_id} no locale"
 '; then
-    echo "  [PASS] locales/pt-br.toml validado com paridade para 16 regras"
+    echo "  [PASS] locales/pt-br.toml validado com paridade para 17 regras"
 else
     echo "  [FAIL] Validação de locales falhou"
     FAILED=1

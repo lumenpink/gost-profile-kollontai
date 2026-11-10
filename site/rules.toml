@@ -368,3 +368,63 @@ return true
 '''
 [rules.KOLLONTAI-016.messages]
 ERR_PATH_DEPENDENCY_FORBIDDEN = "Local filesystem path dependency detected in manifest '{file}'. Use canonical package registries."
+
+[rules.KOLLONTAI-017]
+name = "LICENSING-MATRIX-COMPLIANCE"
+severity = "error"
+scope = "project"
+docs_url = "https://kollontai.2lp.in/2.1.0/rules/KOLLONTAI-017"
+description = "Repositories must have an authorized root LICENSE (GPL-3.0 by default) and compliant modular satellites"
+script = '''
+local license_content = nil
+local license_file = nil
+if gost.file_exists("LICENSE") then
+    license_content = gost.read_file("LICENSE")
+    license_file = "LICENSE"
+elseif gost.file_exists("LICENSE.md") then
+    license_content = gost.read_file("LICENSE.md")
+    license_file = "LICENSE.md"
+end
+
+if not license_content or license_content:match("^%s*$") then
+    return false, "ERR_LICENSE_FILE_MISSING", { file = "LICENSE" }
+end
+
+local lower = license_content:lower()
+local valid_root = false
+if lower:match("general public license") or lower:match("gnu affero") or lower:match("gpl") then
+    valid_root = true
+elseif lower:match("apache license") and (lower:match("2%.0") or lower:match("version 2")) then
+    valid_root = true
+elseif lower:match("creative commons") and (lower:match("sharealike") or lower:match("by%-sa")) then
+    valid_root = true
+end
+
+if not valid_root then
+    return false, "ERR_LICENSE_INVALID_SPDX", { file = license_file }
+end
+
+-- Validate satellites if present
+local satellites = {
+    ["LICENSE-MEDIA"] = { "creative commons", "by%-sa" },
+    ["LICENSE-LOGO"] = { "creative commons", "by%-nd" },
+    ["LICENSE-APACHE"] = { "apache license" },
+}
+
+for sat_name, required_patterns in pairs(satellites) do
+    if gost.file_exists(sat_name) then
+        local sat_content = (gost.read_file(sat_name) or ""):lower()
+        for _, pat in ipairs(required_patterns) do
+            if not sat_content:match(pat) then
+                return false, "ERR_SATELLITE_LICENSE_INVALID", { file = sat_name }
+            end
+        end
+    end
+end
+
+return true
+'''
+[rules.KOLLONTAI-017.messages]
+ERR_LICENSE_FILE_MISSING = "Root license file '{file}' is required but was not found"
+ERR_LICENSE_INVALID_SPDX = "Root license in '{file}' must be an authorized GOST license (GPL-3.0, AGPL-3.0, Apache-2.0 or CC-BY-SA-4.0)"
+ERR_SATELLITE_LICENSE_INVALID = "Modular satellite license '{file}' does not match required canonical terms"

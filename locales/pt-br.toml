@@ -82,3 +82,10 @@ ERR_FALLBACK_NOT_ENGLISH = "O roteador do site em '{file}' deve configurar ingl�
 description = "Manifestos de pacotes não devem conter dependências apontando para caminhos do sistema de arquivos local"
 [rules.KOLLONTAI-016.messages]
 ERR_PATH_DEPENDENCY_FORBIDDEN = "Dependência local via caminho do sistema de arquivos detectada no manifesto '{file}'. Utilize registros canônicos de pacotes."
+
+[rules.KOLLONTAI-017]
+description = "Repositórios devem conter uma licença raiz autorizada (GPL-3.0 como padrão) e satélites modulares conformes"
+[rules.KOLLONTAI-017.messages]
+ERR_LICENSE_FILE_MISSING = "Arquivo de licença raiz '{file}' é obrigatório mas não foi encontrado"
+ERR_LICENSE_INVALID_SPDX = "Licença raiz em '{file}' deve ser uma licença autorizada pelo GOST (GPL-3.0, AGPL-3.0, Apache-2.0 ou CC-BY-SA-4.0)"
+ERR_SATELLITE_LICENSE_INVALID = "Licença satélite modular '{file}' não corresponde aos termos canônicos exigidos"
