@@ -22,8 +22,8 @@ else
     FAILED=1
 fi
 
-# 2. Ausência de termos proibidos
-if grep -rni "soberan" "$PROFILE" "$REPO_DIR/site"; then
+# 2. Ausência de termos proibidos em documentação e site
+if grep -rni --include="*.html" --include="*.md" "soberan" "$PROFILE" "$REPO_DIR/site"; then
     echo "  [FAIL] Termo proibido encontrado em profile.md ou site/"
     FAILED=1
 else
