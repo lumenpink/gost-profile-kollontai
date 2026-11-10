@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Features
+- **site:** disponibilizar rules.toml em site/rules.toml (closes #16)
 - **site:** sincronizar site/profile.md e purgar termos proibidos do site (closes #15)
 - **rules:** criar regra KOLLONTAI-016 de proibição de dependências via path (closes #14)
 - **rules:** sanear catálogo tático com os 15 decretos de engenharia (closes #13)
