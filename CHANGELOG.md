@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Refactored
+- **site:** unificar artefatos normativos sob site/{version}/ eliminando rotas duplicadas (closes #21)
+
 ### Features
 - **catalog:** disponibilizar catalogo versions.json e rotas versionadas (closes #20)
 - **docs:** esclarecer convenção de commit count relativo para canal dev (closes #19)
@@ -33,6 +36,9 @@
 - **spec:** expurgar Watchtower e obrigatoriedade de act em pre-push (ref #4)
 
 ## [Unreleased]
+
+### Refactored
+- **site:** unificar artefatos normativos sob site/{version}/ eliminando rotas duplicadas (closes #21)
 
 ### Features
 - **spec(channels):** padronizar canais stable e dev com contrato de esteira desacoplada (closes #8)
