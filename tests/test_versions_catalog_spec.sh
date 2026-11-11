@@ -24,13 +24,9 @@ check_versions_catalog() {
         fi
     fi
 
-    # 2. site/RULES.md e site/RULES.toml na raiz
-    if [ ! -f "$root/site/RULES.md" ]; then
-        echo "  [FAIL] site/RULES.md ausente na raiz do site"
-        failed=1
-    fi
-    if [ ! -f "$root/site/RULES.toml" ]; then
-        echo "  [FAIL] site/RULES.toml ausente na raiz do site"
+    # 2. Ausência estrita de artefatos normativos soltos na raiz de site/
+    if [ -f "$root/site/RULES.md" ] || [ -f "$root/site/RULES.toml" ] || [ -f "$root/site/rules.toml" ] || [ -f "$root/site/profile.md" ] || [ -f "$root/site/kollontai.md" ]; then
+        echo "  [FAIL] Artefatos normativos soltos na raiz de site/ encontrados (devem residir exclusivamente em site/{version}/)"
         failed=1
     fi
 
