@@ -30,20 +30,20 @@ else
     echo "  [PASS] Termos proibidos ausentes em profile.md e site/"
 fi
 
-# 2.1 Paridade de site/profile.md com profile.md
-if ! cmp -s "$PROFILE" "$REPO_DIR/site/profile.md"; then
-    echo "  [FAIL] site/profile.md diverge de profile.md"
+# 2.1 Paridade de site/2.1.0/RULES.md com profile.md
+if ! cmp -s "$PROFILE" "$REPO_DIR/site/2.1.0/RULES.md"; then
+    echo "  [FAIL] site/2.1.0/RULES.md diverge de profile.md"
     FAILED=1
 else
-    echo "  [PASS] site/profile.md sincronizado com profile.md"
+    echo "  [PASS] site/2.1.0/RULES.md sincronizado com profile.md"
 fi
 
-# 2.2 Paridade de site/rules.toml com rules.toml
-if ! cmp -s "$RULES" "$REPO_DIR/site/rules.toml"; then
-    echo "  [FAIL] site/rules.toml diverge ou ausente em relacao a rules.toml"
+# 2.2 Paridade de site/2.1.0/RULES.toml com rules.toml
+if ! cmp -s "$RULES" "$REPO_DIR/site/2.1.0/RULES.toml"; then
+    echo "  [FAIL] site/2.1.0/RULES.toml diverge ou ausente em relacao a rules.toml"
     FAILED=1
 else
-    echo "  [PASS] site/rules.toml sincronizado com rules.toml"
+    echo "  [PASS] site/2.1.0/RULES.toml sincronizado com rules.toml"
 fi
 
 # 2.3 Convenção de SemVer para canal dev (commit count desde última tag estável - #19)
@@ -171,7 +171,7 @@ assert not clean_path, "Mutante 4: nao deve alertar em registro canonico"
 echo "  [PASS] Mutante 4 (path dependency detectada e registry permitido) conforme"
 
 # Mutante 5: detecção de termo proibido em site/
-cat "$REPO_DIR/site/profile.md" > "$TMP_MUT"
+cat "$REPO_DIR/site/2.1.0/RULES.md" > "$TMP_MUT"
 echo "soberania nacional" >> "$TMP_MUT"
 if grep -qi "soberan" "$TMP_MUT"; then
     echo "  [PASS] Mutante 5 (termo proibido em site/ detectado) conforme"

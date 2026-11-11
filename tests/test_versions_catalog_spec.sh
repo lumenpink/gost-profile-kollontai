@@ -16,10 +16,10 @@ check_versions_catalog() {
         echo "  [FAIL] site/versions.json não encontrado"
         failed=1
     else
-        if grep -q '"latest": "2.1.0"' "$vjson" && grep -q '"standard": "kollontai"' "$vjson"; then
+        if grep -q '"latest": "2.1.0"' "$vjson" && grep -q '"standard": "kollontai"' "$vjson" && grep -q '"versions"' "$vjson"; then
             true
         else
-            echo "  [FAIL] site/versions.json não declara latest 2.1.0 ou standard kollontai"
+            echo "  [FAIL] site/versions.json não declara latest 2.1.0, standard kollontai ou lista de versions"
             failed=1
         fi
     fi
@@ -57,8 +57,6 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 
 mkdir -p "$TMP_DIR/site/2.1.0"
 cp "$REPO_ROOT/site/versions.json" "$TMP_DIR/site/"
-cp "$REPO_ROOT/site/RULES.md" "$TMP_DIR/site/"
-cp "$REPO_ROOT/site/RULES.toml" "$TMP_DIR/site/"
 cp "$REPO_ROOT/site/2.1.0/RULES.md" "$TMP_DIR/site/2.1.0/"
 cp "$REPO_ROOT/site/2.1.0/RULES.toml" "$TMP_DIR/site/2.1.0/"
 
@@ -75,17 +73,15 @@ fi
 # Restaura versions.json
 cp "$REPO_ROOT/site/versions.json" "$TMP_DIR/site/"
 
-# Mutante 2: Remoção de RULES.md na raiz
-rm "$TMP_DIR/site/RULES.md"
+# Mutante 2: Injeção de artefato espúrio na raiz
+touch "$TMP_DIR/site/RULES.md"
 if check_versions_catalog "$TMP_DIR" >/dev/null 2>&1; then
-    echo "  [FAIL] Mutante 2 (remoção de RULES.md) não foi capturado!"
+    echo "  [FAIL] Mutante 2 (artefato espúrio na raiz) não foi capturado!"
     exit 1
 else
-    echo "  [PASS] Mutante 2 (remoção de RULES.md) capturado com precisão"
+    echo "  [PASS] Mutante 2 (artefato espúrio na raiz) capturado com precisão"
 fi
-
-# Restaura RULES.md
-cp "$REPO_ROOT/site/RULES.md" "$TMP_DIR/site/"
+rm -f "$TMP_DIR/site/RULES.md"
 
 # Mutante 3: Remoção de RULES.toml em 2.1.0
 rm "$TMP_DIR/site/2.1.0/RULES.toml"
@@ -94,6 +90,19 @@ if check_versions_catalog "$TMP_DIR" >/dev/null 2>&1; then
     exit 1
 else
     echo "  [PASS] Mutante 3 (remoção de 2.1.0/RULES.toml) capturado com precisão"
+fi
+
+# Restaura RULES.toml
+cp "$REPO_ROOT/site/2.1.0/RULES.toml" "$TMP_DIR/site/2.1.0/"
+
+# Mutante 4: Remoção do campo versions de versions.json
+grep -v '"versions"' "$TMP_DIR/site/versions.json" > "$TMP_DIR/site/versions_no_ver.json"
+mv "$TMP_DIR/site/versions_no_ver.json" "$TMP_DIR/site/versions.json"
+if check_versions_catalog "$TMP_DIR" >/dev/null 2>&1; then
+    echo "  [FAIL] Mutante 4 (omissão de versions) não foi capturado!"
+    exit 1
+else
+    echo "  [PASS] Mutante 4 (omissão de versions) capturado com precisão"
 fi
 
 echo "✔ [GREEN TEST] Todas as asserções e mutações foram aprovadas com 100% de conformidade."
