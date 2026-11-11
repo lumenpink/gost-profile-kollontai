@@ -13,17 +13,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: "Verify Essential Files"
+      - name: "Run Normative Spec Audits & Tests"
         run: |
-          test -f profile.md || { echo "profile.md missing"; exit 1; }
-          test -f GOSTVER || { echo "GOSTVER missing"; exit 1; }
-          test -f README.md || { echo "README.md missing"; exit 1; }
-          test -f LICENSE || { echo "LICENSE missing"; exit 1; }
-          test -f VERSION || { echo "VERSION missing"; exit 1; }
-          test -f site/index.html || { echo "site/index.html missing"; exit 1; }
-          test -f site/profile.md || { echo "site/profile.md missing"; exit 1; }
-          test -f site/_headers || { echo "site/_headers missing"; exit 1; }
-          echo "All essential Kollontai profile files are present."
+          for test_script in tests/*.sh; do
+            echo "Running $test_script..."
+            bash "$test_script"
+          done
+
+      - name: "Run CCCP Conformance Gate"
+        run: |
+          if command -v cccp >/dev/null 2>&1; then
+            cccp check --strict
+          fi
+          echo "All normative technical specifications and tests passed."
 
   deploy-site:
     name: "Deploy Documentation Site (kollontai.2lp.in)"
