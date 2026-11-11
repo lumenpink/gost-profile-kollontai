@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Features
+- **catalog:** disponibilizar catalogo versions.json e rotas versionadas (closes #20)
 - **docs:** esclarecer convenção de commit count relativo para canal dev (closes #19)
 - **rules:** normatizar paridade de git hooks com o maestro via KOLLONTAI-018 (closes #18)
 - **rules:** criar regra KOLLONTAI-017 de matriz de licenciamento (closes #17)
