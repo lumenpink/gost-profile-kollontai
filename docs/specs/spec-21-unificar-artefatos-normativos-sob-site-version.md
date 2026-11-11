@@ -18,3 +18,8 @@ Essa duplicidade gerava rotas conflitantes, ocultava versões obsoletas e criava
 - **Fase 7 (Mutation Test):** Testes de mutação garantindo que a tentativa de consultar a raiz retorne ausência dos arquivos normativos.
 - **Fase 8 (Quality Gate):** Validação de todos os testes shell do repositório (`bash tests/*.sh`).
 - **Fase 9 (Close):** Laudo de fechamento e merge na `main`.
+
+## 4. Resultados da Execução
+- **Artefatos Expurgados:** Eliminados `site/RULES.md`, `site/RULES.toml`, `site/rules.toml`, `site/profile.md`, `site/kollontai.md`, `site/2.1.0/profile.md` e `site/2.1.0/rules.toml`.
+- **Roteamento Versionado Único:** Apenas `site/2.1.0/RULES.md` e `site/2.1.0/RULES.toml` permanecem como fontes canônicas de normas publicadas.
+- **Testes e Mutantes:** Suíte completa em `tests/*.sh` (6 scripts) executada com 100% de aprovação.
