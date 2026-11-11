@@ -95,7 +95,7 @@ fi
 # Restaura RULES.toml
 cp "$REPO_ROOT/site/2.1.0/RULES.toml" "$TMP_DIR/site/2.1.0/"
 
-# Mutante 4: Remoção do campo versions de versions.json
+# Mutante 4: Remoção do campo versions de versions.json (DD-TDD ph7)
 grep -v '"versions"' "$TMP_DIR/site/versions.json" > "$TMP_DIR/site/versions_no_ver.json"
 mv "$TMP_DIR/site/versions_no_ver.json" "$TMP_DIR/site/versions.json"
 if check_versions_catalog "$TMP_DIR" >/dev/null 2>&1; then
