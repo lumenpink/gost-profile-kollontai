@@ -16,13 +16,13 @@ inherits_from:
 
 > **Sobre este Perfil:**  
 > O perfil **Kollontai** (em homenagem à revolucionária soviética, feminista e diplomata Alexandra Kollontai) define o ferramental tático de engenharia, os contratos de interface do ecossistema de governança, a matriz de versões de compiladores, o protocolo de auto-atualização de binários e a arquitetura de distribuição para projetos aderentes ao padrão **GOST**.  
-> Ele é agnóstico a domínios pessoais e identidades individuais, servindo como perfil base para coletivos, laboratórios ou perfis autorais derivados.
+> Ele é agnóstico a domínios pessoais e identidades individuais, servindo como perfil base para coletivos, laboratórios ou perfis autorais derivados (como o perfil Lilya).
 
 ---
 
 ## 1. Contratos e Interfaces do Ecossistema Tático de Governança
 
-No perfil Kollontai, a governança definida na norma GOST é decomposta em três interfaces táticas funcionais e universais:
+No perfil Kollontai, a governança definida na norma GOST é decomposta em cinco interfaces táticas funcionais e universais:
 
 ### 1.1 Contrato da Ferramenta de Ciclo de Vida Local (Maestro Local)
 Responsável exclusivo pela orquestração do ciclo de vida local do repositório, execução das 9 fases DD-TDD, interceptação de convenções de commit, higiene de código e integração segura de branches.
@@ -64,6 +64,29 @@ Responsável pela avaliação de regras declarativas (`rules.toml`) e emissão d
 | `check [--strict] [--lang <l>] [--scope <s>] [--json]` | Avalia regras declaradas com filtros de escopo (`project`, `post-build`, etc.) e emite laudos em texto ou JSON. Retorna código 0 em aprovação e código 1 em falha (ou avisos em modo estrito). |
 | `test` | Valida sintaxe e integridade das regras declarativas do catálogo local. |
 | `eval <expressão>` | Executa script ou expressão isolada com acesso aos primitivos de runtime normativos. |
+
+### 1.4 Contrato da Ferramenta de Entrega Contínua e Despacho de Artefatos (CD)
+Responsável pelo pipeline de entrega contínua após a aprovação da integração contínua (CI), garantindo que nenhum binário de produção seja compilado ou empacotado em estações de trabalho não-reprodutíveis.
+
+#### Contrato Funcional de Entrega Contínua:
+| Operação / Capacidade | Finalidade | Contrato Funcional |
+| :--- | :--- | :--- |
+| `ingest` | **Ingestão de Staging** | Consome binários e pacotes compilados na esteira hermética de CI da forja e valida suas assinaturas e hashes criptográficos SHA-256. |
+| `dispatch` | **Despacho Externo** | Publica os artefatos nos storages autorizados de distribuição e atualiza os canais de entrega semântica (`stable`, `dev`). |
+| `purge` | **Higiene de Staging** | Remove imediatamente da forja primária os pacotes temporários de staging recém-despachados, prevenindo saturação de disco. |
+| `deploy-stack` | **Deploy de Servidores** | Aciona remotamente a atualização de serviços conteinerizados via SSH na rede privada com verificação de healthcheck e rollback automático. |
+| `cascade` | **Propagação em Cascata** | Propaga atualizações de versão a montante (*upstream*) para os manifestos de dependência dos módulos a jusante (*downstream*). |
+
+### 1.5 Contrato do Controlador de Fronteira e Sincronia de Espelhos
+Responsável pela proteção e telemetria nas fronteiras públicas do ecossistema, isolando contribuições não-confiáveis e gerando paridade entre espelhos.
+
+#### Contrato Funcional de Fronteira:
+| Operação / Capacidade | Finalidade | Contrato Funcional |
+| :--- | :--- | :--- |
+| `sync-infra` | **Sincronia de Espelhos** | Configura espelhos de envio passivo (`pushurl = no_push`), garantindo paridade de metadados, descrição e tópicos. |
+| `reconcile` | **Reconciliação Anti-Drift** | Executa conciliação periódica de eventos de forja e webhooks perdidos através de buffers de lookback. |
+| `inbox-quarantine` | **Quarentena de PRs** | Isola Pull Requests externos de espelhos públicos no namespace de quarentena `refs/heads/inbox/*` antes de qualquer execução de CI. |
+| `inbox-clean` | **Higiene de Fronteira** | Remove branches locais `inbox/*` associadas a Pull Requests já encerrados ou rejeitados. |
 
 ---
 

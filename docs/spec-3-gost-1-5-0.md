@@ -9,7 +9,7 @@
 
 ## 1. Contexto & Motivação
 
-O perfil **Kollontai** é o perfil base canônico que serve de fundação para toda a infraestrutura técnica e perfis derivados (incluindo o perfil Lumen). Com o lançamento do **GOST 1.5.0**, faz-se necessária a sincronização integral do repositório:
+O perfil **Kollontai** é o perfil base canônico que serve de fundação para toda a infraestrutura técnica e perfis derivados (incluindo o perfil Lilya). Com o lançamento do **GOST 1.5.0**, faz-se necessária a sincronização integral do repositório:
 1. Elevação da declaração de conformidade normativa em `GOSTVER` e `profile.md` para `1.5.0`.
 2. Regularização anatômica da raiz com a inclusão de `.editorconfig`.
 3. Sincronização das especificações canônicas de linguagem em `.gost/languages/shell.md`.

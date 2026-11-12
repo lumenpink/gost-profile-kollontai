@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Documentation
+- **profile:** formalizar contratos de cd e fronteira e purgar perfil lumen (closes #24)
 - **profile:** atualizar taxonomia tatico-generica de ferramentas (closes #23)
 
 ### Refactored
