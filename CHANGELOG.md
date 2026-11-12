@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixes
+- **site:** sincronizar site/2.1.0/RULES.md com profile.md para paridade de auditoria (closes #25)
+
 ### Documentation
 - **profile:** formalizar contratos de cd e fronteira e purgar perfil lumen (closes #24)
 - **profile:** atualizar taxonomia tatico-generica de ferramentas (closes #23)

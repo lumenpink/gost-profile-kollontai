@@ -15,52 +15,78 @@ inherits_from:
 # Perfil de Implementação GOST: Kollontai
 
 > **Sobre este Perfil:**  
-> O perfil **Kollontai** (em homenagem à revolucionária soviética, feminista e diplomata Alexandra Kollontai) define o ferramental concreto de engenharia, a implementação oficial do Maestro de Governança (**`cccp`**), a matriz de versões de compiladores, o protocolo de auto-atualização de binários e a arquitetura de distribuição para projetos aderentes ao padrão **GOST**.  
-> Ele é agnóstico a domínios pessoais e identidades individuais, servindo como perfil base para coletivos, laboratórios ou perfis autorais derivados (como o perfil `lumen`).
+> O perfil **Kollontai** (em homenagem à revolucionária soviética, feminista e diplomata Alexandra Kollontai) define o ferramental tático de engenharia, os contratos de interface do ecossistema de governança, a matriz de versões de compiladores, o protocolo de auto-atualização de binários e a arquitetura de distribuição para projetos aderentes ao padrão **GOST**.  
+> Ele é agnóstico a domínios pessoais e identidades individuais, servindo como perfil base para coletivos, laboratórios ou perfis autorais derivados (como o perfil Lilya).
 
 ---
 
-## 1. O Maestro Concreto: `cccp` e `.cccprc`
+## 1. Contratos e Interfaces do Ecossistema Tático de Governança
 
-No perfil Kollontai, a autoridade de governança definida na Seção 6 da norma GOST é materializada pelo binário **`cccp`** (integrado ao sistema de triagem **`divan`**).
+No perfil Kollontai, a governança definida na norma GOST é decomposta em cinco interfaces táticas funcionais e universais:
 
-### 1.1 Arquivo de Configuração `.cccprc`
-Todo repositório sob o perfil Kollontai **DEVE** declarar na raiz (ou herdar via configuração global em `$XDG_CONFIG_HOME/cccp/config.env`) os parâmetros operacionais do Maestro:
+### 1.1 Contrato da Ferramenta de Ciclo de Vida Local (Maestro Local)
+Responsável exclusivo pela orquestração do ciclo de vida local do repositório, execução das 9 fases DD-TDD, interceptação de convenções de commit, higiene de código e integração segura de branches.
 
-```ini
-# Idioma primário para triagem de tickets (divan), Laudo da Fase 9 e fallback de i18n
-agent_var_lang = portuguese
-
-# Diretivas de Forja Primária (Sobrescritas pelo perfil filho ou pelo repositório)
-primary_forge_type = forgejo
-primary_owner = <owner>
-primary_repo = <slug>
-
-# Espelhos Passivos e Ingestão de Fronteira (Separados por vírgula: codeberg,github)
-mirrors = codeberg,github
-mirror_owner = <mirror_owner>
-```
-
-### 1.2 Mapeamento de Comandos do Maestro (`cccp`)
-É estritamente proibido invocar comandos brutos de mutação do Git ou CLIs de terceiros (`tea`, `gh`, `glab`). O ciclo de vida completo opera via `cccp`:
-
-| Subcomando `cccp` | Fase / Escopo | Ação Determinística Executada pelo Maestro |
+#### Contrato de Comandos do Maestro Local:
+| Comando / Ação | Fase / Escopo | Contrato Funcional |
 | :--- | :---: | :--- |
-| `cccp init --slug <s> ...` | **Dia Zero** | Cria repo local (`main`), provisiona forja primária e espelhos (`pushurl = no_push`), abre o Ticket `#1` (`chore`), gera anatomia GOST + `.gost/metadata.json`, comita `(closes #1 - ph9)` com Laudo de Gênese, fecha o Ticket `#1` e faz o primeiro push. |
-| `cccp ticket create` | **Fase 1** | Cria a issue na forja primária (com tipo, contexto e critérios de aceite) e sincroniza o cache local em `.git/cccp/tickets/<id>.json`. |
-| `cccp divan` | **Fase 1** | Sessão assistida de triagem, quebra de épicos e refinamento de tickets. |
-| `cccp start <id> [--base <b>]` | **Fase 2** | Lê os metadados do ticket `#<id>`, atualiza a branch base (`main`, `vN` ou `epic/*`) e faz checkout automático para `<tipo>/<id>-<slug>`. |
-| `cccp status` | **Fases 1–9** | Inspeciona o histórico da branch ativa e exibe o ticket atual, a fase alcançada (`ph3`..`ph9`) e o próximo passo obrigatório. |
-| `cccp commit "<resumo>"` | **Fases 3–8** | Deduz o `<id>` e a fase atual (`ph3`..`ph8`), valida as travas da fase (bloqueia código em `ph3`; exige falha de teste em `ph4`; exige sucesso em `ph5`; impõe ordem `test` $\to$ `refactor` em `ph7`) e formata `<tipo>: <resumo> (ref #<id> - ph<N>)`. |
-| `cccp mutate` | **Fase 7** | Executa a ferramenta de teste de mutação da linguagem ativa restrita ao diff da branch (`git diff <base>..HEAD`). |
-| `cccp hygiene` / `cccp fix` | **Fase 8** | Executa instantaneamente o linter estático (`-D warnings`) e o verificador/aplicador de formatação determinística das linguagens declaradas no `GOSTVER`. |
-| `cccp close "<resumo>"` | **Fase 9** | Exige o corpo estruturado com o **Laudo Textual de Resolução** (`[Resumo]:`, `[Solução]:`, `[Validação]:`), valida a atualização de `CHANGELOG.md`/`site/` e grava o commit final `(closes #<id> - ph9)`. |
-| `cccp merge` | **Pós-Fase 9** | Verifica o cumprimento das fases e do Fast Hygiene, integra a branch na base (`main`, `vN` ou `epic/*`), posta o Laudo do commit `ph9` como comentário oficial no ticket encerrando-o na forja e remove a branch local. |
-| `cccp epic start|finish <slug>` | **Épicos** | Cria ou finaliza branches persistentes de integração (`epic/<slug>`) para reescritas multi-ticket. |
-| `cccp push [--multidev]` | **Publicação** | Bloqueia push de branches efêmeras de ticket (salvo `--multidev`) e envia branches persistentes (`main`, `vN`, `epic/*`) para o `origin`. |
-| `cccp release <patch|minor|major>` | **Release** | Executa auditoria pré-tag em container (`act`), consolida o `CHANGELOG.md`, atualiza o `VERSION`, assina a tag Git e publica. |
-| `cccp gost sync | check` | **Governança** | Resolve a cascata de perfis (`extends`), propaga o `.gost/metadata.json` e executa as auditorias determinísticas do `rules.json`. |
-| `cccp inbox list | review | accept` | **Fronteira** | Gerencia contribuições externas isoladas no namespace de quarentena `refs/heads/inbox/*`. |
+| `start <id> [--base <b>]` | **Fase 2** | Lê os metadados do ticket `#<id>`, atualiza a base (`main`, `vN` ou `epic/*`) e cria/alterna para a branch de trabalho `<tipo>/<id>-<slug>`. |
+| `status` | **Fases 1–9** | Inspeciona o histórico da branch ativa, audita a fase alcançada (`ph3`..`ph9`) e indica o próximo passo obrigatório. |
+| `commit "<resumo>"` | **Fases 3–8** | Deduz o ticket e a fase atual (`ph3`..`ph8`), valida as travas da fase e grava o commit convencional com `<tipo>: <resumo> (ref #<id> - ph<N>)`. |
+| `mutate` | **Fase 7** | Executa a ferramenta de teste de mutação da linguagem restrita ao diff da branch. |
+| `hygiene` / `fix` | **Fase 8** | Executa formatadores determinísticos e linters estáticos com tolerância zero a avisos (`-D warnings`). |
+| `close "<resumo>"` | **Fase 9** | Exige o corpo com o **Laudo Textual de Resolução** (`[Resumo]:`, `[Solução]:`, `[Validação]:`) e grava o commit canônico de fechamento `(closes #<id> - ph9)`. |
+| `merge` | **Pós-Fase 9** | Valida a presença da tag canônica `(closes #<id>)` e integra localmente a branch de trabalho na base (`main`), eliminando a branch local efêmera. |
+| `push [--multidev]` | **Publicação** | Bloqueia push de branches efêmeras de ticket e envia branches persistentes (`main`, `vN`, `epic/*`) ao remote autorizado. |
+| `release <patch|minor|major>` | **Release** | Executa auditoria pré-tag, consolida `CHANGELOG.md`, atualiza `VERSION` e sela a tag semântica. |
+
+### 1.2 Contrato da Ferramenta de Governança de Forja e Abastecimento
+Responsável pela interface com forjas remotas (API), ciclo de vida de issues/tickets, triagem assistida e catalogação multi-repositório.
+
+#### Contrato de Comandos de Forja e Abastecimento:
+| Comando / Ação | Finalidade | Contrato Funcional |
+| :--- | :--- | :--- |
+| `init` / `new` | **Dia Zero** | Inicializa repositório local e remoto na forja primária, gera anatomia inicial e registra no catálogo. |
+| `ticket create` | **Abertura** | Cria issue na forja com tipo semântico, contexto e critérios de aceite. |
+| `ticket list` | **Consulta** | Lista issues ativas com filtros por estado, marco ou responsável. |
+| `ticket comment` | **Comentário** | Insere anotações ou laudos de progresso na issue remota. |
+| `ticket close` | **Encerramento** | Fecha formalmente a issue na forja com mensagem conclusiva. |
+| `divan` / `triage` | **Triagem Assistida** | Sessão interativa assistida por modelo de inteligência para refinamento e planejamento. |
+| `catalog scan` / `list` | **Inventário** | Varre workspaces e cataloga repositórios e seus metadados (`.gost/metadata.json`). |
+| `batch push` | **Operação em Lote** | Executa envio de atualizações sincronizadas através dos repositórios do catálogo. |
+
+### 1.3 Contrato do Validador Normativo de Conformidade
+Responsável pela avaliação de regras declarativas (`rules.toml`) e emissão de laudos padronizados de conformidade.
+
+#### Contrato de Comandos do Validador:
+| Comando / Ação | Contrato Funcional |
+| :--- | :--- |
+| `check [--strict] [--lang <l>] [--scope <s>] [--json]` | Avalia regras declaradas com filtros de escopo (`project`, `post-build`, etc.) e emite laudos em texto ou JSON. Retorna código 0 em aprovação e código 1 em falha (ou avisos em modo estrito). |
+| `test` | Valida sintaxe e integridade das regras declarativas do catálogo local. |
+| `eval <expressão>` | Executa script ou expressão isolada com acesso aos primitivos de runtime normativos. |
+
+### 1.4 Contrato da Ferramenta de Entrega Contínua e Despacho de Artefatos (CD)
+Responsável pelo pipeline de entrega contínua após a aprovação da integração contínua (CI), garantindo que nenhum binário de produção seja compilado ou empacotado em estações de trabalho não-reprodutíveis.
+
+#### Contrato Funcional de Entrega Contínua:
+| Operação / Capacidade | Finalidade | Contrato Funcional |
+| :--- | :--- | :--- |
+| `ingest` | **Ingestão de Staging** | Consome binários e pacotes compilados na esteira hermética de CI da forja e valida suas assinaturas e hashes criptográficos SHA-256. |
+| `dispatch` | **Despacho Externo** | Publica os artefatos nos storages autorizados de distribuição e atualiza os canais de entrega semântica (`stable`, `dev`). |
+| `purge` | **Higiene de Staging** | Remove imediatamente da forja primária os pacotes temporários de staging recém-despachados, prevenindo saturação de disco. |
+| `deploy-stack` | **Deploy de Servidores** | Aciona remotamente a atualização de serviços conteinerizados via SSH na rede privada com verificação de healthcheck e rollback automático. |
+| `cascade` | **Propagação em Cascata** | Propaga atualizações de versão a montante (*upstream*) para os manifestos de dependência dos módulos a jusante (*downstream*). |
+
+### 1.5 Contrato do Controlador de Fronteira e Sincronia de Espelhos
+Responsável pela proteção e telemetria nas fronteiras públicas do ecossistema, isolando contribuições não-confiáveis e gerando paridade entre espelhos.
+
+#### Contrato Funcional de Fronteira:
+| Operação / Capacidade | Finalidade | Contrato Funcional |
+| :--- | :--- | :--- |
+| `sync-infra` | **Sincronia de Espelhos** | Configura espelhos de envio passivo (`pushurl = no_push`), garantindo paridade de metadados, descrição e tópicos. |
+| `reconcile` | **Reconciliação Anti-Drift** | Executa conciliação periódica de eventos de forja e webhooks perdidos através de buffers de lookback. |
+| `inbox-quarantine` | **Quarentena de PRs** | Isola Pull Requests externos de espelhos públicos no namespace de quarentena `refs/heads/inbox/*` antes de qualquer execução de CI. |
+| `inbox-clean` | **Higiene de Fronteira** | Remove branches locais `inbox/*` associadas a Pull Requests já encerrados ou rejeitados. |
 
 ---
 
@@ -312,7 +338,7 @@ A página raiz atua como roteador leve para os 10 subdiretórios de idioma (`en`
 </script>
 ```
 
-### 6.2 Geração Automatizada do Banner Minimalista (`cccp site banner`)
+### 6.2 Geração Determinística do Banner Minimalista
 O banner `site/assets/og_preview.png` (`1200 × 630 px`, Safe Zone 4:3 de `720px–840px` × `500px`) é gerado deterministicamente a partir do `.gost/metadata.json`:
 * Renderiza o fundo com `theme.bg_color` e detalhes de contraste com `theme.accent_color`.
 * Posiciona o `icon` oficial e imprime exclusivamente a chamada curta **`{title} — {tagline}`** ($\le 65$ caracteres), sem textos secundários.
@@ -331,7 +357,7 @@ O perfil Kollontai estabelece o contrato de renderização do rodapé nas 10 lí
 
 ## 7. Catálogo Local de Descoberta (`~/src/catalog.json`)
 
-Todo repositório inicializado ou sincronizado pelo `cccp` registra seus metadados extraídos do `.gost/metadata.json` no índice central da estação de trabalho (`~/src/catalog.json`):
+Todo repositório inicializado ou sincronizado pelo ferramental de governança registra seus metadados extraídos do `.gost/metadata.json` no índice central da estação de trabalho (`~/src/catalog.json`):
 
 ```json
 {
