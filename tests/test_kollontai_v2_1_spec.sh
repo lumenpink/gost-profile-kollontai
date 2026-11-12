@@ -7,7 +7,7 @@ RULES="$REPO_DIR/rules.toml"
 LOCALES="$REPO_DIR/locales/pt-br.toml"
 VERSION_FILE="$REPO_DIR/VERSION"
 
-echo "=== [TEST] Auditoria de Conformidade Kollontai v2.1.0 (#13) ==="
+echo "=== [TEST] Auditoria de Conformidade Kollontai v2.1.0 (#13, #25) ==="
 
 FAILED=0
 
