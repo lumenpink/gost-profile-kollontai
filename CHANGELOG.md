@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Documentation
+- **profile:** atualizar taxonomia tatico-generica de ferramentas (closes #23)
+
 ### Refactored
 - **site:** unificar artefatos normativos sob site/{version}/ eliminando rotas duplicadas (closes #21)
 
