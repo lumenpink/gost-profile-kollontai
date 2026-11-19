@@ -326,128 +326,242 @@
     </header>
 
     <article>
+<hr />
+<p>standard: "kollontai"<br />
+tier: "tactical"<br />
+version: "2.1.0"<br />
+locale: "pt-br"<br />
+authority: "Standards Committee"<br />
+published_at: "2026-11-08"<br />
+inherits_from:<br />
+  standard: "gosplan"<br />
+  tier: "strategic"<br />
+  version: "1.0.0"<br />
+  base_url: "https://gosplan.2lp.in/1.0.0/"</p>
+<hr />
 <h1 id="perfil-de-implementacao-gost-kollontai">Perfil de Implementação GOST: Kollontai</h1>
-<pre><code class="language-yaml">---
-id: kollontai
-name: &quot;Perfil de Implementação Kollontai&quot;
-extends: &quot;https://gost.2lp.in/SPEC.md&quot;
-target_gost: &quot;2.0.0&quot;
-status: &quot;Ativo / Produção&quot;
----
-</code></pre>
 <blockquote>
 <p><strong>Sobre este Perfil:</strong><br />
-O perfil <strong>Kollontai</strong> (em homenagem à revolucionária soviética, feminista e diplomata Alexandra Kollontai) define o ferramental concreto de engenharia, a implementação oficial do Maestro de Governança (<strong><code>cccp</code></strong>), a matriz de versões de compiladores, o protocolo de auto-atualização de binários e a arquitetura de distribuição para projetos aderentes ao padrão <strong>GOST</strong>.<br />
-Ele é agnóstico a domínios pessoais e identidades individuais, servindo como perfil base para coletivos, laboratórios ou perfis autorais derivados (como o perfil <code>lumen</code>).</p>
+O perfil <strong>Kollontai</strong> (em homenagem à revolucionária soviética, feminista e diplomata Alexandra Kollontai) define o ferramental tático de engenharia, os contratos de interface do ecossistema de governança, a matriz de versões de compiladores, o protocolo de auto-atualização de binários e a arquitetura de distribuição para projetos aderentes ao padrão <strong>GOST</strong>.<br />
+Ele é agnóstico a domínios pessoais e identidades individuais, servindo como perfil base para coletivos, laboratórios ou perfis autorais derivados (como o perfil Lilya).</p>
 </blockquote>
 <hr />
-<h2 id="1-o-maestro-concreto-cccp-e-cccprc">1. O Maestro Concreto: <code>cccp</code> e <code>.cccprc</code></h2>
-<p>No perfil Kollontai, a autoridade de governança definida na Seção 6 da norma GOST é materializada pelo binário <strong><code>cccp</code></strong> (integrado ao sistema de triagem <strong><code>divan</code></strong>).</p>
-<h3 id="11-arquivo-de-configuracao-cccprc">1.1 Arquivo de Configuração <code>.cccprc</code></h3>
-<p>Todo repositório sob o perfil Kollontai <strong>DEVE</strong> declarar na raiz (ou herdar via configuração global em <code>$XDG_CONFIG_HOME/cccp/config.env</code>) os parâmetros operacionais do Maestro:</p>
-<pre><code class="language-ini"># Idioma primário para triagem de tickets (divan), Laudo da Fase 9 e fallback de i18n
-agent_var_lang = portuguese
-
-# Diretivas de Forja Primária (Sobrescritas pelo perfil filho ou pelo repositório)
-primary_forge_type = forgejo
-primary_owner = &lt;owner&gt;
-primary_repo = &lt;slug&gt;
-
-# Espelhos Passivos e Ingestão de Fronteira (Separados por vírgula: codeberg,github)
-mirrors = codeberg,github
-mirror_owner = &lt;mirror_owner&gt;
-</code></pre>
-<h3 id="12-mapeamento-de-comandos-do-maestro-cccp">1.2 Mapeamento de Comandos do Maestro (<code>cccp</code>)</h3>
-<p>É estritamente proibido invocar comandos brutos de mutação do Git ou CLIs de terceiros (<code>tea</code>, <code>gh</code>, <code>glab</code>). O ciclo de vida completo opera via <code>cccp</code>:</p>
+<h2 id="1-contratos-e-interfaces-do-ecossistema-tatico-de-governanca">1. Contratos e Interfaces do Ecossistema Tático de Governança</h2>
+<p>No perfil Kollontai, a governança definida na norma GOST é decomposta em cinco interfaces táticas funcionais e universais:</p>
+<h3 id="11-contrato-da-ferramenta-de-ciclo-de-vida-local-maestro-local">1.1 Contrato da Ferramenta de Ciclo de Vida Local (Maestro Local)</h3>
+<p>Responsável exclusivo pela orquestração do ciclo de vida local do repositório, execução das 9 fases DD-TDD, interceptação de convenções de commit, higiene de código e integração segura de branches.</p>
+<h4 id="contrato-de-comandos-do-maestro-local">Contrato de Comandos do Maestro Local:</h4>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Subcomando <code>cccp</code></th>
+<th style="text-align: left;">Comando / Ação</th>
 <th style="text-align: center;">Fase / Escopo</th>
-<th style="text-align: left;">Ação Determinística Executada pelo Maestro</th>
+<th style="text-align: left;">Contrato Funcional</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>cccp init --slug &lt;s&gt; ...</code></td>
-<td style="text-align: center;"><strong>Dia Zero</strong></td>
-<td style="text-align: left;">Cria repo local (<code>main</code>), provisiona forja primária e espelhos (<code>pushurl = no_push</code>), abre o Ticket <code>#1</code> (<code>chore</code>), gera anatomia GOST + <code>.gost/metadata.json</code>, comita <code>(closes #1 - ph9)</code> com Laudo de Gênese, fecha o Ticket <code>#1</code> e faz o primeiro push.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>cccp ticket create</code></td>
-<td style="text-align: center;"><strong>Fase 1</strong></td>
-<td style="text-align: left;">Cria a issue na forja primária (com tipo, contexto e critérios de aceite) e sincroniza o cache local em <code>.git/cccp/tickets/&lt;id&gt;.json</code>.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>cccp divan</code></td>
-<td style="text-align: center;"><strong>Fase 1</strong></td>
-<td style="text-align: left;">Sessão assistida de triagem, quebra de épicos e refinamento de tickets.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>cccp start &lt;id&gt; [--base &lt;b&gt;]</code></td>
+<td style="text-align: left;"><code>start &lt;id&gt; [--base &lt;b&gt;]</code></td>
 <td style="text-align: center;"><strong>Fase 2</strong></td>
-<td style="text-align: left;">Lê os metadados do ticket <code>#&lt;id&gt;</code>, atualiza a branch base (<code>main</code>, <code>vN</code> ou <code>epic/*</code>) e faz checkout automático para <code>&lt;tipo&gt;/&lt;id&gt;-&lt;slug&gt;</code>.</td>
+<td style="text-align: left;">Lê os metadados do ticket <code>#&lt;id&gt;</code>, atualiza a base (<code>main</code>, <code>vN</code> ou <code>epic/*</code>) e cria/alterna para a branch de trabalho <code>&lt;tipo&gt;/&lt;id&gt;-&lt;slug&gt;</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>cccp status</code></td>
+<td style="text-align: left;"><code>status</code></td>
 <td style="text-align: center;"><strong>Fases 1–9</strong></td>
-<td style="text-align: left;">Inspeciona o histórico da branch ativa e exibe o ticket atual, a fase alcançada (<code>ph3</code>..<code>ph9</code>) e o próximo passo obrigatório.</td>
+<td style="text-align: left;">Inspeciona o histórico da branch ativa, audita a fase alcançada (<code>ph3</code>..<code>ph9</code>) e indica o próximo passo obrigatório.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>cccp commit "&lt;resumo&gt;"</code></td>
+<td style="text-align: left;"><code>commit "&lt;resumo&gt;"</code></td>
 <td style="text-align: center;"><strong>Fases 3–8</strong></td>
-<td style="text-align: left;">Deduz o <code>&lt;id&gt;</code> e a fase atual (<code>ph3</code>..<code>ph8</code>), valida as travas da fase (bloqueia código em <code>ph3</code>; exige falha de teste em <code>ph4</code>; exige sucesso em <code>ph5</code>; impõe ordem <code>test</code> $\to$ <code>refactor</code> em <code>ph7</code>) e formata <code>&lt;tipo&gt;: &lt;resumo&gt; (ref #&lt;id&gt; - ph&lt;N&gt;)</code>.</td>
+<td style="text-align: left;">Deduz o ticket e a fase atual (<code>ph3</code>..<code>ph8</code>), valida as travas da fase e grava o commit convencional com <code>&lt;tipo&gt;: &lt;resumo&gt; (ref #&lt;id&gt; - ph&lt;N&gt;)</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>cccp mutate</code></td>
+<td style="text-align: left;"><code>mutate</code></td>
 <td style="text-align: center;"><strong>Fase 7</strong></td>
-<td style="text-align: left;">Executa a ferramenta de teste de mutação da linguagem ativa restrita ao diff da branch (<code>git diff &lt;base&gt;..HEAD</code>).</td>
+<td style="text-align: left;">Executa a ferramenta de teste de mutação da linguagem restrita ao diff da branch.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>cccp hygiene</code> / <code>cccp fix</code></td>
+<td style="text-align: left;"><code>hygiene</code> / <code>fix</code></td>
 <td style="text-align: center;"><strong>Fase 8</strong></td>
-<td style="text-align: left;">Executa instantaneamente o linter estático (<code>-D warnings</code>) e o verificador/aplicador de formatação determinística das linguagens declaradas no <code>GOSTVER</code>.</td>
+<td style="text-align: left;">Executa formatadores determinísticos e linters estáticos com tolerância zero a avisos (<code>-D warnings</code>).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>cccp close "&lt;resumo&gt;"</code></td>
+<td style="text-align: left;"><code>close "&lt;resumo&gt;"</code></td>
 <td style="text-align: center;"><strong>Fase 9</strong></td>
-<td style="text-align: left;">Exige o corpo estruturado com o <strong>Laudo Textual de Resolução</strong> (<code>[Resumo]:</code>, <code>[Solução]:</code>, <code>[Validação]:</code>), valida a atualização de <code>CHANGELOG.md</code>/<code>site/</code> e grava o commit final <code>(closes #&lt;id&gt; - ph9)</code>.</td>
+<td style="text-align: left;">Exige o corpo com o <strong>Laudo Textual de Resolução</strong> (<code>[Resumo]:</code>, <code>[Solução]:</code>, <code>[Validação]:</code>) e grava o commit canônico de fechamento <code>(closes #&lt;id&gt; - ph9)</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>cccp merge</code></td>
+<td style="text-align: left;"><code>merge</code></td>
 <td style="text-align: center;"><strong>Pós-Fase 9</strong></td>
-<td style="text-align: left;">Verifica o cumprimento das fases e do Fast Hygiene, integra a branch na base (<code>main</code>, <code>vN</code> ou <code>epic/*</code>), posta o Laudo do commit <code>ph9</code> como comentário oficial no ticket encerrando-o na forja e remove a branch local.</td>
+<td style="text-align: left;">Valida a presença da tag canônica <code>(closes #&lt;id&gt;)</code> e integra localmente a branch de trabalho na base (<code>main</code>), eliminando a branch local efêmera.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>cccp epic start|finish &lt;slug&gt;</code></td>
-<td style="text-align: center;"><strong>Épicos</strong></td>
-<td style="text-align: left;">Cria ou finaliza branches persistentes de integração (<code>epic/&lt;slug&gt;</code>) para reescritas multi-ticket.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>cccp push [--multidev]</code></td>
+<td style="text-align: left;"><code>push [--multidev]</code></td>
 <td style="text-align: center;"><strong>Publicação</strong></td>
-<td style="text-align: left;">Bloqueia push de branches efêmeras de ticket (salvo <code>--multidev</code>) e envia branches persistentes (<code>main</code>, <code>vN</code>, <code>epic/*</code>) para o <code>origin</code>.</td>
+<td style="text-align: left;">Bloqueia push de branches efêmeras de ticket e envia branches persistentes (<code>main</code>, <code>vN</code>, <code>epic/*</code>) ao remote autorizado.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>cccp release &lt;patch|minor|major&gt;</code></td>
+<td style="text-align: left;"><code>release &lt;patch|minor|major&gt;</code></td>
 <td style="text-align: center;"><strong>Release</strong></td>
-<td style="text-align: left;">Executa auditoria pré-tag em container (<code>act</code>), consolida o <code>CHANGELOG.md</code>, atualiza o <code>VERSION</code>, assina a tag Git e publica.</td>
+<td style="text-align: left;">Executa auditoria pré-tag, consolida <code>CHANGELOG.md</code>, atualiza <code>VERSION</code> e sela a tag semântica.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-contrato-da-ferramenta-de-governanca-de-forja-e-abastecimento">1.2 Contrato da Ferramenta de Governança de Forja e Abastecimento</h3>
+<p>Responsável pela interface com forjas remotas (API), ciclo de vida de issues/tickets, triagem assistida e catalogação multi-repositório.</p>
+<h4 id="contrato-de-comandos-de-forja-e-abastecimento">Contrato de Comandos de Forja e Abastecimento:</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Comando / Ação</th>
+<th style="text-align: left;">Finalidade</th>
+<th style="text-align: left;">Contrato Funcional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>init</code> / <code>new</code></td>
+<td style="text-align: left;"><strong>Dia Zero</strong></td>
+<td style="text-align: left;">Inicializa repositório local e remoto na forja primária, gera anatomia inicial e registra no catálogo.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>cccp gost sync | check</code></td>
-<td style="text-align: center;"><strong>Governança</strong></td>
-<td style="text-align: left;">Resolve a cascata de perfis (<code>extends</code>), propaga o <code>.gost/metadata.json</code> e executa as auditorias determinísticas do <code>rules.json</code>.</td>
+<td style="text-align: left;"><code>ticket create</code></td>
+<td style="text-align: left;"><strong>Abertura</strong></td>
+<td style="text-align: left;">Cria issue na forja com tipo semântico, contexto e critérios de aceite.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>cccp inbox list | review | accept</code></td>
-<td style="text-align: center;"><strong>Fronteira</strong></td>
-<td style="text-align: left;">Gerencia contribuições externas isoladas no namespace de quarentena <code>refs/heads/inbox/*</code>.</td>
+<td style="text-align: left;"><code>ticket list</code></td>
+<td style="text-align: left;"><strong>Consulta</strong></td>
+<td style="text-align: left;">Lista issues ativas com filtros por estado, marco ou responsável.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ticket comment</code></td>
+<td style="text-align: left;"><strong>Comentário</strong></td>
+<td style="text-align: left;">Insere anotações ou laudos de progresso na issue remota.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ticket close</code></td>
+<td style="text-align: left;"><strong>Encerramento</strong></td>
+<td style="text-align: left;">Fecha formalmente a issue na forja com mensagem conclusiva.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>divan</code> / <code>triage</code></td>
+<td style="text-align: left;"><strong>Triagem Assistida</strong></td>
+<td style="text-align: left;">Sessão interativa assistida por modelo de inteligência para refinamento e planejamento.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>catalog scan</code> / <code>list</code></td>
+<td style="text-align: left;"><strong>Inventário</strong></td>
+<td style="text-align: left;">Varre workspaces e cataloga repositórios e seus metadados (<code>.gost/metadata.json</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>batch push</code></td>
+<td style="text-align: left;"><strong>Operação em Lote</strong></td>
+<td style="text-align: left;">Executa envio de atualizações sincronizadas através dos repositórios do catálogo.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-contrato-do-validador-normativo-de-conformidade">1.3 Contrato do Validador Normativo de Conformidade</h3>
+<p>Responsável pela avaliação de regras declarativas (<code>rules.toml</code>) e emissão de laudos padronizados de conformidade.</p>
+<h4 id="contrato-de-comandos-do-validador">Contrato de Comandos do Validador:</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Comando / Ação</th>
+<th style="text-align: left;">Contrato Funcional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>check [--strict] [--lang &lt;l&gt;] [--scope &lt;s&gt;] [--json]</code></td>
+<td style="text-align: left;">Avalia regras declaradas com filtros de escopo (<code>project</code>, <code>post-build</code>, etc.) e emite laudos em texto ou JSON. Retorna código 0 em aprovação e código 1 em falha (ou avisos em modo estrito).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>test</code></td>
+<td style="text-align: left;">Valida sintaxe e integridade das regras declarativas do catálogo local.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>eval &lt;expressão&gt;</code></td>
+<td style="text-align: left;">Executa script ou expressão isolada com acesso aos primitivos de runtime normativos.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-contrato-da-ferramenta-de-entrega-continua-e-despacho-de-artefatos-cd">1.4 Contrato da Ferramenta de Entrega Contínua e Despacho de Artefatos (CD)</h3>
+<p>Responsável pelo pipeline de entrega contínua após a aprovação da integração contínua (CI), garantindo que nenhum binário de produção seja compilado ou empacotado em estações de trabalho não-reprodutíveis.</p>
+<h4 id="contrato-funcional-de-entrega-continua">Contrato Funcional de Entrega Contínua:</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Operação / Capacidade</th>
+<th style="text-align: left;">Finalidade</th>
+<th style="text-align: left;">Contrato Funcional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>ingest</code></td>
+<td style="text-align: left;"><strong>Ingestão de Staging</strong></td>
+<td style="text-align: left;">Consome binários e pacotes compilados na esteira hermética de CI da forja e valida suas assinaturas e hashes criptográficos SHA-256.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>dispatch</code></td>
+<td style="text-align: left;"><strong>Despacho Externo</strong></td>
+<td style="text-align: left;">Publica os artefatos nos storages autorizados de distribuição e atualiza os canais de entrega semântica (<code>stable</code>, <code>dev</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>purge</code></td>
+<td style="text-align: left;"><strong>Higiene de Staging</strong></td>
+<td style="text-align: left;">Remove imediatamente da forja primária os pacotes temporários de staging recém-despachados, prevenindo saturação de disco.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>deploy-stack</code></td>
+<td style="text-align: left;"><strong>Deploy de Servidores</strong></td>
+<td style="text-align: left;">Aciona remotamente a atualização de serviços conteinerizados via SSH na rede privada com verificação de healthcheck e rollback automático.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cascade</code></td>
+<td style="text-align: left;"><strong>Propagação em Cascata</strong></td>
+<td style="text-align: left;">Propaga atualizações de versão a montante (<em>upstream</em>) para os manifestos de dependência dos módulos a jusante (<em>downstream</em>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="15-contrato-do-controlador-de-fronteira-e-sincronia-de-espelhos">1.5 Contrato do Controlador de Fronteira e Sincronia de Espelhos</h3>
+<p>Responsável pela proteção e telemetria nas fronteiras públicas do ecossistema, isolando contribuições não-confiáveis e gerando paridade entre espelhos.</p>
+<h4 id="contrato-funcional-de-fronteira">Contrato Funcional de Fronteira:</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Operação / Capacidade</th>
+<th style="text-align: left;">Finalidade</th>
+<th style="text-align: left;">Contrato Funcional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>sync-infra</code></td>
+<td style="text-align: left;"><strong>Sincronia de Espelhos</strong></td>
+<td style="text-align: left;">Configura espelhos de envio passivo (<code>pushurl = no_push</code>), garantindo paridade de metadados, descrição e tópicos.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>reconcile</code></td>
+<td style="text-align: left;"><strong>Reconciliação Anti-Drift</strong></td>
+<td style="text-align: left;">Executa conciliação periódica de eventos de forja e webhooks perdidos através de buffers de lookback.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>inbox-quarantine</code></td>
+<td style="text-align: left;"><strong>Quarentena de PRs</strong></td>
+<td style="text-align: left;">Isola Pull Requests externos de espelhos públicos no namespace de quarentena <code>refs/heads/inbox/*</code> antes de qualquer execução de CI.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>inbox-clean</code></td>
+<td style="text-align: left;"><strong>Higiene de Fronteira</strong></td>
+<td style="text-align: left;">Remove branches locais <code>inbox/*</code> associadas a Pull Requests já encerrados ou rejeitados.</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="2-topologia-de-forjas-espelhos-e-fronteira">2. Topologia de Forjas, Espelhos e Fronteira</h2>
-<h3 id="21-centralidade-da-forja-primaria-e-espelhamento-passivo">2.1 Centralidade da Forja Primária e Espelhamento Passivo</h3>
+<h3 id="21-autoridade-da-forja-primaria-e-espelhamento-passivo">2.1 Autoridade da Forja Primária e Espelhamento Passivo</h3>
 <ol>
 <li><strong>Unidirecionalidade Local (<code>Zero Dual Push</code>):</strong> O ambiente local mantém o remote <code>origin</code> apontando exclusivamente para a forja primária definida no perfil final. A replicação de código para espelhos externos (Codeberg, GitHub) é responsabilidade exclusiva do <em>Push Mirror</em> automático da forja primária (<code>sync_on_commit: true</code>).</li>
 <li><strong>Sinalização de Espelhos e Paridade de Metadados:</strong><br />
@@ -621,6 +735,7 @@ mirror_owner = &lt;mirror_owner&gt;
 2. <strong>Canal de Desenvolvimento (<code>dev</code>):</strong><br />
    - Rótulo na interface: <em>Versão Experimental</em>.<br />
    - Sufixo / padrão de versão: <code>x.y.z-dev.{n}+{YYYYMMDD}.{commit}</code>.<br />
+   - <strong>Semântica Canônica de <code>{n}</code> (Commit Count):</strong> O contador <code>{n}</code> representa estritamente o número de commits desde a última tag estável (<code>git rev-list vX.Y.Z..HEAD --count</code>), mensurando a distância relativa do incremento em relação à versão estável base. É expressamente proibido utilizar a contagem acumulada absoluta de commits do repositório (<code>git rev-list --count HEAD</code>), prevenindo contaminações e saltos artificiais de numeração no SemVer. Quando o <code>HEAD</code> coincidir com a tag estável, <code>{n}</code> é <code>0</code>. Se o repositório não possuir tags estáveis anteriores (estado inaugural/gênese), <code>{n}</code> recai sobre a contagem a partir da gênese sobre a base <code>0.0.0-dev.{n}</code>.<br />
    - Alias canônico: <code>*-dev-latest.*</code> (ex.: <code>{app}-dev-latest-{target}.{ext}</code>).<br />
 3. <strong>Consumo de Versões Canônicas Recomendado:</strong><br />
    - Em manifestos de build (<code>Cargo.toml</code>, etc.), a fixação em versões canônicas exatas (<code>=</code>) é formalmente <strong>recomendada</strong> (<em>SHOULD</em> / <em>DEVERIA</em>) para garantir reprodutibilidade hermética em cascata.<br />
@@ -720,7 +835,7 @@ jobs:
   })();
 &lt;/script&gt;
 </code></pre>
-<h3 id="62-geracao-automatizada-do-banner-minimalista-cccp-site-banner">6.2 Geração Automatizada do Banner Minimalista (<code>cccp site banner</code>)</h3>
+<h3 id="62-geracao-deterministica-do-banner-minimalista">6.2 Geração Determinística do Banner Minimalista</h3>
 <p>O banner <code>site/assets/og_preview.png</code> (<code>1200 × 630 px</code>, Safe Zone 4:3 de <code>720px–840px</code> × <code>500px</code>) é gerado deterministicamente a partir do <code>.gost/metadata.json</code>:<br />
 * Renderiza o fundo com <code>theme.bg_color</code> e detalhes de contraste com <code>theme.accent_color</code>.<br />
 * Posiciona o <code>icon</code> oficial e imprime exclusivamente a chamada curta <strong><code>{title} — {tagline}</code></strong> ($\le 65$ caracteres), sem textos secundários.</p>
@@ -733,7 +848,7 @@ jobs:
 </code></pre>
 <hr />
 <h2 id="7-catalogo-local-de-descoberta-srccatalogjson">7. Catálogo Local de Descoberta (<code>~/src/catalog.json</code>)</h2>
-<p>Todo repositório inicializado ou sincronizado pelo <code>cccp</code> registra seus metadados extraídos do <code>.gost/metadata.json</code> no índice central da estação de trabalho (<code>~/src/catalog.json</code>):</p>
+<p>Todo repositório inicializado ou sincronizado pelo ferramental de governança registra seus metadados extraídos do <code>.gost/metadata.json</code> no índice central da estação de trabalho (<code>~/src/catalog.json</code>):</p>
 <pre><code class="language-json">{
   &quot;slug&quot;: &quot;&lt;slug&gt;&quot;,
   &quot;title&quot;: &quot;&lt;title&gt;&quot;,
@@ -746,6 +861,165 @@ jobs:
   &quot;website&quot;: &quot;&lt;public_site_url&gt;&quot;
 }
 </code></pre>
+<hr />
+<h2 id="8-padroes-taticos-de-conteinerizacao-obrigatoria-de-servicos">8. Padrões Táticos de Conteinerização Obrigatória de Serviços</h2>
+<p>Em cumprimento à diretriz estratégica do GOSPLAN, todo serviço de backend, microsserviço ou daemon distribuído no perfil Kollontai DEVE atender aos seguintes padrões de conteinerização:</p>
+<h3 id="81-anatomia-de-imagem-dockerfile-containerfile">8.1 Anatomia de Imagem (<code>Dockerfile</code> / <code>Containerfile</code>)</h3>
+<ol>
+<li><strong>Multi-Stage Hermético:</strong> O estágio de build compila o software hermeticamente; o estágio final copia apenas o binário compilado e artefatos estritamente necessários para uma imagem base minimalista (<code>alpine</code> ou <code>scratch</code>).</li>
+<li><strong>Execução Desprivilegiada Mandatória:</strong> O container DEVE executar sob usuário não-root explicitamente (<code>user: "1000:1000"</code>). É proibida a execução contínua como <code>root</code>.</li>
+<li><strong>Imutabilidade e Efemeridade:</strong> O sistema de arquivos do container é considerado volátil, delegando persistência a volumes nomeados ou bind-mounts explicitados no compose.</li>
+</ol>
+<h3 id="82-orquestracao-declarativa-local-composeyaml">8.2 Orquestração Declarativa Local (<code>compose.yaml</code>)</h3>
+<ol>
+<li><strong>Extensão Canônica:</strong> A declaração de orquestração utiliza estritamente o nome <code>compose.yaml</code> (sendo expressamente banido o uso da extensão obsoleta <code>.yml</code>).</li>
+<li><strong>Política de Reinício e Healthcheck:</strong> Todo serviço em produção declara <code>restart: unless-stopped</code> e uma probe ativa de integridade (<code>healthcheck</code> com <code>interval</code>, <code>timeout</code> e <code>retries</code>).</li>
+<li><strong>Isolamento de Rede:</strong> Serviços internos operam em redes privadas OCI (<code>networks: default: internal: true</code> ou isoladas). Portas só devem ser expostas se o serviço for explicitamente um ponto de ingresso público.</li>
+</ol>
+<hr />
+<h2 id="9-padrao-tatico-de-sanidade-pos-compilacao-smoke-tests">9. Padrão Tático de Sanidade Pós-Compilação (<em>Smoke Tests</em>)</h2>
+<p>Todo artefato executável gerado no perfil Kollontai está sujeito a validação no escopo canônico <code>post-build</code>:</p>
+<ol>
+<li><strong>Execução Dinâmica Rápida:</strong> O binário gerado é executado com argumentos de inspeção inofensivos em tempo limite estrito ($\le 3$ segundos).</li>
+<li><strong>Prevenção de Falhas Críticas:</strong> O teste detecta e bloqueia falhas de segmentação (<code>SIGSEGV</code> / sinal 11), <em>panics</em> imediatos de runtime ou ausência de dependências dinâmicas compartilhadas (<em>shared libraries</em> faltantes no ambiente).</li>
+<li><strong>Isolamento e Limpeza:</strong> A execução não deve deixar processos zumbis ou arquivos temporários não tratados no host.</li>
+</ol>
+<hr />
+<h2 id="10-decretos-regulamentadores-de-engenharia-kollontai-001-a-kollontai-018">10. Decretos Regulamentadores de Engenharia (KOLLONTAI-001 a KOLLONTAI-018)</h2>
+<p>O catálogo tático do perfil Kollontai estabelece parâmetros objetivos de engenharia e conformidade técnica para todos os projetos subordinados:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Nome Canônico</th>
+<th style="text-align: left;">Escopo</th>
+<th style="text-align: left;">Descrição Sumária</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-001</strong></td>
+<td style="text-align: left;"><code>README-MAX-LINES</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Teto rigoroso de 50 linhas para o arquivo <code>README.md</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-002</strong></td>
+<td style="text-align: left;"><code>BANNER-DIMENSIONS-AND-RATIO</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Banner institucional exatamente em 1200x630 (proporção 1.91:1) com safe zone.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-003</strong></td>
+<td style="text-align: left;"><code>DDD-DOMAIN-PURITY</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Pureza de domínio: <code>src/domain/</code> com zero I/O, rede ou dependências de frameworks.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-004</strong></td>
+<td style="text-align: left;"><code>STATIC-ANALYSIS-ZERO-WARNINGS</code></td>
+<td style="text-align: left;"><code>ci</code></td>
+<td style="text-align: left;">Linters e análise estática executando com zero advertências (<code>-D warnings</code> ou <code>--strict</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-005</strong></td>
+<td style="text-align: left;"><code>FORMAT-CHECK-DETERMINISTIC</code></td>
+<td style="text-align: left;"><code>ci</code></td>
+<td style="text-align: left;">Verificação determinística de formatação de código (<code>fmt --check</code>) na esteira.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-006</strong></td>
+<td style="text-align: left;"><code>SITE-SECURITY-HEADERS</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Cabeçalhos de segurança HTTP em <code>site/_headers</code> (anti-sniffing e anti-framing).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-007</strong></td>
+<td style="text-align: left;"><code>COMPOSE-NON-ROOT-USER</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Usuário desprivilegiado <code>user: "1000:1000"</code> obrigatório em manifestos compose.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-008</strong></td>
+<td style="text-align: left;"><code>COMPOSE-HEALTHCHECK-REQUIRED</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Sonda de integridade ativa (<code>healthcheck:</code>) obrigatória em manifestos compose.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-009</strong></td>
+<td style="text-align: left;"><code>DOCKERFILE-NON-ROOT-USER</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Usuário desprivilegiado <code>USER 1000:1000</code> obrigatório em Dockerfiles.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-010</strong></td>
+<td style="text-align: left;"><code>API-CONTRACT-OPENAPI</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Contratos de API em <code>docs/openapi.yaml</code> ou <code>docs/external/</code> em padrão OpenAPI 3.x.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-011</strong></td>
+<td style="text-align: left;"><code>FORBIDDEN-TERMS</code></td>
+<td style="text-align: left;"><code>docs</code></td>
+<td style="text-align: left;">Tabela curada de termos proibidos (sem etiqueta imperialista na norma).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-012</strong></td>
+<td style="text-align: left;"><code>SMOKE-TEST-SANITY-POST-BUILD</code></td>
+<td style="text-align: left;"><code>post-build</code></td>
+<td style="text-align: left;">Smoke test pós-compilação atestando ausência de SIGSEGV (139) e panics.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-013</strong></td>
+<td style="text-align: left;"><code>INTL-KEY-PARITY</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Paridade genérica de chaves entre dicionários das línguas listadas em <code>LANGUAGES</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-014</strong></td>
+<td style="text-align: left;"><code>RTL-LOGICAL-PROPERTIES-AUDIT</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Auditoria de propriedades lógicas CSS e atributo <code>dir="rtl"</code> para idiomas RTL.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-015</strong></td>
+<td style="text-align: left;"><code>I18N-SITE-FALLBACK-ENGLISH</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Roteador cliente do site adota inglês (<code>en</code>) como fallback na ausência do idioma do visitante.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-016</strong></td>
+<td style="text-align: left;"><code>FORBIDDEN-PATH-DEPENDENCIES</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Proibição de dependências locais via caminho (path = "...") em manifestos de pacotes.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-017</strong></td>
+<td style="text-align: left;"><code>LICENSING-MATRIX-COMPLIANCE</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Conformidade da matriz de licenciamento (GPL-3.0 padrão em software e satélites modulares).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>KOLLONTAI-018</strong></td>
+<td style="text-align: left;"><code>GIT-HOOKS-MAESTRO-PARITY</code></td>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;">Hooks essenciais do Git instalados e ativamente gerenciados pelo maestro <code>cccp</code>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-especificacoes-tecnicas-taticas-de-linguagens-languages">11. Especificações Técnicas Táticas de Linguagens (<code>languages/</code>)</h2>
+<p>A autoridade tática de homologação de toolchains, compiladores e convenções de código é exercida pelo perfil Kollontai. As especificações por stack técnica residem no diretório canônico <code>languages/</code>:</p>
+<ul>
+<li><strong>Rust:</strong> <code>languages/rust.md</code> — Edição 2024, <code>rustc &gt;= 1.99.0</code>, compilação estática musl, pureza de domínio e arquitetura Hexagonal.</li>
+<li><strong>JavaScript &amp; TypeScript:</strong> <code>languages/javascript.md</code> — Node.js 24 LTS, TypeScript 5.8+, neutralidade WinterCG e ESM nativo.</li>
+<li><strong>POSIX Shell &amp; Bash:</strong> <code>languages/shell.md</code> — Portabilidade <code>/bin/sh</code> prioritária e Bash 5.2+ para recursos avançados.</li>
+<li><strong>Python:</strong> <code>languages/python.md</code> — Python 3.12+, <code>mypy --strict</code>, linters modernos (<code>ruff</code>) e imutabilidade.</li>
+<li><strong>Go:</strong> <code>languages/go.md</code> — Go 1.22+, compilação atômica <code>CGO_ENABLED=0</code> e contêineres <code>FROM scratch</code>.</li>
+<li><strong>PHP:</strong> <code>languages/php.md</code> — PHP 8.5+ canônico, compatibilidade reversa 8.2+ e <code>declare(strict_types=1);</code>.</li>
+<li><strong>R:</strong> <code>languages/r.md</code> — R 4.3+ e reprodutibilidade matemática absoluta.</li>
+</ul>
+<p>As especificações de linguagem possuem versionamento SemVer subordinado à norma tática e são publicadas sob <code>https://kollontai.2lp.in/2.1.0/languages/&lt;lang&gt;.md</code>.</p>
     </article>
 
     <footer class="site-footer">

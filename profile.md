@@ -426,3 +426,20 @@ O catálogo tático do perfil Kollontai estabelece parâmetros objetivos de enge
 | **KOLLONTAI-016** | `FORBIDDEN-PATH-DEPENDENCIES` | `project` | Proibição de dependências locais via caminho (path = "...") em manifestos de pacotes. |
 | **KOLLONTAI-017** | `LICENSING-MATRIX-COMPLIANCE` | `project` | Conformidade da matriz de licenciamento (GPL-3.0 padrão em software e satélites modulares). |
 | **KOLLONTAI-018** | `GIT-HOOKS-MAESTRO-PARITY` | `project` | Hooks essenciais do Git instalados e ativamente gerenciados pelo maestro `cccp`. |
+
+---
+
+## 11. Especificações Técnicas Táticas de Linguagens (`languages/`)
+
+A autoridade tática de homologação de toolchains, compiladores e convenções de código é exercida pelo perfil Kollontai. As especificações por stack técnica residem no diretório canônico `languages/`:
+
+- **Rust:** `languages/rust.md` — Edição 2024, `rustc >= 1.99.0`, compilação estática musl, pureza de domínio e arquitetura Hexagonal.
+- **JavaScript & TypeScript:** `languages/javascript.md` — Node.js 24 LTS, TypeScript 5.8+, neutralidade WinterCG e ESM nativo.
+- **POSIX Shell & Bash:** `languages/shell.md` — Portabilidade `/bin/sh` prioritária e Bash 5.2+ para recursos avançados.
+- **Python:** `languages/python.md` — Python 3.12+, `mypy --strict`, linters modernos (`ruff`) e imutabilidade.
+- **Go:** `languages/go.md` — Go 1.22+, compilação atômica `CGO_ENABLED=0` e contêineres `FROM scratch`.
+- **PHP:** `languages/php.md` — PHP 8.5+ canônico, compatibilidade reversa 8.2+ e `declare(strict_types=1);`.
+- **R:** `languages/r.md` — R 4.3+ e reprodutibilidade matemática absoluta.
+
+As especificações de linguagem possuem versionamento SemVer subordinado à norma tática e são publicadas sob `https://kollontai.2lp.in/2.1.0/languages/<lang>.md`.
+

@@ -15,9 +15,22 @@ OUT_HTML = os.path.join(SITE_DIR, "index.html")
 
 os.makedirs(SITE_DIR, exist_ok=True)
 
-# 1. Sincronizar arquivos raw para acesso via CLI / curl
-shutil.copy2(SRC_MD, os.path.join(SITE_DIR, "profile.md"))
-shutil.copy2(SRC_MD, os.path.join(SITE_DIR, "kollontai.md"))
+# 1. Sincronizar especificação versionada
+v_dir = os.path.join(SITE_DIR, "2.1.0")
+os.makedirs(v_dir, exist_ok=True)
+shutil.copy2(SRC_MD, os.path.join(v_dir, "RULES.md"))
+
+# Sincronizar catálogo de linguagens táticas
+LANG_SRC = os.path.join(ROOT, "languages")
+if os.path.isdir(LANG_SRC):
+    site_lang = os.path.join(SITE_DIR, "languages")
+    site_v_lang = os.path.join(v_dir, "languages")
+    os.makedirs(site_lang, exist_ok=True)
+    os.makedirs(site_v_lang, exist_ok=True)
+    for fname in os.listdir(LANG_SRC):
+        if fname.endswith(".md"):
+            shutil.copy2(os.path.join(LANG_SRC, fname), os.path.join(site_lang, fname))
+            shutil.copy2(os.path.join(LANG_SRC, fname), os.path.join(site_v_lang, fname))
 
 with open(SRC_MD, "r", encoding="utf-8") as f:
     md_content = f.read()
@@ -381,4 +394,4 @@ with open(OUT_HTML, "w", encoding="utf-8") as f:
     f.write(html_template)
 
 print(f"✅ Site construído com sucesso em: {OUT_HTML}")
-print(f"✅ profile.md e kollontai.md sincronizados em: {SITE_DIR}")
+print(f"✅ RULES.md e languages sincronizados em: {SITE_DIR}")

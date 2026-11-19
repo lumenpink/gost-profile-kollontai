@@ -19,7 +19,7 @@ Com a positivação da Metanorma Fundamental GOST v3.0.0 e do Plano Estratégico
      - `base_url: "https://gosplan.2lp.in/1.0.0/"`
 
 2. **Purga Terminológica:**
-   - Substituição de qualquer menção imperialista (ex.: "Soberania") por "Autoridade da Forja Primária" ou "Centralidade da Forja Primária".
+   - Substituição de qualquer menção imperialista por "Autoridade da Forja Primária" ou "Centralidade da Forja Primária".
 
 3. **Catálogo Declarativo de Regras Tridigitais (`rules.toml`):**
    - Regras tridigitais no padrão `KOLLONTAI-001` a `KOLLONTAI-999`.

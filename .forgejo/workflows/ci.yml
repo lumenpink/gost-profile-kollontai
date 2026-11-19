@@ -13,6 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: "Format & Hygiene Check"
+        run: |
+          if command -v black >/dev/null 2>&1; then
+            black --check scripts/
+          fi
+
       - name: "Run Normative Spec Audits & Tests"
         run: |
           for test_script in tests/*.sh; do
