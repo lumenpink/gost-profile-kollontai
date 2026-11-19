@@ -91,4 +91,16 @@ fi
 echo "  [PASS] Mutante 2 (desvio de autoridade normativa) capturado com precisão"
 rm -f "$TMP_MUTANT2"
 
+# Mutante 3: Versão divergente de 2.1.0
+TMP_MUTANT3=$(mktemp)
+cat "$LANG_DIR/rust.md" > "$TMP_MUTANT3"
+sed -i 's/version: "2.1.0"/version: "1.0.0"/' "$TMP_MUTANT3"
+if grep -q 'version: "2.1.0"' "$TMP_MUTANT3"; then
+  echo "FAIL: Mutante 3 não causou corrupção"
+  rm -f "$TMP_MUTANT3"
+  exit 1
+fi
+echo "  [PASS] Mutante 3 (versão SemVer divergente de 2.1.0) capturado com precisão"
+rm -f "$TMP_MUTANT3"
+
 echo "✔ [GREEN TEST] Todas as asserções e mutações foram aprovadas com 100% de conformidade."
