@@ -13,6 +13,7 @@
 - **site:** unificar artefatos normativos sob site/{version}/ eliminando rotas duplicadas (closes #21)
 
 ### Features
+- **languages:** hospedar e versionar especificacoes de linguagem na camada tatica (closes #26)
 - **catalog:** disponibilizar catalogo versions.json e rotas versionadas (closes #20)
 - **docs:** esclarecer convenção de commit count relativo para canal dev (closes #19)
 - **rules:** normatizar paridade de git hooks com o maestro via KOLLONTAI-018 (closes #18)
