@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "slug": "gost-profile-kollontai",
+  "title": "Kollontai",
+  "site_type": "doc",
+  "tagline": "Perfil Tático Canônico do Ecossistema GOST",
+  "summary": "Perfil canônico de governança, automação e qualidade para projetos de engenharia do ecossistema.",
+  "abstract": "O perfil Kollontai especifica o catálogo canônico de decretos de engenharia, catálogo de linguagens e contratos de esteira hermética, herdando diretamente da norma estratégica GOSPLAN e da Grundnorm GOST v3.0.0.",
+  "tags": [
+    "kollontai",
+    "profile",
+    "gost",
+    "rules",
+    "tactical",
+    "specification"
+  ],
+  "icon": "🌸",
+  "theme": {
+    "bg_color": "#181825",
+    "accent_color": "#cba6f7"
+  }
+}

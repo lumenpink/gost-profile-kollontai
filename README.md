@@ -41,3 +41,12 @@ Tópicos cobertos:
 ## ⚖️ Licença
 
 Licenciado sob [Creative Commons Atribuição-CompartilhaIgual 4.0 Internacional (CC-BY-SA 4.0)](./LICENSE).
+
+| Componente | Licença | Arquivo |
+| :--- | :--- | :--- |
+| **Especificação e Perfis** | CC-BY-SA-4.0 | [LICENSE](LICENSE) |
+| **Logotipos e Insígnias** | CC-BY-ND-4.0 | [LICENSE-LOGO](LICENSE-LOGO) |
+
+---
+
+Feito com amor travesti por [Lumen Pink](https://lumen.pink).

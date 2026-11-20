@@ -3,7 +3,7 @@ set -eo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-echo "=== [TEST] Auditoria de Conformidade Kollontai GOST 2.0.0 ==="
+echo "=== [TEST] Auditoria de Conformidade Kollontai GOST 3.0.0 ==="
 
 FAILED=0
 
@@ -16,10 +16,10 @@ else
 fi
 
 # 2. Especificação modular de linguagem
-if [ -s "$REPO_DIR/.gost/languages/shell.md" ]; then
-    echo "  [PASS] Especificação .gost/languages/shell.md presente e não-vazia"
+if [ -s "$REPO_DIR/languages/shell.md" ]; then
+    echo "  [PASS] Especificação languages/shell.md presente e não-vazia"
 else
-    echo "  [FAIL] Especificação .gost/languages/shell.md ausente ou vazia"
+    echo "  [FAIL] Especificação languages/shell.md ausente ou vazia"
     FAILED=1
 fi
 
@@ -31,11 +31,11 @@ else
     FAILED=1
 fi
 
-# 4. GOSTVER
-if grep -qF 'GOST_VERSION="2.0.0"' "$REPO_DIR/GOSTVER"; then
-    echo "  [PASS] GOSTVER atualizado para 2.0.0"
+# 4. Delivery Declarativo
+if [ -f "$REPO_DIR/.gost/delivery.toml" ]; then
+    echo "  [PASS] .gost/delivery.toml presente e conforme GOST v3.0"
 else
-    echo "  [FAIL] GOSTVER não contém GOST_VERSION=\"2.0.0\""
+    echo "  [FAIL] .gost/delivery.toml ausente"
     FAILED=1
 fi
 
