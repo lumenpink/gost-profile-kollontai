@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Fixes
+- **rules:** dispensar checagem de hooks do maestro em esteiras de ci na regra KOLLONTAI-018 (closes #28)
 - **site:** sincronizar site/2.1.0/RULES.md com profile.md para paridade de auditoria (closes #25)
 
 ### Documentation
