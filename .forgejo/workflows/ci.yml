@@ -29,6 +29,7 @@ jobs:
       - name: "Run CCCP Conformance Gate"
         run: |
           if command -v cccp >/dev/null 2>&1; then
+            cccp hook -i || true
             cccp check --strict
           fi
           echo "All normative technical specifications and tests passed."
