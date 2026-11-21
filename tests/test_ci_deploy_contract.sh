@@ -10,8 +10,8 @@ check_workflow() {
     local target="$1"
     local failed=0
 
-    # 1. Presença do Deploy Cloudflare Workers
-    if grep -qF "npx wrangler deploy" "$target" && grep -qF "CLOUDFLARE_API_TOKEN" "$target"; then
+    # 1. Presença de publicação via Generic Packages e ausência de wrangler direto
+    if grep -qF "cccp package upload site" "$target" && ! grep -qF "wrangler" "$target"; then
         true
     else
         failed=1
@@ -26,10 +26,10 @@ check_workflow() {
 }
 
 if check_workflow "$WORKFLOW"; then
-    echo "  [PASS] Deploy Cloudflare Workers configurado corretamente"
-    echo "  [PASS] Step quebrado de Codeberg Pages ausente do workflow"
+    echo "  [PASS] Publicação delegada ao Kombinat via Generic Packages configurada corretamente"
+    echo "  [PASS] Steps legados de Codeberg Pages e Wrangler direto ausentes do workflow"
 else
-    echo "❌ [FAIL] Workflow de CI ainda contém etapas incompatíveis ou ausência de Cloudflare."
+    echo "❌ [FAIL] Workflow de CI ainda contém etapas incompatíveis ou ausência de cccp package upload site."
     exit 1
 fi
 
@@ -39,7 +39,7 @@ TMP_MUTANT=$(mktemp)
 trap 'rm -f "$TMP_MUTANT"' EXIT
 
 # Mutante 1: Reintrodução de worktree add --orphan
-sed 's/npx wrangler deploy/git worktree add --orphan -b pages \/tmp/g' "$WORKFLOW" > "$TMP_MUTANT"
+sed 's/cccp package upload site/git worktree add --orphan -b pages \/tmp/g' "$WORKFLOW" > "$TMP_MUTANT"
 if check_workflow "$TMP_MUTANT"; then
     echo "  [FAIL] Mutante 1 (reintrodução de worktree orphan) não foi capturado!"
     exit 1
@@ -47,13 +47,13 @@ else
     echo "  [PASS] Mutante 1 (reintrodução de worktree orphan) capturado com precisão"
 fi
 
-# Mutante 2: Remoção do deploy Cloudflare
-sed 's/npx wrangler deploy/echo skip/g' "$WORKFLOW" > "$TMP_MUTANT"
+# Mutante 2: Reintrodução de wrangler deploy direto
+sed 's/cccp package upload site/npx wrangler deploy/g' "$WORKFLOW" > "$TMP_MUTANT"
 if check_workflow "$TMP_MUTANT"; then
-    echo "  [FAIL] Mutante 2 (remoção de wrangler deploy) não foi capturado!"
+    echo "  [FAIL] Mutante 2 (reintrodução de wrangler deploy) não foi capturado!"
     exit 1
 else
-    echo "  [PASS] Mutante 2 (remoção de wrangler deploy) capturado com precisão"
+    echo "  [PASS] Mutante 2 (reintrodução de wrangler deploy) capturado com precisão"
 fi
 
 echo "✔ [GREEN TEST] Todas as asserções e mutações foram aprovadas com 100% de conformidade."
