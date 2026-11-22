@@ -2,15 +2,15 @@
 standard: "kollontai"
 tier: "tactical"
 language: "rust"
-version: "2.1.0"
+version: "2.2.0"
 locale: "pt-br"
 authority: "Standards Committee"
 published_at: "2026-11-08"
 inherits_from:
   standard: "kollontai"
   tier: "tactical"
-  version: "2.1.0"
-  base_url: "https://kollontai.2lp.in/2.1.0/"
+  version: "2.2.0"
+  base_url: "https://kollontai.2lp.in/2.2.0/"
 ---
 
 # GOST Language Specification: Rust
@@ -20,7 +20,7 @@ inherits_from:
 ---
 
 ## 1. Visão Geral e Filosofia
-Esta especificação define os requisitos de engenharia, ferramentas e padrões para desenvolvimento em **Rust** (edição 2024 canônica, compilador `rustc >= 1.99.0`) no ecossistema GOST.
+Esta especificação define os requisitos de engenharia, ferramentas e padrões para desenvolvimento em **Rust** (edição 2024 canônica, compilador `rustc >= 1.100.0`) no ecossistema GOST.
 
 ---
 
@@ -97,7 +97,7 @@ Esta especificação define os requisitos de engenharia, ferramentas e padrões 
    ```
 2. **Dockerfile Canônico (Multi-stage + Scratch Estático musl com CA-Certs):**
    ```dockerfile
-   FROM rust:1.99-alpine AS builder
+   FROM rust:1.100-alpine AS builder
    RUN apk add --no-cache musl-dev ca-certificates
    WORKDIR /build
    COPY Cargo.toml Cargo.lock ./

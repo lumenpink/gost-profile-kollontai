@@ -2,15 +2,15 @@
 standard: "kollontai"
 tier: "tactical"
 language: "r"
-version: "2.1.0"
+version: "2.2.0"
 locale: "pt-br"
 authority: "Standards Committee"
 published_at: "2026-11-08"
 inherits_from:
   standard: "kollontai"
   tier: "tactical"
-  version: "2.1.0"
-  base_url: "https://kollontai.2lp.in/2.1.0/"
+  version: "2.2.0"
+  base_url: "https://kollontai.2lp.in/2.2.0/"
 ---
 
 # GOST Language Specification: R
