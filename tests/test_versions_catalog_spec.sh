@@ -4,7 +4,7 @@ set -eo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-echo "=== [TEST] Auditoria do Catálogo versions.json e Rotas Versionadas (Kollontai #20) ==="
+echo "=== [TEST] Auditoria do Catálogo versions.json e Rotas Versionadas (Kollontai #20, #30) ==="
 
 check_versions_catalog() {
     local root="$1"
@@ -16,10 +16,10 @@ check_versions_catalog() {
         echo "  [FAIL] site/versions.json não encontrado"
         failed=1
     else
-        if grep -q '"latest": "2.1.0"' "$vjson" && grep -q '"standard": "kollontai"' "$vjson" && grep -q '"versions"' "$vjson"; then
+        if grep -q '"latest": "2.2.0"' "$vjson" && grep -q '"standard": "kollontai"' "$vjson" && grep -q '"versions"' "$vjson" && grep -q '"2.1.0"' "$vjson" && grep -q '"2.2.0"' "$vjson"; then
             true
         else
-            echo "  [FAIL] site/versions.json não declara latest 2.1.0, standard kollontai ou lista de versions"
+            echo "  [FAIL] site/versions.json não declara latest 2.2.0, standard kollontai ou lista de versions com 2.1.0 e 2.2.0"
             failed=1
         fi
     fi
@@ -30,13 +30,13 @@ check_versions_catalog() {
         failed=1
     fi
 
-    # 3. site/2.1.0/RULES.md e site/2.1.0/RULES.toml no subdiretório versionado
-    if [ ! -f "$root/site/2.1.0/RULES.md" ]; then
-        echo "  [FAIL] site/2.1.0/RULES.md ausente no subdiretório versionado"
+    # 3. site/2.1.0/ e site/2.2.0/ no subdiretório versionado
+    if [ ! -f "$root/site/2.1.0/RULES.md" ] || [ ! -f "$root/site/2.1.0/RULES.toml" ]; then
+        echo "  [FAIL] Arquivos de 2.1.0 ausentes no subdiretório versionado"
         failed=1
     fi
-    if [ ! -f "$root/site/2.1.0/RULES.toml" ]; then
-        echo "  [FAIL] site/2.1.0/RULES.toml ausente no subdiretório versionado"
+    if [ ! -f "$root/site/2.2.0/RULES.md" ] || [ ! -f "$root/site/2.2.0/RULES.toml" ]; then
+        echo "  [FAIL] Arquivos de 2.2.0 ausentes no subdiretório versionado"
         failed=1
     fi
 
@@ -46,7 +46,7 @@ check_versions_catalog() {
 if check_versions_catalog "$REPO_ROOT"; then
     echo "  [PASS] Catálogo versions.json e rotas versionadas estão em conformidade!"
 else
-    echo "❌ [FAIL] Auditoria falhou (comportamento RED esperado)."
+    echo "❌ [FAIL] Auditoria falhou (comportamento RED esperado na Fase 4)."
     exit 1
 fi
 
@@ -55,13 +55,15 @@ echo "=== [MUTATION] Verificando sensibilidade dos testes a mutações ==="
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-mkdir -p "$TMP_DIR/site/2.1.0"
+mkdir -p "$TMP_DIR/site/2.1.0" "$TMP_DIR/site/2.2.0"
 cp "$REPO_ROOT/site/versions.json" "$TMP_DIR/site/"
 cp "$REPO_ROOT/site/2.1.0/RULES.md" "$TMP_DIR/site/2.1.0/"
 cp "$REPO_ROOT/site/2.1.0/RULES.toml" "$TMP_DIR/site/2.1.0/"
+cp "$REPO_ROOT/site/2.2.0/RULES.md" "$TMP_DIR/site/2.2.0/"
+cp "$REPO_ROOT/site/2.2.0/RULES.toml" "$TMP_DIR/site/2.2.0/"
 
 # Mutante 1: Versão latest alterada
-sed -E 's/"latest": "2.1.0"/"latest": "9.9.9"/' "$TMP_DIR/site/versions.json" > "$TMP_DIR/site/versions_mut.json"
+sed -E 's/"latest": "2.2.0"/"latest": "9.9.9"/' "$TMP_DIR/site/versions.json" > "$TMP_DIR/site/versions_mut.json"
 mv "$TMP_DIR/site/versions_mut.json" "$TMP_DIR/site/versions.json"
 if check_versions_catalog "$TMP_DIR" >/dev/null 2>&1; then
     echo "  [FAIL] Mutante 1 (latest divergente) não foi capturado!"
@@ -83,17 +85,17 @@ else
 fi
 rm -f "$TMP_DIR/site/RULES.md"
 
-# Mutante 3: Remoção de RULES.toml em 2.1.0
-rm "$TMP_DIR/site/2.1.0/RULES.toml"
+# Mutante 3: Remoção de RULES.toml em 2.2.0
+rm "$TMP_DIR/site/2.2.0/RULES.toml"
 if check_versions_catalog "$TMP_DIR" >/dev/null 2>&1; then
-    echo "  [FAIL] Mutante 3 (remoção de 2.1.0/RULES.toml) não foi capturado!"
+    echo "  [FAIL] Mutante 3 (remoção de 2.2.0/RULES.toml) não foi capturado!"
     exit 1
 else
-    echo "  [PASS] Mutante 3 (remoção de 2.1.0/RULES.toml) capturado com precisão"
+    echo "  [PASS] Mutante 3 (remoção de 2.2.0/RULES.toml) capturado com precisão"
 fi
 
 # Restaura RULES.toml
-cp "$REPO_ROOT/site/2.1.0/RULES.toml" "$TMP_DIR/site/2.1.0/"
+cp "$REPO_ROOT/site/2.2.0/RULES.toml" "$TMP_DIR/site/2.2.0/"
 
 # Mutante 4: Remoção do campo versions de versions.json (DD-TDD ph7)
 grep -v '"versions"' "$TMP_DIR/site/versions.json" > "$TMP_DIR/site/versions_no_ver.json"
