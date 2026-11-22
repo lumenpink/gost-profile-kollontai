@@ -86,5 +86,7 @@ breaking: true
 ---
 
 ## 5. Resultados de Validação (Quality Gate)
-- Todas as suítes de teste normativas em `tests/*.sh` devem passar com 100% de conformidade.
-- `cccp check --strict` sem avisos ou falhas.
+- **Suíte Normativa:** Todas as 8 suítes de teste em `tests/*.sh` executadas com 100% de sucesso.
+- **Cobertura de Mutações:** Mutantes eliminados com sucesso em `test_upgrade_md_spec.sh`, `test_versions_catalog_spec.sh`, `test_languages_spec.sh` e `test_kollontai_v2_1_spec.sh`.
+- **Artefato Canônico:** `site/2.2.0/UPGRADE.md` publicado e auditado contra o contrato GOST v3.0.0.
+- **Auditoria Strict:** `cccp check --strict` aprovado com 17/17 (100% de conformidade).
